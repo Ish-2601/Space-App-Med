@@ -1,0 +1,53 @@
+{
+  "_note": "PLACEHOLDER thresholds for a prototype. Replace each with values cited from NASA HRP / clinical sources and fill in 'source'. Not medical advice.",
+  "indicators": [
+    {
+      "id": "heartRate", "label": "Heart rate", "unit": "bpm", "bodyPart": "heart",
+      "green": [50, 90], "yellow": [40, 110],
+      "how": "Place two fingers on your wrist or use the wearable. Rest 5 minutes first.",
+      "why": "Microgravity shifts fluids and deconditions the heart; resting HR trends show cardiovascular adaptation.",
+      "action": { "yellow": "Hydrate and do light exercise; recheck in 1 hour.", "red": "Stop activity, notify crew medical officer and flight surgeon." },
+      "source": "TODO"
+    },
+    {
+      "id": "systolic", "label": "Blood pressure (systolic)", "unit": "mmHg", "bodyPart": "heart",
+      "green": [95, 130], "yellow": [85, 140],
+      "how": "Use the cuff on the upper arm, seated and relaxed.",
+      "why": "Fluid shifts and reduced activity change blood pressure regulation.",
+      "action": { "yellow": "Recheck after 10 minutes of rest; log symptoms.", "red": "Notify flight surgeon." },
+      "source": "TODO"
+    },
+    {
+      "id": "glucose", "label": "Blood glucose", "unit": "mg/dL", "bodyPart": "gut",
+      "green": [70, 140], "yellow": [60, 180],
+      "how": "Fingerstick glucometer, before a meal.",
+      "why": "Stress, diet changes and inactivity affect metabolism and nutrition.",
+      "action": { "yellow": "Review meal plan and exercise.", "red": "Notify flight surgeon." },
+      "source": "TODO"
+    },
+    {
+      "id": "temp", "label": "Body temperature", "unit": "°C", "bodyPart": "immune",
+      "green": [36.1, 37.5], "yellow": [35.5, 38.0],
+      "how": "Use the forehead or ear thermometer.",
+      "why": "Immune changes in spaceflight can mask or trigger infections.",
+      "action": { "yellow": "Rest, hydrate, recheck in 2 hours.", "red": "Isolate and notify flight surgeon." },
+      "source": "TODO"
+    },
+    {
+      "id": "sleep", "label": "Sleep", "unit": "hours", "bodyPart": "brain",
+      "green": [7, 9], "yellow": [5.5, 10],
+      "how": "From the wearable or a morning log.",
+      "why": "Isolation, light cycles and noise disrupt circadian rhythm; poor sleep raises error risk.",
+      "action": { "yellow": "Keep a fixed sleep schedule; reduce evening light.", "red": "Report fatigue to crew and flight surgeon." },
+      "source": "TODO"
+    },
+    {
+      "id": "mood", "label": "Mood (1-10)", "unit": "/10", "bodyPart": "brain",
+      "green": [6, 10], "yellow": [4, 10],
+      "how": "Self-rating; honest answers matter more than high ones.",
+      "why": "Isolation and confinement raise behavioral health risks.",
+      "action": { "yellow": "Schedule a call with family or a counselor.", "red": "Request a private conference with ground support." },
+      "source": "TODO"
+    }
+  ]
+}
