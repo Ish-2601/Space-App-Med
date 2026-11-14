@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Crewmate from "./Crewmate.jsx";
+import CrewAvatar from "./CrewAvatar.jsx";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import { useStore, envOf, activeEvent, delayText } from "../backend/api.js";
 import Today from "../pages/Today.jsx";
@@ -73,7 +73,7 @@ export default function Dashboard({ person, onSwitch }) {
     <div className="app">
       <header>
         <div className="who">
-          <Crewmate color={person.color} size={44} />
+          <CrewAvatar person={person} compact />
           <div>
             <h1>{person.name}</h1>
             <span className="muted">{person.role}</span>

@@ -139,6 +139,7 @@ export function createInitialState() {
     medkit: MEDKIT.map((m) => ({ ...m })),
     exerciseLog: perPerson(() => []),
     photos: perPerson(() => []),
+    profilePhotos: {},
     journal: perPerson(() => []),
     symptomLog: perPerson(() => []),
     checklists: perPerson(() => ({})),

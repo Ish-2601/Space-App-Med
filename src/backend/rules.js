@@ -347,6 +347,8 @@ export function crewOverview(state) {
       person: p,
       status: overallStatus(state, p.id),
       score: healthScore(state, p.id),
+      // Alerts, a missing daily check-in or scheduled checks require attention.
+      checkupRequired: alerts.length > 0 || !state.checkins[p.id][state.mission.day] || dueChecks(state, p.id).some((d) => d.due),
       alerts,
       checkedIn: !!state.checkins[p.id][state.mission.day],
       sheltered: ev ? !!ev.sheltered[p.id] : null,

@@ -4,6 +4,7 @@ import { getState, update, replaceState, startClock, useStore } from "./store.js
 import { createInitialState, simulateRow, simulateHabitat } from "./seed.js";
 import { ENVIRONMENTS, EMERGENCIES, CHECKS } from "./content.js";
 import { putPhoto, removePhoto, clearPhotos } from "./photoStore.js";
+import { validateProfilePhoto } from "./profilePhoto.js";
 import {
   rowFor, personOf, alertsFor, healthScore, indicatorStatuses, activeEvent, earthDelayMs, evaluateTest, habitatToday, envOf,
 } from "./rules.js";
@@ -56,6 +57,28 @@ export function setCalibration(pxPerMm) {
 }
 
 // ---------- Photos ----------
+
+// Profile portraits are separate from the medical photo log.
+export async function saveProfilePhoto(pid, blob) {
+  if (!personOf(getState(), pid)) throw new Error("Crew member not found.");
+  validateProfilePhoto(blob);
+  const id = `profile-${pid}-${newId()}`;
+  await putPhoto(id, blob);
+  const previous = getState().profilePhotos?.[pid];
+  update((s) => {
+    s.profilePhotos ||= {};
+    s.profilePhotos[pid] = id;
+  });
+  if (previous) await removePhoto(previous);
+  return id;
+}
+
+export async function deleteProfilePhoto(pid) {
+  const id = getState().profilePhotos?.[pid];
+  if (!id) return;
+  update((s) => { delete s.profilePhotos[pid]; });
+  await removePhoto(id);
+}
 
 // meta: { category: "face" | "skin" | "eyes" | "other", part, note, rating }
 export async function savePhoto(pid, blob, meta) {
