@@ -16,7 +16,7 @@
     {
       "id": "okafor", "name": "T. Okafor", "role": "Flight engineer", "color": "#378ADD",
       "priorDose": 40,
-      "baseline": { "heartRate": 58, "systolic": 118, "diastolic": 76, "spo2": 98, "glucose": 90, "temp": 36.6, "sleep": 7.8, "mood": 8, "exercise": 100, "water": 2.6 },
+      "baseline": { "heartRate": 66, "systolic": 118, "diastolic": 76, "spo2": 98, "glucose": 90, "temp": 36.6, "sleep": 7.8, "mood": 8, "exercise": 100, "water": 2.6 },
       "drift": { "systolic": 18, "diastolic": 10, "water": -0.8 },
       "notes": {
         "heart": "Your blood pressure has been rising over the last few weeks. Keep logging it daily.",
@@ -27,7 +27,7 @@
     {
       "id": "rivera", "name": "M. Rivera", "role": "Medical officer", "color": "#1D9E75",
       "priorDose": 0,
-      "baseline": { "heartRate": 66, "systolic": 110, "diastolic": 70, "spo2": 98, "glucose": 84, "temp": 36.6, "sleep": 7.6, "mood": 9, "exercise": 92, "water": 2.5 },
+      "baseline": { "heartRate": 66, "systolic": 110, "diastolic": 70, "spo2": 98, "glucose": 84, "temp": 36.6, "sleep": 7.6, "mood": 9, "exercise": 108, "water": 2.5 },
       "drift": {},
       "notes": {
         "brain": "First long-duration mission. Mood has been stable.",

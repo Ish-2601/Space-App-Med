@@ -3,9 +3,9 @@
 NASA Space Apps Challenge 2026: *Create Health Monitoring Software for Astronauts on Space Missions*
 Challenge page: https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/
 
-A web-based tool that helps astronauts assess their own health: guided check-ins, color-coded indicators, a clickable body map, trend charts, and guidance on what to do next.
+A web app that helps astronauts check, understand and act on their own health when Earth is minutes away.
 
-> Prototype using **simulated data**. Not medical advice. Thresholds must be sourced from NASA HRP and other cited references (see `src/data/indicators.json`).
+> Prototype using **simulated data**. Not medical advice. Thresholds and facts are sourced in `docs/RESEARCH.md`.
 
 ## Run it
 
@@ -16,29 +16,38 @@ npm install
 npm run dev
 ```
 
-Open the URL it prints (usually http://localhost:5173).
+Open http://localhost:5173. To start over with fresh demo data: Mission control → Reset all data.
+
+## Features
+
+- **Crew lobby:** every astronaut as a crewmate; pick one to open their app. A CMO view shows the whole crew.
+- **Today:** health score, alerts with actions (notify CMO, send to flight surgeon), daily tasks.
+- **Check-in:** daily measurements (sensor values pre-filled), vision self-check, motion sickness, symptoms, with how/why for each.
+- **Body map:** tap a body part for your personal status, readings vs your own baseline, notes and NASA countermeasures.
+- **Trends:** charts with the healthy band and your personal baseline.
+- **Radiation:** dose vs NASA's 600 mSv career limit, projections, solar storm simulation with shelter tracking.
+- **Mind:** private journal, mood, coping ideas, request a private conference.
+- **Quests:** gamified countermeasures, streaks, points, badges, crew leaderboard.
+- **Med guide:** symptom guides (causes, self-care, when to escalate).
+- **Checklists:** pre/post spacewalk and landing readiness.
+- **Earth link:** reports to the flight surgeon with a realistic delay, offline queue, simulated replies.
+- **Emergency:** step-by-step protocols (decompression sickness, solar storm, fainting, hypoxia, chest pain).
+- **Mission control:** switch environment (ISS / transit / Moon / Mars), advance days, demo triggers, export or reset data.
 
 ## Structure
 
 | Path | What |
 |---|---|
-| `src/App.jsx` | UI: body map, indicator list, trend chart, guidance |
-| `src/lib.js` | Status logic, simulated mission data, body-part info |
-| `src/data/indicators.json` | Indicators, ranges, how-to, why, actions. **Add citations here** |
-| `docs/ROADMAP.md` | Task checklist and owners |
-| `docs/CHALLENGE.md` | Challenge requirements and judging checklist |
+| `src/backend/` | The backend (runs in the browser, works offline). See `docs/BACKEND.md` |
+| `src/pages/` | One file per page |
+| `src/components/` | Crew lobby, dashboard shell, body map, shared bits |
+| `src/data/` | Indicators (with sources) and crew profiles |
+| `docs/` | Research, design, roadmap, backend docs |
 
 ## Deploy (free)
 
-`npm run build`, then publish `dist/` on GitHub Pages, Netlify or Vercel. Put the live link in your submission.
-
-## Team
-
-Add names and roles here.
+`npm run build`, then publish `dist/` on GitHub Pages, Netlify or Vercel.
 
 ## Sources
 
-- NASA HRP: 5 Hazards https://www.nasa.gov/hrp/hazards/
-- NASA HRP: Risks https://www.nasa.gov/hrp/risks/
-- NASA HRP: Ongoing research https://www.nasa.gov/hrp/ongoing-hrp-research/
-- CSA: Monitoring Radiation for Astronaut Health https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp
+See `docs/RESEARCH.md`. Main sources: NASA Human Research Program (hazards, risks, ongoing research) and the Canadian Space Agency.

@@ -17,9 +17,12 @@ Assign an owner to each line (initials) and tick when done.
 - [x] Research thresholds and citations for each indicator (`indicators.json`, `docs/RESEARCH.md`)
 - [x] Add indicators: SpO₂, diastolic BP, exercise, water, cumulative radiation
 - [ ] A researcher verifies the clinical links in RESEARCH.md §7
-- [ ] Non-numeric checks: vision self-check (SANS), motion-sickness rating, symptom checklist (rash, cold sore)
-- [ ] Simulated data generator with a "hazard event" scenario (solar particle event, landing)
-- [ ] Environment selector: ISS / transit / Moon / Mars (changes the radiation rate and gravity risks)
+- [x] Non-numeric checks: vision self-check (SANS), motion-sickness rating, symptom checklist (rash, cold sore)
+- [x] Simulated data generator with a "hazard event" scenario (solar particle event, landing)
+- [x] Environment selector: ISS / transit / Moon / Mars (changes the radiation rate and gravity risks)
+- [x] Full backend and all pages functional (docs/BACKEND.md, docs/DESIGN.md)
+- [ ] Verify environment dose rates and delays in content.js against sources and add them to RESEARCH.md
+- [ ] UI redesign (team)
 
 ## Phase 2: Core features
 - [ ] Real SVG body map, clickable, with function and status

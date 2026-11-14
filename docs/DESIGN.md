@@ -10,20 +10,34 @@
    - what spaceflight does to that part (NASA HRP)
    - how to protect it (NASA countermeasures)
 
-## Sections still to build (see ROADMAP)
+## All pages (built, functional, rough styling)
 
-| Page | Purpose | Priority |
+| Page | File | Purpose |
 |---|---|---|
-| Today | Health score, alert banner, today's tasks | Must |
-| Check-in | Step-by-step daily measurements with how/why | Must |
-| Trends | Charts vs personal baseline with green/yellow/red bands | Must (basic version exists) |
-| Radiation | Cumulative dose vs 600 mSv limit, solar storm alert | Should |
-| Quests | Gamified countermeasures, streaks | Should |
-| Med guide | Symptom guides: self-treat, recheck or escalate | Should |
-| Earth link | Queued reports to the flight surgeon with delay timer | Should |
-| Mind | Mood, private journal, coping ideas | Nice |
-| Emergency | Step lists for decompression sickness, solar storm, fainting, low O₂ | Nice |
-| Crew view | Medical officer sees everyone's status | Nice (the lobby partly covers this) |
+| Today | `pages/Today.jsx` | Health score, alerts with actions, today's tasks |
+| Check-in | `pages/CheckIn.jsx` | Daily measurements with how/why, vision, motion sickness, symptoms |
+| Body map | `pages/Body.jsx` | Body figure + personalized part detail |
+| Trends | `pages/Trends.jsx` | Charts with healthy band and personal baseline |
+| Radiation | `pages/Radiation.jsx` | Dose vs limit, projections, solar storm + shelter |
+| Mind | `pages/Mind.jsx` | Journal, mood, coping ideas, private conference request |
+| Quests | `pages/Quests.jsx` | Quests, streak, points, badges, leaderboard |
+| Med guide | `pages/MedGuide.jsx` | Symptom guides, log symptom, notify CMO |
+| Checklists | `pages/Checklists.jsx` | Pre/post EVA, landing readiness |
+| Earth link | `pages/EarthLink.jsx` | Delayed reports and replies, offline queue |
+| Crew (CMO) | `pages/CrewView.jsx` | Whole-crew status, notifications, emergencies |
+| Mission control | `pages/MissionControl.jsx` | Environment, advance day, demo triggers, export/reset |
+| Emergency | `pages/Emergency.jsx` | Step-by-step protocols |
+
+All data and logic live in `src/backend/` (see `docs/BACKEND.md`), so the UI can be redesigned without touching behaviour.
+
+## Suggested 3-minute demo
+
+1. Lobby: show the four crewmates and their statuses.
+2. Open **T. Okafor** → Check-in: enter systolic 152, vision "changed", symptom "Headache" → Today shows red/yellow alerts.
+3. Body map → Eyes and Heart: personal notes and baseline comparison.
+4. Send report to flight surgeon → Earth link: watch it travel (14 s), get reviewed, and reply.
+5. Radiation → simulate a solar particle event → shelter → dose comparison.
+6. CMO view from the lobby: whole crew at a glance.
 
 ## Data
 

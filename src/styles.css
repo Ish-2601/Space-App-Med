@@ -1,30 +1,90 @@
+/* Rough functional styles. The team will redesign the UI. */
 * { box-sizing: border-box; }
-body { margin: 0; background: #0b1020; color: #e8ecf5; font-family: system-ui, sans-serif; }
-h1, h2, h3 { margin: 0 0 8px; }
-h3 { font-size: 15px; margin-top: 16px; color: #c9d3ee; }
-.app { max-width: 1200px; margin: 0 auto; padding: 16px; }
+body { margin: 0; background: #0b1020; color: #e8ecf5; font-family: system-ui, sans-serif; line-height: 1.5; }
+h1, h2, h3, h4 { margin: 0 0 8px; }
+h3 { font-size: 16px; margin-top: 18px; color: #c9d3ee; }
+a { color: #8fb3ff; }
+pre { white-space: pre-wrap; font-size: 12px; background: #0b1020; padding: 8px; border-radius: 8px; }
+input, select, textarea { background: #0b1020; color: inherit; border: 1px solid #34406a; border-radius: 8px; padding: 6px 8px; font: inherit; }
+input[type="number"], textarea, .page > div > input { width: 100%; }
+input[type="range"] { vertical-align: middle; }
+textarea { width: 100%; margin: 6px 0; }
+.app { max-width: 1300px; margin: 0 auto; padding: 16px; }
 header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .who { display: flex; align-items: center; gap: 12px; }
-.header-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mission-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+.mission-bar > span { background: #131a33; padding: 4px 10px; border-radius: 999px; }
+.warn { color: #f1c40f; }
 .badge { display: inline-block; background: #1b2440; padding: 4px 10px; border-radius: 999px; font-size: 12px; }
-.switch { background: #1b2440; color: inherit; border: 1px solid #34406a; border-radius: 8px; padding: 8px 12px; cursor: pointer; }
-.switch:hover { background: #26315a; }
-main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
-.card { background: #131a33; border-radius: 12px; padding: 16px; min-width: 0; }
 .muted { color: #9aa6c4; }
+.small { font-size: 12px; }
+.error { color: #ff7b7b; font-size: 13px; }
+.danger-text { color: #ff7b7b; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 6px 0; }
+.spread { justify-content: space-between; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; flex: none; }
-.list { list-style: none; padding: 0; margin: 0; }
-.list li { padding: 8px; border-radius: 8px; cursor: pointer; }
-.list li:hover, .list li.sel { background: #1b2440; }
-.alert { padding: 8px 10px; border-radius: 8px; margin-top: 6px; }
+
+.btn { background: #1b2440; color: inherit; border: 1px solid #34406a; border-radius: 8px; padding: 8px 12px; cursor: pointer; font: inherit; }
+.btn:hover { background: #26315a; }
+.btn.small { padding: 4px 8px; font-size: 12px; }
+.btn.primary { background: #2f5bd3; border-color: #2f5bd3; }
+.btn.danger { background: #7a1f1f; border-color: #a33; }
+.btn.active { background: #2f5bd3; }
+
+.layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 16px; margin-top: 16px; }
+.sidebar { display: flex; flex-direction: column; gap: 4px; }
+.nav-btn { text-align: left; background: transparent; color: #c9d3ee; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; font: inherit; }
+.nav-btn:hover { background: #131a33; }
+.nav-btn.active { background: #1b2440; color: #fff; }
+.nav-btn.danger { color: #ff7b7b; margin-top: 8px; border: 1px solid #a33; }
+.page { min-width: 0; }
+footer { margin-top: 24px; text-align: center; }
+
+.card { background: #131a33; border-radius: 12px; padding: 16px; min-width: 0; margin-bottom: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stat .big { font-size: 40px; font-weight: 600; }
+.stat .big-ish { font-size: 20px; font-weight: 600; display: flex; align-items: center; }
+
+.alert { padding: 10px 12px; border-radius: 8px; margin: 6px 0; }
 .alert.yellow { background: #4a3f0a; }
 .alert.red { background: #4a1414; }
+.alert.info { background: #1b2a4a; }
+.banner { cursor: pointer; margin-top: 12px; }
+.note { background: #1b2440; border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; }
+
+.tasks { list-style: none; padding: 0; }
+.tasks li { padding: 6px 0; }
+.tasks li.done { color: #9aa6c4; }
+.badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.badge-item { background: #131a33; border: 1px solid #26315a; border-radius: 999px; padding: 4px 10px; font-size: 13px; color: #9aa6c4; }
+.badge-item.earned { color: #fff; border-color: #f1c40f; }
+
+.field { border-left: 4px solid #34406a; padding: 6px 0 6px 12px; margin-bottom: 10px; }
+.field label { display: block; }
+.radio { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; cursor: pointer; }
+.radio.block { display: flex; margin: 6px 0; }
+.big-check { font-size: 15px; }
+.sym-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px; }
+
+.meter { height: 14px; background: #0b1020; border-radius: 999px; overflow: hidden; margin: 8px 0; }
+.meter > div { height: 100%; }
+
+.list { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.report.priority { border: 1px solid #a33; }
+.journal p { margin: 4px 0; }
+.table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+.table th, .table td { text-align: left; padding: 8px; border-bottom: 1px solid #26315a; vertical-align: top; }
+.notif { padding: 6px 10px; border-left: 4px solid #34406a; margin: 4px 0; background: #131a33; }
+.notif.red { border-left-color: #e74c3c; }
+.notif.yellow { border-left-color: #f1c40f; }
+.notif.read { opacity: 0.6; }
 
 /* Crew select */
-.crew-select { max-width: 900px; margin: 0 auto; padding: 48px 16px; text-align: center; }
+.crew-select { max-width: 960px; margin: 0 auto; padding: 48px 16px; text-align: center; }
 .crew-select h2 { margin-top: 32px; }
-.crew-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 16px; margin-top: 16px; }
-.crew-card { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #131a33; color: inherit; border: 2px solid transparent; border-radius: 16px; padding: 20px 12px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+.crew-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; margin-top: 16px; }
+.crew-card { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #131a33; color: inherit; border: 2px solid transparent; border-radius: 16px; padding: 20px 12px; cursor: pointer; transition: transform 0.15s, border-color 0.15s; font: inherit; }
 .crew-card:hover { transform: translateY(-4px); border-color: #34406a; }
 .crew-name { font-size: 18px; font-weight: 600; }
 .crew-status { display: flex; align-items: center; font-size: 13px; }
@@ -37,17 +97,16 @@ main { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16p
 .spot { cursor: pointer; }
 .spot:hover circle { stroke: #ffffff; stroke-width: 2; }
 .part-list { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.part { display: flex; align-items: center; text-align: left; background: #0b1020; color: inherit; border: 1px solid #26315a; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 13px; }
+.part { display: flex; align-items: center; text-align: left; background: #0b1020; color: inherit; border: 1px solid #26315a; border-radius: 8px; padding: 6px 10px; cursor: pointer; font: inherit; font-size: 13px; }
 .part.active { background: #26315a; }
-
-/* Body part detail */
 .detail-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .pill { border: 1px solid; border-radius: 999px; padding: 3px 10px; font-size: 12px; }
-.note { background: #1b2440; border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; }
 .reading { border-left: 4px solid; padding: 6px 0 6px 10px; margin-bottom: 8px; }
 .detail ul { margin: 0; padding-left: 20px; }
 
 @media (max-width: 800px) {
-  main { grid-template-columns: 1fr; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { flex-direction: row; overflow-x: auto; }
+  .nav-btn { white-space: nowrap; }
   .bodymap { flex-direction: column; align-items: center; }
 }
