@@ -21,7 +21,8 @@ Open http://localhost:5173. Run the tests with `npm test`. To start over with fr
 ## Features
 
 **Daily**
-- **Crew lobby:** every astronaut as a crewmate with status; CMO view for the whole crew.
+- **NASA Med crew lobby:** galaxy background, personal profile photos, live health percentages and checkup status; select a portrait to open that astronaut's dashboard. Checkups show as necessary when alerts, a daily check-in or scheduled medical checks need attention. The CMO view remains available for the whole crew.
+- **Profile photos:** use the camera button to add a JPG, PNG, WebP or GIF (up to 5 MB). Photos are cropped to a 512px square and stored locally in IndexedDB, separately from medical photos. They also appear in the personal dashboard; use Remove photo to restore the default avatar.
 - **Today:** health score, alerts with actions (notify CMO, send to flight surgeon), checks due, supplements, quests, environment focus.
 - **Check-in:** 12 indicators (sensor values pre-filled), motion sickness, symptoms, with how/why for each.
 - **Log activity:** workouts, water, scheduled supplements.

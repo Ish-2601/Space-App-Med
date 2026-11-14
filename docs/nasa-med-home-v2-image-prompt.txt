@@ -1,0 +1,17 @@
+Edited with the built-in image_gen tool.
+
+Use case: precise-object-edit.
+Edit target: Image 1 is the existing NASA Med home-screen PNG.
+Supporting compositing input: Image 2 is the user's new starfield background. Use this supplied background image itself as the full-bleed backdrop of the existing screen, including its soft purple/blue clouds, sparse glowing stars, fine tiny stars, and subtle connected constellations in the corners. Preserve its arrangement and subdued lighting, scaled proportionally to fill the canvas. Do not substitute a different galaxy.
+Make ONLY this change: replace the old outer background of Image 1 with Image 2. Remove the old bright, highly textured edge nebulae.
+Lock all foreground UI from Image 1 in place: the centered NASA Med title and underline, all subtitles, four equally sized dark crew cards and their positions, borders, default blue silhouette avatars with camera icons, labels, names, health percentages, progress bars, checkup status pills, icons, typography, padding, and footer. Preserve the dark card fills to keep the content readable, and preserve the avatar tiles.
+Preserve exact text:
+"NASA Med"
+"Crew health overview"
+"Select a profile to open a personal health dashboard."
+Card 1: "Name", "Alex Morgan", "Health score", "98%", "Checkup", "Not necessary".
+Card 2: "Name", "Jordan Lee", "Health score", "95%", "Checkup", "Not necessary".
+Card 3: "Name", "Sam Rivera", "Health score", "72%", "Checkup", "Necessary".
+Card 4: "Name", "Taylor Chen", "Health score", "91%", "Checkup", "Not necessary".
+Footer: "Sample crew data".
+Output: a crisp finished flat landscape PNG app screen, same framing and proportions as Image 1, edge to edge. No added text or objects, no device frame, no watermark. All UI elements remain intact; only the main starfield background changes.

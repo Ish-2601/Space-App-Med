@@ -1,0 +1,16 @@
+Generated with the built-in image_gen tool.
+
+Use case: ui-mockup.
+Asset type: a finished flat landscape PNG canvas for an astronaut crew selection home screen, ideally 2048 x 1152, edge-to-edge app UI.
+Input image: the attached hand-drawn paper sketch is a COMPOSITION REFERENCE ONLY: preserve its main idea of a centered NASA Med heading and four equal crew profile cards arranged horizontally. Replace all paper, handwriting and photographed surroundings with polished digital UI.
+Primary request: design an elegant, highly readable dark galaxy themed NASA Med home screen where users choose a crew member by clicking their default profile picture to enter that person's health dashboard. This is a NASA Space Apps student project concept.
+Composition: perfectly straight-on flat interface, generous margins, well aligned typography and equal card spacing, no device frame, no perspective, no surrounding presentation board. Center the exact title "NASA Med" near the top in confident modern sans-serif, white with a subtle cool accent. Under the title, put "Crew health overview" and then smaller "Select a profile to open a personal health dashboard." Four large equal cards form one horizontal row in the central area, filling the width with comfortable padding. Keep all text readable at normal viewing size.
+Style: refined premium space mission medical app. Deep midnight navy and near-black background, subtle indigo/violet nebula clouds near the edges and sparse tiny stars. Keep the center quiet. Slightly translucent dark navy cards with restrained thin blue-gray outlines, softly rounded corners, subtle depth, no excessive neon or glow. White primary text, muted blue-gray secondary labels, mint status for not necessary, warm amber status for necessary. Contrast is excellent.
+Each card: large square avatar tile with softly rounded corners at the top. Use the SAME neutral default anonymous head-and-shoulders profile silhouette in all four tiles, pale blue against a dark radial galaxy-colored field; no actual people, no portraits, no faces. Add a small unobtrusive camera icon at bottom-right of each avatar tile to suggest replaceable profile pictures. Beneath avatar, show the small label "Name" and a clear full sample name. Then label "Health score" and a large percentage, with a thin clean progress bar matching the score. At the bottom show label "Checkup" and a legible compact status pill including an icon AND text.
+Exact card content left to right:
+Card 1: "Name", "Alex Morgan", "Health score", "98%", "Checkup", "Not necessary".
+Card 2: "Name", "Jordan Lee", "Health score", "95%", "Checkup", "Not necessary".
+Card 3: "Name", "Sam Rivera", "Health score", "72%", "Checkup", "Necessary". Use amber on this score and status, and a slightly warmer fine border.
+Card 4: "Name", "Taylor Chen", "Health score", "91%", "Checkup", "Not necessary".
+At the very bottom, tiny tasteful footer text "Sample crew data".
+Constraints: exactly four cards, identical card dimensions and avatar sizes, names and labels spelled exactly, no added charts, no navigation sidebar, no invented medical measurements, no excessive decorative controls, no NASA seal, no watermark, no phone or laptop, no photographed paper. Finished crisp app canvas with polished typography and professionally balanced spacing.
