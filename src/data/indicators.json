@@ -1,53 +1,137 @@
 {
-  "_note": "PLACEHOLDER thresholds for a prototype. Replace each with values cited from NASA HRP / clinical sources and fill in 'source'. Not medical advice.",
+  "_note": "Prototype thresholds. Bands: value inside 'green' = green, inside 'yellow' = yellow, otherwise red. Full rationale and citations in docs/RESEARCH.md section 7. Not medical advice.",
   "indicators": [
     {
-      "id": "heartRate", "label": "Heart rate", "unit": "bpm", "bodyPart": "heart",
-      "green": [50, 90], "yellow": [40, 110],
-      "how": "Place two fingers on your wrist or use the wearable. Rest 5 minutes first.",
-      "why": "Microgravity shifts fluids and deconditions the heart; resting HR trends show cardiovascular adaptation.",
-      "action": { "yellow": "Hydrate and do light exercise; recheck in 1 hour.", "red": "Stop activity, notify crew medical officer and flight surgeon." },
-      "source": "TODO"
+      "id": "heartRate", "label": "Resting heart rate", "unit": "bpm", "bodyPart": "heart",
+      "green": [60, 100], "yellow": [50, 110],
+      "hazards": ["gravity"], "risk": "Cardiovascular Adaptations",
+      "how": "Sit still for 5 minutes, then read your wearable or count your wrist pulse for 30 seconds and double it.",
+      "why": "Weightlessness changes how the heart and blood vessels work and can even make the heart rounder. Heart-rate trends show how your cardiovascular system is adapting.",
+      "action": {
+        "yellow": "Rest, drink water, and recheck in 1 hour. If you feel palpitations or dizziness, log them.",
+        "red": "Stop activity. Notify the crew medical officer and send a report to the flight surgeon (expect up to a 20-minute one-way delay)."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/", "https://www.heart.org/en/healthy-living/fitness/fitness-basics/target-heart-rates"]
     },
     {
       "id": "systolic", "label": "Blood pressure (systolic)", "unit": "mmHg", "bodyPart": "heart",
-      "green": [95, 130], "yellow": [85, 140],
-      "how": "Use the cuff on the upper arm, seated and relaxed.",
-      "why": "Fluid shifts and reduced activity change blood pressure regulation.",
-      "action": { "yellow": "Recheck after 10 minutes of rest; log symptoms.", "red": "Notify flight surgeon." },
-      "source": "TODO"
+      "green": [90, 119], "yellow": [85, 139],
+      "hazards": ["gravity"], "risk": "Cardiovascular Adaptations",
+      "how": "Use the arm cuff seated, arm at heart level, after 5 minutes of rest.",
+      "why": "Fluid shifts alter blood pressure control. Low pressure raises the chance of fainting during gravity transitions such as landing.",
+      "action": {
+        "yellow": "Recheck after 10 minutes of rest. Before a landing, follow fluid-loading and compression-garment procedures.",
+        "red": "Notify the crew medical officer and flight surgeon. If low and dizzy, lie down with legs raised."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-cardiovascular-adaptations/", "https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings"]
     },
     {
-      "id": "glucose", "label": "Blood glucose", "unit": "mg/dL", "bodyPart": "gut",
-      "green": [70, 140], "yellow": [60, 180],
-      "how": "Fingerstick glucometer, before a meal.",
-      "why": "Stress, diet changes and inactivity affect metabolism and nutrition.",
-      "action": { "yellow": "Review meal plan and exercise.", "red": "Notify flight surgeon." },
-      "source": "TODO"
+      "id": "diastolic", "label": "Blood pressure (diastolic)", "unit": "mmHg", "bodyPart": "heart",
+      "green": [60, 79], "yellow": [55, 89],
+      "hazards": ["gravity"], "risk": "Cardiovascular Adaptations",
+      "how": "Recorded at the same time as systolic pressure.",
+      "why": "Part of the full blood pressure picture for cardiovascular adaptation.",
+      "action": {
+        "yellow": "Recheck after rest; review salt and fluid intake.",
+        "red": "Notify the crew medical officer and flight surgeon."
+      },
+      "sources": ["https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings"]
+    },
+    {
+      "id": "spo2", "label": "Blood oxygen (SpO₂)", "unit": "%", "bodyPart": "lungs",
+      "green": [95, 100], "yellow": [92, 100],
+      "hazards": ["hostile"], "risk": "Hypoxia",
+      "how": "Clip the pulse oximeter on a warm finger and hold still for 30 seconds.",
+      "why": "Future habitats may run at lower pressure to make spacewalks safer, which raises the risk of mild hypoxia: headache, confusion, vision problems and poor sleep.",
+      "action": {
+        "yellow": "Rest and recheck in 15 minutes. Check cabin O₂ and CO₂ readings.",
+        "red": "Use supplemental oxygen per procedure and notify the crew medical officer immediately."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-hypoxia/"]
+    },
+    {
+      "id": "glucose", "label": "Blood glucose (fasting)", "unit": "mg/dL", "bodyPart": "gut",
+      "green": [70, 99], "yellow": [60, 125],
+      "hazards": ["distance", "hostile"], "risk": "Inadequate Food and Nutrition",
+      "how": "Fingerstick glucometer in the morning, before eating.",
+      "why": "Diet changes, menu fatigue, stress and inactivity affect metabolism. Nutrition is essential for health and performance on long missions.",
+      "action": {
+        "yellow": "If low: eat a snack with fast carbs and recheck in 15 minutes. If high: review meals and exercise.",
+        "red": "Notify the crew medical officer and flight surgeon."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/", "https://diabetes.org/about-diabetes/diagnosis"]
     },
     {
       "id": "temp", "label": "Body temperature", "unit": "°C", "bodyPart": "immune",
-      "green": [36.1, 37.5], "yellow": [35.5, 38.0],
-      "how": "Use the forehead or ear thermometer.",
-      "why": "Immune changes in spaceflight can mask or trigger infections.",
-      "action": { "yellow": "Rest, hydrate, recheck in 2 hours.", "red": "Isolate and notify flight surgeon." },
-      "source": "TODO"
+      "green": [36.1, 37.4], "yellow": [35.5, 37.9],
+      "hazards": ["hostile", "radiation"], "risk": "Altered Immune System Responses",
+      "how": "Use the forehead or ear thermometer, at rest.",
+      "why": "Spaceflight stress can weaken immunity and reactivate dormant viruses (cold sores, shingles), and microbes can be more virulent in space.",
+      "action": {
+        "yellow": "Rest, hydrate, recheck in 2 hours, and log any rash, cold sore or sore throat.",
+        "red": "Limit close contact with crewmates and notify the crew medical officer and flight surgeon."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/", "https://www.cdc.gov/quarantine/maritime/definitions-signs-symptoms-conditions-ill-travelers.html"]
     },
     {
       "id": "sleep", "label": "Sleep", "unit": "hours", "bodyPart": "brain",
-      "green": [7, 9], "yellow": [5.5, 10],
-      "how": "From the wearable or a morning log.",
-      "why": "Isolation, light cycles and noise disrupt circadian rhythm; poor sleep raises error risk.",
-      "action": { "yellow": "Keep a fixed sleep schedule; reduce evening light.", "red": "Report fatigue to crew and flight surgeon." },
-      "source": "TODO"
+      "green": [7, 9], "yellow": [6, 10],
+      "hazards": ["isolation"], "risk": "Inadequate Sleep and Irregular Schedules",
+      "how": "Read from your wrist sensor, or log when you fell asleep and woke up.",
+      "why": "ISS crews see 16 sunrises a day. Irregular light, work overload and noise disrupt sleep, which hurts performance and health.",
+      "action": {
+        "yellow": "Use the sleep-mode lighting, avoid caffeine in the afternoon, and keep a fixed sleep window.",
+        "red": "Report fatigue to the commander before safety-critical tasks and ask for a schedule adjustment."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-from-inadequate-sleep-and-irregular-schedules/", "https://www.cdc.gov/sleep/about/index.html"]
     },
     {
-      "id": "mood", "label": "Mood (1-10)", "unit": "/10", "bodyPart": "brain",
+      "id": "mood", "label": "Mood (1–10)", "unit": "/10", "bodyPart": "brain",
       "green": [6, 10], "yellow": [4, 10],
-      "how": "Self-rating; honest answers matter more than high ones.",
-      "why": "Isolation and confinement raise behavioral health risks.",
-      "action": { "yellow": "Schedule a call with family or a counselor.", "red": "Request a private conference with ground support." },
-      "source": "TODO"
+      "hazards": ["isolation", "distance"], "risk": "Behavioral Conditions and Psychiatric Disorders",
+      "how": "Rate how you feel today from 1 (very low) to 10 (great). Honest answers matter more than high ones.",
+      "why": "Isolation, confinement and distance from Earth raise the risk of anxiety and depression, which affect sleep, morale and decisions.",
+      "action": {
+        "yellow": "Try a self-care activity: journaling, tending plants, looking out a window, or a recorded message from family.",
+        "red": "Request a private conference with ground support. You don't have to handle this alone."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-behavioral-conditions-and-psychiatric-disorders/"]
+    },
+    {
+      "id": "exercise", "label": "Exercise", "unit": "min/day", "bodyPart": "bones",
+      "green": [90, 600], "yellow": [45, 600],
+      "hazards": ["gravity"], "risk": "Spaceflight-Induced Bone Changes / Reduced Fitness",
+      "how": "Logged automatically from the exercise device, or enter resistance and aerobic minutes.",
+      "why": "Without gravity, bones lose 1–1.5% of density per month and strength and aerobic fitness drop 10–12% on average. ISS crews exercise 1.5 hours a day to fight this.",
+      "action": {
+        "yellow": "Add a resistance session today to reach 90 minutes.",
+        "red": "You're well below the countermeasure target. Schedule exercise before other optional tasks."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-spaceflight-induced-bone-changes/", "https://www.nasa.gov/reference/risk-of-reduced-cardiorespiratory-and-musculoskeletal-fitness/"]
+    },
+    {
+      "id": "water", "label": "Water intake", "unit": "L/day", "bodyPart": "kidneys",
+      "green": [2.0, 6.0], "yellow": [1.5, 6.0],
+      "hazards": ["gravity"], "risk": "Kidney stones (Gravity Fields hazard)",
+      "how": "Log each drink bag, or read from the water dispenser.",
+      "why": "Dehydration plus calcium released from shrinking bones raises kidney stone risk. Good hydration also helps prevent fainting at landing.",
+      "action": {
+        "yellow": "Drink another 500 mL over the next few hours.",
+        "red": "Rehydrate now and watch for flank pain or dark urine."
+      },
+      "sources": ["https://www.nasa.gov/hrp/hazard-gravity-fields/"]
+    },
+    {
+      "id": "radiation", "label": "Cumulative radiation dose", "unit": "mSv", "bodyPart": "wholeBody",
+      "green": [0, 300], "yellow": [0, 480],
+      "hazards": ["radiation"], "risk": "Radiation-Induced Cancers (+ CNS effects)",
+      "how": "Read automatically from your personal dosimeter. You cannot see or feel radiation.",
+      "why": "Radiation raises cancer risk and can affect the brain, heart and eyes. NASA's career limit is 600 mSv. ISS crews get about 0.2–0.5 mSv per day, and more beyond Earth's magnetic field.",
+      "action": {
+        "yellow": "Over 50% of the career limit. Minimize time in low-shielding areas and review the EVA plan with the flight surgeon.",
+        "red": "Over 80% of the career limit. The flight surgeon must review all further exposure. During a solar storm alert, go to the shielded shelter."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-radiation-induced-cancers/", "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf", "https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp"]
     }
   ]
 }

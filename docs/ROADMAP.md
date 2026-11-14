@@ -3,14 +3,23 @@
 Assign an owner to each line (initials) and tick when done.
 
 ## Phase 0: Decide (first 2-3 hours)
-- [ ] Everyone reads docs/CHALLENGE.md and the official page
-- [ ] Agree on user, scenario and one-line pitch
+- [ ] Everyone reads docs/CHALLENGE.md and docs/RESEARCH.md
+- [x] Proposed user, scenario and pitch (below); team to confirm
 - [ ] Assign roles; everyone clones the repo and runs `npm run dev`
 
+### Proposed decisions (from research; change if the team disagrees)
+- **User:** an astronaut on a long-duration mission with no real-time Mission Control (Mars transit or Mars base). Secondary user: the crew medical officer.
+- **Pitch:** *"When Earth is 20 minutes away, AstroHealth helps astronauts check, understand and act on their own health."*
+- **Demo scenario:** Mars transit, day 120. A daily check-in shows sleep and exercise drifting yellow. The body map lights up bones and brain and explains why (NASA bone-loss and sleep risks). A solar particle event alert then sends the crew to the storm shelter and updates the cumulative dose. The app queues a report to the flight surgeon with a delay timer.
+- **Why it wins:** every indicator maps to a NASA HRP risk with citations (docs/RESEARCH.md), it's offline and delay-aware (Distance hazard), and it's self-explanatory (Systems Operations Support risk).
+
 ## Phase 1: Foundation
-- [ ] Research thresholds and citations for each indicator (`indicators.json`)
-- [ ] Add more indicators/hazards: radiation dose, bone/muscle, eyes, CO2
-- [ ] Simulated data generator with a "hazard event" scenario
+- [x] Research thresholds and citations for each indicator (`indicators.json`, `docs/RESEARCH.md`)
+- [x] Add indicators: SpO₂, diastolic BP, exercise, water, cumulative radiation
+- [ ] A researcher verifies the clinical links in RESEARCH.md §7
+- [ ] Non-numeric checks: vision self-check (SANS), motion-sickness rating, symptom checklist (rash, cold sore)
+- [ ] Simulated data generator with a "hazard event" scenario (solar particle event, landing)
+- [ ] Environment selector: ISS / transit / Moon / Mars (changes the radiation rate and gravity risks)
 
 ## Phase 2: Core features
 - [ ] Real SVG body map, clickable, with function and status

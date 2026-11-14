@@ -75,6 +75,12 @@ export default function App() {
           </ResponsiveContainer>
           <p><b>How to measure:</b> {ind.how}</p>
           <p><b>Why it matters in space:</b> {ind.why}</p>
+          <p className="muted">
+            NASA risk: {ind.risk} · Sources:{" "}
+            {ind.sources.map((s, n) => (
+              <a key={s} href={s} target="_blank" rel="noreferrer" style={{ color: "#8fb3ff", marginRight: 6 }}>[{n + 1}]</a>
+            ))}
+          </p>
           {statuses[ind.id] !== "green" && statuses[ind.id] !== "unknown" && (
             <p className={"alert " + statuses[ind.id]}>⚠ {ind.action[statuses[ind.id]]}</p>
           )}
