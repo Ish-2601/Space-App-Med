@@ -1,90 +1,357 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  useStore, alertsFor, healthScore, overallStatus, tasksFor, streak, points, notifyCMO, sendReport, dueChecks, medsDue, envOf, habitatToday, co2Status,
+  useStore,
+  alertsFor,
+  healthScore,
+  overallStatus,
+  tasksFor,
+  streak,
+  points,
+  dueChecks,
+  rowFor,
+  addWater,
+  notifyCMO,
+  sendReport,
 } from "../backend/api.js";
-import { COLORS, STATUS_LABEL, bodyParts } from "../lib.js";
+import { Panel, Icon, Status, Segments } from "../components/ConsoleUI.jsx";
+
+const TASKS = {
+  checkin: [
+    "Daily check-in",
+    "Eight short steps · about 3 minutes",
+    "today",
+    "checkin",
+    "Start",
+  ],
+  exercise: [
+    "Workout",
+    "Daily movement and resistance training",
+    "exercise",
+    "log",
+    "Log",
+  ],
+  water: [
+    "Water",
+    "Keep your daily hydration on track",
+    "water",
+    "log",
+    "+ 250 mL",
+  ],
+  sleep: [
+    "Sleep",
+    "Protect your regular sleep window",
+    "moon",
+    "checkin",
+    "Review",
+  ],
+  meds: [
+    "Supplements",
+    "Your scheduled supplements for today",
+    "kit",
+    "log",
+    "Log",
+  ],
+  checks: [
+    "Medical check",
+    "Camera, vision or reaction self-check",
+    "medical",
+    "checks",
+    "Open",
+  ],
+  journal: [
+    "Journal",
+    "A moment to reflect on your day",
+    "journal",
+    "mind",
+    "Write",
+  ],
+};
 
 export default function Today({ person, go }) {
   const state = useStore();
   const pid = person.id;
-  const alerts = alertsFor(state, pid);
+  const row = rowFor(state, pid);
   const status = overallStatus(state, pid);
-  const tasks = tasksFor(state, pid);
+  const score = healthScore(state, pid);
+  const alerts = alertsFor(state, pid).filter((a) => a.level !== "info");
   const due = dueChecks(state, pid).filter((d) => d.due);
-  const meds = medsDue(state, pid);
-  const env = envOf(state);
-  const hab = habitatToday(state);
-
+  const tasks = tasksFor(state, pid);
+  const done = tasks.filter((t) => t.done).length;
+  const priority = alerts[0];
+  const [notice, setNotice] = useState("");
+  const openAlert = (a) =>
+    go(
+      a.page || (a.part ? "body" : "checkin"),
+      a.guide ? { guide: a.guide } : a.part ? { part: a.part } : {},
+    );
   return (
-    <div>
-      <h2>Today · day {state.mission.day}</h2>
-      <div className="grid3">
-        <div className="card stat">
-          <div className="muted small">Health score</div>
-          <div className="big">{healthScore(state, pid)}</div>
-        </div>
-        <div className="card stat">
-          <div className="muted small">Status</div>
-          <div className="big-ish"><span className="dot" style={{ background: COLORS[status] }} />{STATUS_LABEL[status]}</div>
-        </div>
-        <div className="card stat">
-          <div className="muted small">Streak · points</div>
-          <div className="big-ish">🔥 {streak(state, pid)} days · ⭐ {points(state, pid)}</div>
-        </div>
-      </div>
-
-      <p className="small">
-        <b>{env.label} focus:</b>{" "}
-        {env.focus.map((f) => (
-          <button key={f} className="btn small" onClick={() => go("body", { part: f })}>{bodyParts[f].name}</button>
-        ))}{" "}
-        · Cabin CO₂ <span style={{ color: COLORS[co2Status(hab.co2)] }}>{hab.co2} mmHg</span>
-      </p>
-
-      <h3>Alerts ({alerts.length})</h3>
-      {alerts.length === 0 && <p className="muted">All clear. Nice work.</p>}
-      {alerts.map((a) => (
-        <div key={a.id} className={"alert " + a.level}>
-          <b>{a.title}</b>
-          <div>{a.action}</div>
-          <div className="row">
-            {a.page && <button className="btn small" onClick={() => go(a.page, a.guide ? { guide: a.guide } : {})}>Open</button>}
-            {a.part && <button className="btn small" onClick={() => go("body", { part: a.part })}>Show on body map</button>}
-            {a.indicator && <button className="btn small" onClick={() => go("trends", { indicator: a.indicator })}>Trend</button>}
-            {a.level !== "info" && (
-              <button className="btn small" onClick={() => notifyCMO(pid, `${person.name}: ${a.title}`, a.level)}>Notify CMO</button>
-            )}
-            {(a.escalate || a.level === "red") && (
-              <button className="btn small" onClick={() => { sendReport(pid, "health"); go("earth"); }}>Send report to flight surgeon</button>
+    <div className="today-screen">
+      <div className="today-hero">
+        <Panel title="Status" className="status-window">
+          <p className="eyebrow">PERSONAL HEALTH / DAY {state.mission.day}</p>
+          <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
+          <div className="health-overview">
+            <div className={`health-ring tone-${status}`}>
+              <svg viewBox="0 0 160 160" aria-hidden="true">
+                <circle className="ring-track" cx="80" cy="80" r="66" />
+                <circle
+                  className="ring-value"
+                  cx="80"
+                  cy="80"
+                  r="66"
+                  pathLength="100"
+                  strokeDasharray={`${score} 100`}
+                />
+              </svg>
+              <div>
+                <strong>{score}</strong>
+                <small>HEALTH</small>
+              </div>
+            </div>
+            <div>
+              <Status status={status} />
+              <p className="muted">
+                {alerts.length
+                  ? `${alerts.length} health signals need attention. Take it one step at a time.`
+                  : "Your readings are in range. Keep your daily routine on track."}
+              </p>
+            </div>
+          </div>
+          <div className="mini-stats">
+            {[
+              [`${row.sleep} h`, "SLEEP"],
+              [`${row.heartRate} bpm`, "RESTING HR"],
+              [`${row.water} L`, "WATER"],
+            ].map(([value, label]) => (
+              <div key={label}>
+                <b>{value}</b>
+                <small>{label}</small>
+              </div>
+            ))}
+          </div>
+        </Panel>
+        <Panel
+          title="Do this next"
+          tone={priority?.level || "neutral"}
+          className="priority-window"
+        >
+          <div className="priority-copy">
+            <span className="icon-tile">
+              <Icon
+                name={
+                  priority?.part === "eyes"
+                    ? "eyes"
+                    : priority?.part === "heart"
+                      ? "heart"
+                      : "medical"
+                }
+                size={30}
+              />
+            </span>
+            <div>
+              <p className="eyebrow">YOUR NEXT STEP</p>
+              <h2>
+                {priority?.title ||
+                  (state.checkins[pid][state.mission.day]
+                    ? "Keep your routine going"
+                    : "Take a moment to check in")}
+              </h2>
+              <p>
+                {priority?.action ||
+                  "Review today's readings and complete any scheduled checks. Your record stays with you, even offline."}
+              </p>
+            </div>
+          </div>
+          <div className="row priority-actions">
+            <button
+              className="btn primary"
+              onClick={() => (priority ? openAlert(priority) : go("checkin"))}
+            >
+              {priority ? "Review this signal" : "Start daily check-in"}
+              <Icon name="arrow" size={18} />
+            </button>
+            {priority && (
+              <button
+                className="text-button"
+                onClick={() => {
+                  notifyCMO(
+                    pid,
+                    `${person.name}: ${priority.title}`,
+                    priority.level,
+                  );
+                  setNotice("The medical officer has been notified.");
+                }}
+              >
+                <Icon name="medical" size={18} />
+                Notify CMO
+              </button>
             )}
           </div>
-        </div>
-      ))}
-
-      <div className="grid2">
-        <div>
-          <h3>Checks due</h3>
-          {due.length === 0 && <p className="muted">Nothing due. ✅</p>}
-          {due.map((d) => (
-            <div key={d.check.id} className="row">
-              <span>🩺 {d.check.title}</span>
-              <button className="btn small" onClick={() => (d.check.photo ? go("photos", { category: "face" }) : go("checks", { check: d.check.id }))}>Start</button>
+          <p className="small muted">
+            <Icon name="info" size={14} /> Compared with your own readings and
+            the app's screening ranges.
+          </p>
+          {notice && (
+            <p role="status" className="small">
+              {notice}
+            </p>
+          )}
+        </Panel>
+      </div>
+      <div className="main-with-aside">
+        <Panel title="Today's routine">
+          <div className="row spread">
+            <div>
+              <h2>
+                {done} of {tasks.length} done
+              </h2>
+              <p className="muted small">A little care, every mission day.</p>
             </div>
-          ))}
-          <h3>Supplements</h3>
-          {meds.length === 0 && <p className="muted">None scheduled.</p>}
-          {meds.map((m) => <div key={m.med}>{m.done ? "✅" : "⬜"} {m.name} <span className="muted small">({m.freq})</span></div>)}
-          {meds.some((m) => !m.done) && <button className="btn small" onClick={() => go("log")}>Log supplements</button>}
-        </div>
-        <div>
-          <h3>Today's quests</h3>
-          <ul className="tasks">
-            {tasks.map((t) => (
-              <li key={t.id} className={t.done ? "done" : ""}>
-                {t.done ? "✅" : "⬜"} {t.label} <span className="muted small">+{t.points}</span>
-              </li>
+            <span className="muted small">
+              <Icon name="star" size={16} />{" "}
+              {tasks.filter((t) => t.done).reduce((n, t) => n + t.points, 0)}{" "}
+              points today
+            </span>
+          </div>
+          <Segments
+            value={done}
+            max={tasks.length}
+            count={tasks.length}
+            label="Daily routine completed"
+            tone="green"
+          />
+          <div className="routine-list">
+            {tasks.map((t) => {
+              const [label, sub, icon, page, action] = TASKS[t.id] || [
+                t.label,
+                "Daily health task",
+                "check",
+                "checks",
+                "Open",
+              ];
+              return (
+                <div
+                  key={t.id}
+                  className={`routine-row ${t.done ? "done" : ""}`}
+                >
+                  <span className="task-check">
+                    <Icon name={t.done ? "check" : icon} size={19} />
+                  </span>
+                  <div className="routine-copy">
+                    <b>{label}</b>
+                    <small>{sub}</small>
+                    {t.id === "exercise" && (
+                      <Segments
+                        value={Math.min(row.exercise, 90)}
+                        max={90}
+                        label="Exercise minutes"
+                      />
+                    )}
+                    {t.id === "water" && (
+                      <Segments
+                        value={Math.min(row.water, 2)}
+                        max={2}
+                        label="Water in liters"
+                      />
+                    )}
+                  </div>
+                  <span className="routine-points">+{t.points}</span>
+                  {t.done ? (
+                    <Status status="green">Done</Status>
+                  ) : (
+                    <button
+                      className="btn"
+                      onClick={() =>
+                        t.id === "water" ? addWater(pid, 0.25) : go(page)
+                      }
+                    >
+                      {action}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          {due.length > 0 && (
+            <div className="due-checks">
+              <h3>Scheduled checks</h3>
+              {due.map(({ check }) => (
+                <button
+                  className="text-button"
+                  key={check.id}
+                  onClick={() =>
+                    check.photo
+                      ? go("photos", { category: "face" })
+                      : go("checks", { check: check.id })
+                  }
+                >
+                  <Icon name="medical" size={17} />
+                  {check.title}
+                  <Icon name="arrow" size={15} />
+                </button>
+              ))}
+            </div>
+          )}
+        </Panel>
+        <div className="panel-stack">
+          <Panel title="Other signals">
+            {alerts.slice(1).map((a) => (
+              <div className="signal-row" key={a.id}>
+                <Icon name={a.level === "red" ? "alert" : "info"} />
+                <div>
+                  <b>{a.title}</b>
+                  <p className="muted small">{a.action}</p>
+                  <button className="text-button" onClick={() => openAlert(a)}>
+                    View details <Icon name="arrow" size={15} />
+                  </button>
+                  {a.level === "red" && (
+                    <button
+                      className="text-button"
+                      onClick={() => {
+                        sendReport(pid, "health");
+                        go("earth");
+                      }}
+                    >
+                      Send health report <Icon name="send" size={15} />
+                    </button>
+                  )}
+                </div>
+              </div>
             ))}
-          </ul>
+            {alerts.length < 2 && (
+              <p className="muted">No other health alerts right now.</p>
+            )}
+          </Panel>
+          <Panel title="Consistency">
+            <div className="row spread">
+              <b>
+                <Icon name="star" size={17} /> {streak(state, pid)}-day streak
+              </b>
+              <span className="muted">
+                {points(state, pid).toLocaleString()} points
+              </span>
+            </div>
+            <div className="streak-days">
+              {Array.from(
+                { length: 7 },
+                (_, i) => state.mission.day - 6 + i,
+              ).map((day) => (
+                <div
+                  key={day}
+                  className={state.checkins[pid][day] ? "complete" : ""}
+                >
+                  <small>{day}</small>
+                  <Icon
+                    name={state.checkins[pid][day] ? "check" : "clock"}
+                    size={16}
+                  />
+                </div>
+              ))}
+            </div>
+            <button className="text-button" onClick={() => go("quests")}>
+              Your progress <Icon name="arrow" size={15} />
+            </button>
+          </Panel>
         </div>
       </div>
     </div>

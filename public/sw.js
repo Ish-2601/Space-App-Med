@@ -1,6 +1,6 @@
 // Offline support: cache the app shell and every file it loads, so AstroHealth works with no network
 // (like an onboard computer with the Earth link down).
-const CACHE = "astrohealth-v4";
+const CACHE = "astrohealth-v5";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./index.html", "./manifest.webmanifest", "./icon.svg", "./nasa-med-galaxy.png"])));

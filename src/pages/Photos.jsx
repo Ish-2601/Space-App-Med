@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { PageTitle, Icon } from "../components/ConsoleUI.jsx";
 import useCamera, { captureFrame, resizeImageFile } from "../components/useCamera.js";
 import PhotoThumb from "../components/PhotoThumb.jsx";
 import { useStore, savePhoto, deletePhoto, sendReport } from "../backend/api.js";
@@ -26,6 +27,7 @@ export default function Photos({ person, go, params }) {
   const [compare, setCompare] = useState([]);
   const [filter, setFilter] = useState("all");
   const photos = state.photos[pid].filter((p) => filter === "all" || p.category === filter);
+  useEffect(() => () => { if (pendingUrl) URL.revokeObjectURL(pendingUrl); }, [pendingUrl]);
 
   function hold(blob) {
     setPending(blob);
@@ -42,7 +44,8 @@ export default function Photos({ person, go, params }) {
   async function upload(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    hold(await resizeImageFile(file));
+    try { hold(await resizeImageFile(file)); }
+    catch { setMsg("Could not open this image. Try another photo."); }
     e.target.value = "";
   }
 
@@ -65,17 +68,16 @@ export default function Photos({ person, go, params }) {
   const meta = (id) => state.photos[pid].find((p) => p.id === id);
 
   return (
-    <div>
-      <h2>Photo log</h2>
-      <p className="muted">Photos stay on this device. Compare them over time, or attach them to a report for the flight surgeon.</p>
+    <div className="photo-workspace">
+      <PageTitle eyebrow="Body · Photo log" title="Notice the small changes" description="Photos stay on this device. Compare them over time, or attach them to a simulated report." />
 
       <div className="card">
         <div className="row">
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select aria-label="Photo category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {Object.entries(CATEGORIES).map(([k, c]) => <option key={k} value={k}>{c.label}</option>)}
           </select>
           {category === "skin" && (
-            <select value={part} onChange={(e) => setPart(e.target.value)}>
+            <select aria-label="Body area" value={part} onChange={(e) => setPart(e.target.value)}>
               {Object.entries(bodyParts).map(([k, p]) => <option key={k} value={k}>{p.name}</option>)}
             </select>
           )}
@@ -85,14 +87,14 @@ export default function Photos({ person, go, params }) {
           <video ref={cam.videoRef} playsInline muted className={cam.active ? "" : "hidden"} />
           {cam.active && category === "face" && <div className="oval" />}
           {!cam.active && pendingUrl && <img src={pendingUrl} alt="Captured" />}
-          {!cam.active && !pendingUrl && <div className="cam-placeholder">Camera off</div>}
+          {!cam.active && !pendingUrl && <div className="cam-placeholder"><Icon name="camera" size={42} />Camera off · Capture or upload a photo</div>}
         </div>
         {cam.error && <p className="error">{cam.error}</p>}
         <div className="row">
-          {!cam.active && <button className="btn" onClick={() => cam.start(CATEGORIES[category].facing)}>📷 Open camera</button>}
+          {!cam.active && <button className="btn" onClick={() => cam.start(CATEGORIES[category].facing)}><Icon name="camera" />Open camera</button>}
           {cam.active && <button className="btn primary" onClick={snap}>Take photo</button>}
           {cam.active && <button className="btn small" onClick={cam.stop}>Close camera</button>}
-          <label className="btn">⬆ Upload photo<input type="file" accept="image/*" capture="environment" className="hidden" onChange={upload} /></label>
+          <label className="btn upload-photo-button"><Icon name="download" />Upload photo<input aria-label="Upload medical photo" type="file" accept="image/*" onChange={upload} /></label>
         </div>
         {pending && (
           <>
@@ -116,7 +118,7 @@ export default function Photos({ person, go, params }) {
 
       <div className="row spread">
         <h3>Your photos ({state.photos[pid].length})</h3>
-        <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <select aria-label="Filter photos" value={filter} onChange={(e) => setFilter(e.target.value)}>
           <option value="all">All</option>
           {Object.entries(CATEGORIES).map(([k, c]) => <option key={k} value={k}>{c.label}</option>)}
         </select>

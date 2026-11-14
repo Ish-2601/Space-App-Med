@@ -1,65 +1,144 @@
 import React, { useState } from "react";
 import { HAZARDS, RISKS, GUIDING_QUESTIONS, SOURCES } from "../backend/nasa.js";
-
-const PAGE_LABEL = {
-  checkin: "Check-in", checks: "Checks", photos: "Photo log", medguide: "Med guide", trends: "Trends", emergency: "Emergency",
-  checklists: "Checklists", medkit: "Med kit", habitat: "Habitat", log: "Log activity", quests: "Quests", body: "Body map",
-  mind: "Mind", crew: "Crew (CMO)", today: "Today", learn: "Learn", radiation: "Radiation",
+import { PageTitle, Panel, Back, Icon } from "../components/ConsoleUI.jsx";
+const LABELS = {
+  checkin: "Check-in",
+  checks: "Medical checks",
+  photos: "Photos",
+  medguide: "Help",
+  trends: "Trends",
+  emergency: "Emergency",
+  checklists: "Checklists",
+  medkit: "Med kit",
+  habitat: "Ship",
+  log: "Activity",
+  quests: "Progress",
+  body: "Body",
+  mind: "Mind",
+  crew: "Crew",
+  today: "Today",
+  learn: "Learn",
+  radiation: "Radiation",
 };
-
-// NASA hazards and risks, how AstroHealth covers each, and the challenge's guiding questions
 export default function Learn({ go }) {
-  const [hazard, setHazard] = useState(null);
-  const risks = hazard ? RISKS.filter((r) => r.hazards.includes(hazard)) : RISKS;
-
+  const [hazard, setHazard] = useState(null),
+    risks = hazard ? RISKS.filter((r) => r.hazards.includes(hazard)) : RISKS;
   return (
     <div>
-      <h2>Learn: NASA's hazards and risks</h2>
-      <p className="muted">NASA's Human Research Program groups spaceflight dangers into 5 hazards and tracks specific health risks. Here's each one and where AstroHealth helps.</p>
-
-      <div className="grid3">
-        {HAZARDS.map((h) => (
-          <button key={h.id} className={"card hazard" + (hazard === h.id ? " selected" : "")} onClick={() => setHazard(hazard === h.id ? null : h.id)}>
-            <h3>{h.icon} {h.name}</h3>
-            <p className="small">{h.summary}</p>
-            <ul className="small">{h.facts.map((f) => <li key={f}>{f}</li>)}</ul>
+      <Back onClick={() => go("more")}>More</Back>
+      <PageTitle
+        eyebrow="Learn"
+        title="How NASA Med maps to NASA's research"
+        description="Five hazards shape life beyond Earth. Explore the risks they create and the tools that watch for changes."
+      />
+      <div className="hazard-grid">
+        {HAZARDS.map((h, i) => (
+          <button
+            key={h.id}
+            className={"hazard-card " + (hazard === h.id ? "selected" : "")}
+            aria-pressed={hazard === h.id}
+            onClick={() => setHazard(hazard === h.id ? null : h.id)}
+          >
+            <span className="icon-tile">
+              <Icon name={["radiation", "crew", "orbit", "body", "air"][i]} />
+            </span>
+            <h2>{h.name}</h2>
+            <p className="muted">{h.summary}</p>
+            <span className="small">
+              Explore linked risks <Icon name="arrow" size={14} />
+            </span>
           </button>
         ))}
       </div>
-
-      <div className="row spread">
-        <h3>{hazard ? `Risks linked to ${HAZARDS.find((h) => h.id === hazard).name}` : `All ${RISKS.length} HRP risks`}</h3>
-        {hazard && <button className="btn small" onClick={() => setHazard(null)}>Show all</button>}
-      </div>
-      <table className="table">
-        <thead><tr><th>Risk</th><th>What happens</th><th>Countermeasures</th><th>In AstroHealth</th></tr></thead>
-        <tbody>
-          {risks.map((r) => (
-            <tr key={r.id}>
-              <td><a href={r.url} target="_blank" rel="noreferrer">{r.name}</a></td>
-              <td className="small">{r.summary}</td>
-              <td className="small">{r.countermeasures.join("; ")}</td>
-              <td>{r.tracks.map((t) => <button key={t} className="btn small" onClick={() => go(t)}>{PAGE_LABEL[t]}</button>)}</td>
-            </tr>
+      {hazard && (
+        <Panel title="Hazard details">
+          <h2>{HAZARDS.find((h) => h.id === hazard).name}</h2>
+          <ul>
+            {HAZARDS.find((h) => h.id === hazard).facts.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+          <button className="btn" onClick={() => setHazard(null)}>
+            Show all risks
+          </button>
+        </Panel>
+      )}
+      <Panel
+        title={hazard ? "Related risks" : "All " + RISKS.length + " risks"}
+        className="research-panel"
+      >
+        <div className="table-scroll">
+          <table className="table research-table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>What happens</th>
+                <th>Where NASA Med helps</th>
+              </tr>
+            </thead>
+            <tbody>
+              {risks.map((r, i) => (
+                <tr key={r.id}>
+                  <td>
+                    <span className="risk-number">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <a href={r.url} target="_blank" rel="noreferrer">
+                      {r.name}
+                    </a>
+                  </td>
+                  <td>
+                    {r.summary}
+                    <details>
+                      <summary>Countermeasures</summary>
+                      <ul>
+                        {r.countermeasures.map((c) => (
+                          <li key={c}>{c}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  </td>
+                  <td>
+                    <div className="risk-links">
+                      {r.tracks.map((t) => (
+                        <button key={t} onClick={() => go(t)}>
+                          {LABELS[t] || t}
+                        </button>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
+      <div className="main-with-aside">
+        <Panel title="The challenge's questions">
+          {GUIDING_QUESTIONS.map((g) => (
+            <details className="research-question" key={g.q}>
+              <summary>{g.q}</summary>
+              <p className="muted">{g.a}</p>
+            </details>
           ))}
-        </tbody>
-      </table>
-
-      <h3>The challenge's questions, answered</h3>
-      {GUIDING_QUESTIONS.map((g) => (
-        <details key={g.q} className="card">
-          <summary><b>{g.q}</b></summary>
-          <p>{g.a}</p>
-        </details>
-      ))}
-
-      <h3>About this prototype</h3>
-      <p className="small">
-        Built for the NASA Space Apps Challenge 2026. All crew data is simulated. Thresholds come from NASA, CSA and clinical references; some screening
-        thresholds are team-defined and labelled as such. AstroHealth is not a medical device and not medical advice.
-      </p>
-      <h3>Sources</h3>
-      <ul className="small">{SOURCES.map((s) => <li key={s.url}><a href={s.url} target="_blank" rel="noreferrer">{s.label}</a></li>)}</ul>
+        </Panel>
+        <Panel title="Sources">
+          <ul className="sources-list">
+            {SOURCES.map((s) => (
+              <li key={s.url}>
+                <a href={s.url} target="_blank" rel="noreferrer">
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p className="small muted">
+            All crew data is simulated. Some screening thresholds are
+            team-defined. NASA Med is a Space Apps prototype, not a medical
+            device.
+          </p>
+        </Panel>
+      </div>
     </div>
   );
 }

@@ -1,80 +1,313 @@
 import React, { useState } from "react";
-import { useStore, rowFor, historyOf, submitCheckIn, SYMPTOMS } from "../backend/api.js";
-import { indicators, statusOf, personalBaseline, rangeText, COLORS } from "../lib.js";
+import {
+  useStore,
+  rowFor,
+  historyOf,
+  submitCheckIn,
+  SYMPTOMS,
+  habitatToday,
+} from "../backend/api.js";
+import { indicators, personalBaseline, rangeText } from "../lib.js";
+import { Panel, Back, Segments, Icon } from "../components/ConsoleUI.jsx";
 
-// Daily check-in: measurements (pre-filled from sensors where available), motion sickness, symptoms
-const AUTO = ["sleep", "exercise", "water", "radiation", "heartRate"]; // read from wearable / devices
-
+const QUESTIONS = [
+  "How did you sleep?",
+  "How are you feeling?",
+  "Any headache right now?",
+  "Has your vision changed?",
+  "Any motion sickness?",
+  "How is your hydration?",
+  "Anything else to report?",
+  "Review your readings",
+];
+const GROUPS = [
+  ["sleep"],
+  ["mood"],
+  [],
+  [],
+  [],
+  ["water"],
+  [],
+  [
+    "heartRate",
+    "systolic",
+    "diastolic",
+    "spo2",
+    "temp",
+    "mass",
+    "exercise",
+    "radiation",
+  ],
+];
 export default function CheckIn({ person, go }) {
-  const state = useStore();
-  const pid = person.id;
-  const row = rowFor(state, pid);
-  const history = historyOf(state, pid);
+  const state = useStore(),
+    pid = person.id,
+    row = rowFor(state, pid),
+    history = historyOf(state, pid);
   const existing = state.checkins[pid][state.mission.day];
-  const [values, setValues] = useState(() => Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])));
-  const [motion, setMotion] = useState(existing?.motion || 0);
-  const [symptoms, setSymptoms] = useState(existing?.symptoms || []);
+  const [step, setStep] = useState(0),
+    [values, setValues] = useState(() =>
+      Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])),
+    );
+  const [motion, setMotion] = useState(existing?.motion || 0),
+    [symptoms, setSymptoms] = useState(existing?.symptoms || []);
+  const [answers, setAnswers] = useState({
+    headache:
+      existing && !existing.auto
+        ? existing.symptoms?.includes("headache")
+        : undefined,
+    vision:
+      existing && !existing.auto
+        ? existing.symptoms?.includes("vision")
+        : undefined,
+  });
   const [error, setError] = useState("");
-
-  const toggleSym = (id) => setSymptoms((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
-
-  function submit() {
-    const missing = indicators.filter((i) => values[i.id] === "" || values[i.id] == null || Number.isNaN(Number(values[i.id])));
+  function toggleSym(id) {
+    setSymptoms((s) =>
+      s.includes(id) ? s.filter((x) => x !== id) : [...s, id],
+    );
+  }
+  function answer(id, yes) {
+    setAnswers({ ...answers, [id]: yes });
+    setSymptoms((s) => [...s.filter((x) => x !== id), ...(yes ? [id] : [])]);
+  }
+  function next() {
+    const fields =
+      step === 7
+        ? indicators
+        : indicators.filter((i) => GROUPS[step].includes(i.id));
+    const missing = fields.filter(
+      (i) =>
+        values[i.id] === "" ||
+        values[i.id] == null ||
+        !Number.isFinite(Number(values[i.id])),
+    );
     if (missing.length) {
-      setError(`Enter a number for: ${missing.map((i) => i.label).join(", ")}`);
+      setError(
+        "Enter a number for " + missing.map((i) => i.label).join(", ") + ".",
+      );
       return;
     }
-    submitCheckIn(pid, { values, motion, symptoms });
-    go("today");
+    if (
+      step === 7 &&
+      (answers.headache === undefined || answers.vision === undefined)
+    ) {
+      setStep(answers.headache === undefined ? 2 : 3);
+      setError("Please answer this question before saving your check-in.");
+      return;
+    }
+    setError("");
+    if (step < 7) setStep(step + 1);
+    else {
+      submitCheckIn(pid, { values, motion, symptoms });
+      go("today");
+    }
   }
-
-  return (
-    <div>
-      <h2>Daily check-in</h2>
-      {existing && !existing.auto && <p className="alert info">You already checked in today. Submitting again updates today's entry.</p>}
-      <p className="muted">Sensor values are pre-filled. Measure the others, then submit. Tap "How and why" for instructions. Vision checks are in Checks.</p>
-
-      {indicators.map((i) => {
-        const base = personalBaseline(i, history);
-        const s = statusOf(i, Number(values[i.id]), base);
-        return (
-          <div key={i.id} className="field" style={{ borderLeftColor: COLORS[s] }}>
-            <label>
-              <b>{i.label}</b> <span className="muted small">({i.unit}){AUTO.includes(i.id) ? " · from sensors" : ""}</span>
-              <input
-                type="number" step="any" value={values[i.id]}
-                readOnly={i.id === "radiation"}
-                onChange={(e) => { setValues({ ...values, [i.id]: e.target.value }); setError(""); }}
-              />
-            </label>
-            <details>
-              <summary className="small">How and why</summary>
-              <p className="small"><b>How:</b> {i.how}</p>
-              <p className="small"><b>Why:</b> {i.why}</p>
-              <p className="small muted">Healthy range: {rangeText(i, base)}</p>
-            </details>
-          </div>
-        );
-      })}
-
-      <div className="field">
-        <b>Motion sickness: {motion}/10</b>
-        <input type="range" min="0" max="10" step="1" value={motion} onChange={(e) => setMotion(Number(e.target.value))} />
+  function field(i) {
+    return (
+      <div className="checkin-field" key={i.id}>
+        <label>
+          <span>
+            {i.label} <small className="muted">({i.unit})</small>
+          </span>
+          <input
+            type="number"
+            step="any"
+            value={values[i.id]}
+            readOnly={i.id === "radiation"}
+            onChange={(e) => {
+              setValues({ ...values, [i.id]: e.target.value });
+              setError("");
+            }}
+          />
+        </label>
+        <details>
+          <summary>How and why</summary>
+          <p>{i.how}</p>
+          <p className="muted">{i.why}</p>
+          <p className="small muted">
+            Screening range: {rangeText(i, personalBaseline(i, history))}
+          </p>
+        </details>
       </div>
-
-      <div className="field">
-        <b>Any symptoms today?</b>
-        <div className="sym-grid">
-          {SYMPTOMS.map((s) => (
-            <label key={s.id} className="radio">
-              <input type="checkbox" checked={symptoms.includes(s.id)} onChange={() => toggleSym(s.id)} /> {s.label}
-            </label>
+    );
+  }
+  const symptomId = step === 2 ? "headache" : "vision";
+  const unanswered =
+    (step === 2 || step === 3) && answers[symptomId] === undefined;
+  return (
+    <div className="checkin-screen">
+      <div className="row spread checkin-top">
+        <Back onClick={() => go("today")}>Today</Back>
+        <span className="eyebrow">
+          Daily check-in · Day {state.mission.day}
+        </span>
+        <span className="muted small">
+          <Icon name="clock" size={16} /> About 3 minutes
+        </span>
+      </div>
+      {existing && !existing.auto && (
+        <p className="alert info">
+          You have already checked in today. Saving updates today's entry.
+        </p>
+      )}
+      <Segments value={step + 1} max={8} count={8} label="Check-in progress" />
+      <p className="muted">
+        Question {step + 1} of 8 · Your answers stay here as you move between
+        steps.
+      </p>
+      <Panel
+        title={"Question " + (step + 1) + " of 8"}
+        className="question-window"
+      >
+        <h1>{QUESTIONS[step]}</h1>
+        {step === 2 && (
+          <p className="muted">
+            Cabin CO₂ is {habitatToday(state).co2} mmHg today.
+          </p>
+        )}
+        {step === 3 && (
+          <p className="muted">
+            Think about blurriness, distortion, or a change from your usual
+            vision.
+          </p>
+        )}
+        {(step === 2 || step === 3) && (
+          <div className="answer-options">
+            {[
+              [false, step === 2 ? "No headache" : "No change"],
+              [
+                true,
+                step === 2 ? "I have a headache" : "My vision has changed",
+              ],
+            ].map(([yes, label]) => (
+              <button
+                key={label}
+                className={
+                  "answer-option " +
+                  (answers[symptomId] === yes ? "selected" : "")
+                }
+                aria-pressed={answers[symptomId] === yes}
+                onClick={() => answer(symptomId, yes)}
+              >
+                {label}
+                <Icon name={yes ? "info" : "check"} />
+              </button>
+            ))}
+          </div>
+        )}
+        {step === 4 && (
+          <label className="motion-question">
+            <strong>
+              {motion}
+              <small> / 10</small>
+            </strong>
+            <input
+              aria-label="Motion sickness"
+              type="range"
+              min="0"
+              max="10"
+              step="1"
+              value={motion}
+              onChange={(e) => setMotion(Number(e.target.value))}
+            />
+            <span className="row spread muted">
+              <span>None</span>
+              <span>Severe</span>
+            </span>
+          </label>
+        )}
+        {step === 6 && (
+          <div className="symptom-options">
+            {SYMPTOMS.filter((s) => !["headache", "vision"].includes(s.id)).map(
+              (s) => (
+                <label
+                  key={s.id}
+                  className={
+                    "symptom-option " +
+                    (symptoms.includes(s.id) ? "selected" : "")
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    checked={symptoms.includes(s.id)}
+                    onChange={() => toggleSym(s.id)}
+                  />
+                  {s.label}
+                </label>
+              ),
+            )}
+          </div>
+        )}
+        <div
+          className={"checkin-fields " + (step === 7 ? "review-fields" : "")}
+        >
+          {indicators
+            .filter(
+              (i) =>
+                GROUPS[step].includes(i.id) ||
+                (step === 7 && !GROUPS.flat().includes(i.id)),
+            )
+            .map(field)}
+        </div>
+        {step === 7 && (
+          <p className="muted small">
+            Your sleep, mood, water and symptom answers from earlier steps will
+            also be saved. Radiation is read from your simulated dosimeter.
+          </p>
+        )}
+        {error && (
+          <p className="error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="row spread question-actions">
+          <button
+            className="btn"
+            onClick={() =>
+              step ? (setStep(step - 1), setError("")) : go("today")
+            }
+          >
+            <Icon name="back" />
+            Back
+          </button>
+          <button className="btn primary" disabled={unanswered} onClick={next}>
+            {step === 7 ? "Save check-in" : "Next"}
+            <Icon name={step === 7 ? "check" : "arrow"} />
+          </button>
+        </div>
+      </Panel>
+      <Panel title="From your sensors">
+        <div className="sensor-grid">
+          {[
+            ["heartRate", "Resting HR", "bpm", "heart"],
+            ["sleep", "Sleep", "h", "moon"],
+            ["exercise", "Exercise", "min", "exercise"],
+            ["mass", "Body mass", "kg", "body"],
+          ].map(([id, label, unit, icon]) => (
+            <button
+              className="sensor-tile"
+              key={id}
+              onClick={() => setStep(id === "sleep" ? 0 : 7)}
+            >
+              <span className="eyebrow">
+                <Icon name={icon} size={16} />
+                {label}
+              </span>
+              <strong>
+                {values[id] ?? "—"} <small>{unit}</small>
+              </strong>
+              <span className="small muted">
+                Review reading <Icon name="arrow" size={13} />
+              </span>
+            </button>
           ))}
         </div>
-      </div>
-
-      {error && <p className="error">{error}</p>}
-      <button className="btn primary" onClick={submit}>Submit check-in</button>
+        <p className="small muted">
+          Pre-filled from the simulated mission data. Select a reading to review
+          it.
+        </p>
+      </Panel>
     </div>
   );
 }

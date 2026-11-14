@@ -1,72 +1,212 @@
 import React, { useState } from "react";
-import { useStore, dueChecks, testsOf, evaluateTest, CHECKS } from "../backend/api.js";
-import { COLORS } from "../lib.js";
+import { bodyParts } from "../lib.js";
+import {
+  useStore,
+  dueChecks,
+  testsOf,
+  evaluateTest,
+  CHECKS,
+  historyOf,
+} from "../backend/api.js";
 import HeartRateCamera from "../components/checks/HeartRateCamera.jsx";
 import AmslerGrid from "../components/checks/AmslerGrid.jsx";
 import AcuityTest from "../components/checks/AcuityTest.jsx";
 import ReactionTest from "../components/checks/ReactionTest.jsx";
 import BalanceTest from "../components/checks/BalanceTest.jsx";
-
-const RUNNERS = { hr: HeartRateCamera, amsler: AmslerGrid, acuity: AcuityTest, pvt: ReactionTest, balance: BalanceTest };
-
-// Medical checks hub: what's due, run a check, see past results
-export default function Checks({ person, go, params }) {
-  const state = useStore();
-  const pid = person.id;
-  const [open, setOpen] = useState(params.check || null);
-  const due = dueChecks(state, pid);
-  const check = CHECKS.find((c) => c.id === open);
-  const Runner = RUNNERS[open];
-
+import {
+  Back,
+  PageTitle,
+  Panel,
+  Icon,
+  Status,
+  Sparkline,
+} from "../components/ConsoleUI.jsx";
+const RUNNERS = {
+  hr: HeartRateCamera,
+  amsler: AmslerGrid,
+  acuity: AcuityTest,
+  pvt: ReactionTest,
+  balance: BalanceTest,
+};
+const TITLES = {
+  hr: "Heart rate with the camera",
+  amsler: "Amsler grid",
+  acuity: "Near vision chart",
+  pvt: "Reaction self-test",
+  balance: "Balance test",
+};
+export default function Checks({ person, go, params = {} }) {
+  const state = useStore(),
+    pid = person.id,
+    [open, setOpen] = useState(params.check || null);
+  const due = dueChecks(state, pid),
+    check = CHECKS.find((c) => c.id === open),
+    Runner = RUNNERS[open];
   if (check && Runner) {
     const past = testsOf(state, pid, check.id).slice(0, 8);
     return (
       <div>
-        <button className="btn small" onClick={() => setOpen(null)}>← All checks</button>
-        <h2>{check.title}</h2>
-        <p className="muted small">{check.why}</p>
-        <div className="card"><Runner person={person} /></div>
-        <h3>Your recent results</h3>
-        {past.length === 0 && <p className="muted">None yet.</p>}
-        <ul className="results">
-          {past.map((t) => {
-            const ev = evaluateTest(state, pid, t);
-            return (
-              <li key={t.id}><span className="dot" style={{ background: COLORS[ev.status] }} />Day {t.day}: {ev.summary}</li>
-            );
-          })}
-        </ul>
+        <Back onClick={() => setOpen(null)}>All medical checks</Back>
+        <PageTitle
+          eyebrow={"Medical check · " + bodyParts[check.part].name}
+          title={TITLES[open]}
+        >
+          <span className="telemetry-chip">
+            <Icon name="clock" />
+            {open === "hr"
+              ? "20 seconds"
+              : open === "pvt"
+                ? "3 minutes"
+                : open === "balance"
+                  ? "30 seconds"
+                  : "About 2 minutes"}
+          </span>
+        </PageTitle>
+        <div className="check-layout">
+          <Panel
+            title={open === "amsler" ? "How to" : "Why we check"}
+            className="check-instructions"
+          >
+            {open === "amsler" ? (
+              <ol className="instruction-steps">
+                <li>
+                  Hold the screen at reading distance, about 35 to 40 cm. Wear
+                  your glasses if you use them.
+                </li>
+                <li>Cover the opposite eye to the one being tested.</li>
+                <li>Look only at the white dot in the middle.</li>
+                <li>
+                  Mark any square where lines look wavy, blurry, bent or
+                  missing.
+                </li>
+              </ol>
+            ) : (
+              <>
+                <p>{check.what}</p>
+                <div className="section-divider" />
+                <p className="muted">{check.why}</p>
+              </>
+            )}
+            {open === "hr" && (
+              <p className="alert info small">
+                Less accurate than a medical monitor. Use it for trends and spot
+                checks.
+              </p>
+            )}
+            {open === "amsler" && (
+              <p className="muted small">
+                Use the arrow keys to move around the grid, and Space to mark a
+                square.
+              </p>
+            )}
+          </Panel>
+          <Panel
+            title="Measurement"
+            className={"measurement-panel measurement-" + open}
+          >
+            <Runner person={person} />
+          </Panel>
+          <Panel title="Your results" className="check-results">
+            {open === "hr" && (
+              <>
+                <p className="eyebrow">Recent resting heart rate</p>
+                <Sparkline
+                  bars
+                  values={historyOf(state, pid)
+                    .slice(-7)
+                    .map((r) => r.heartRate)}
+                  label="Resting heart rate over the last seven days"
+                />
+                <p className="small muted">Last seven mission days · bpm</p>
+              </>
+            )}
+            {past.length ? (
+              past.map((t) => {
+                const ev = evaluateTest(state, pid, t);
+                return (
+                  <div className="check-result" key={t.id}>
+                    <Status status={ev.status} />
+                    <p>
+                      <b>Day {t.day}</b> · {ev.summary}
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="empty-state">
+                <Icon name="medical" size={28} />
+                <p>No saved results yet.</p>
+                <span>Completed checks appear here.</span>
+              </div>
+            )}
+            <button
+              className="text-button"
+              onClick={() => go("body", { part: check.part })}
+            >
+              See on your body map <Icon name="arrow" size={16} />
+            </button>
+            {open === "amsler" && (
+              <>
+                <div className="section-divider" />
+                <p className="eyebrow">Why we check</p>
+                <p className="muted small">{check.why}</p>
+              </>
+            )}
+          </Panel>
+        </div>
       </div>
     );
   }
-
   return (
     <div>
-      <h2>Medical checks</h2>
-      <p className="muted">Quick self-checks using the camera, screen and motion sensors. They're scheduled like NASA's in-flight "standard measures": the app reminds you when each is due.</p>
-      <div className="grid2">
+      <PageTitle
+        eyebrow="Personal health"
+        title="Medical checks"
+        description="Small checks to notice changes early. Choose a test to begin."
+      />
+      <div className="checks-directory">
         {due.map(({ check: c, last, daysSince, applicable, due: isDue }) => (
-          <div key={c.id} className="card">
+          <Panel
+            key={c.id}
+            title={bodyParts[c.part].name}
+            tone={isDue ? "yellow" : "neutral"}
+          >
             <div className="row spread">
-              <h3>{c.title}</h3>
-              <span className={"pill " + (isDue ? "pill-due" : "")}>
-                {!applicable ? "Not in microgravity" : isDue ? "Due" : `Next in ${c.every - daysSince} d`}
-              </span>
+              <Icon
+                name={
+                  c.part === "eyes"
+                    ? "eyes"
+                    : c.part === "heart"
+                      ? "heart"
+                      : "medical"
+                }
+                size={28}
+              />
+              <Status status={isDue ? "yellow" : "info"}>
+                {!applicable
+                  ? "Needs gravity"
+                  : isDue
+                    ? "Due"
+                    : "Next in " + (c.every - daysSince) + " days"}
+              </Status>
             </div>
-            <p className="small">{c.what}</p>
-            <p className="small muted">Every {c.every} days · last: {last ? `day ${last.day}` : "never"}</p>
-            {c.photo ? (
-              <button className="btn" onClick={() => go("photos", { category: "face" })}>Open photo log</button>
-            ) : (
-              <button className={"btn" + (isDue ? " primary" : "")} onClick={() => setOpen(c.id)}>Start</button>
-            )}
-          </div>
+            <h2>{c.title}</h2>
+            <p className="muted">{c.what}</p>
+            <p className="small muted">
+              Every {c.every} days ·{" "}
+              {last ? "Last checked on day " + last.day : "Not checked yet"}
+            </p>
+            <button
+              className="btn"
+              onClick={() =>
+                c.photo ? go("photos", { category: "face" }) : setOpen(c.id)
+              }
+            >
+              {c.photo ? "Open photo log" : "Open check"}
+              <Icon name="arrow" size={16} />
+            </button>
+          </Panel>
         ))}
-      </div>
-      <div className="card">
-        <h3>Photo log</h3>
-        <p className="small">Photograph rashes, cold sores, swelling or anything you want the CMO or flight surgeon to see, and compare over time.</p>
-        <button className="btn" onClick={() => go("photos")}>Open photo log</button>
       </div>
     </div>
   );
