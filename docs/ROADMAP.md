@@ -21,8 +21,13 @@ Assign an owner to each line (initials) and tick when done.
 - [x] Simulated data generator with a "hazard event" scenario (solar particle event, landing)
 - [x] Environment selector: ISS / transit / Moon / Mars (changes the radiation rate and gravity risks)
 - [x] Full backend and all pages functional (docs/BACKEND.md, docs/DESIGN.md)
-- [ ] Verify environment dose rates and delays in content.js against sources and add them to RESEARCH.md
+- [x] Verify environment dose rates and delays against sources (RESEARCH.md §7b)
+- [x] Camera and screen checks: heart rate, reaction self-test, Amsler grid, near vision chart, balance, photo log
+- [x] Med kit, activity log, habitat monitor, Learn page (NASA hazards and risks), offline PWA, GitHub Pages workflow, unit tests
+- [ ] Test camera heart rate and offline install on a real laptop/phone (embedded preview browser can't)
+- [ ] Turn on GitHub Pages (Settings → Pages → Source: GitHub Actions) and put the link in the submission
 - [ ] UI redesign (team)
+- [ ] Demo video + project description (use DESIGN.md demo script and Learn page answers)
 
 ## Phase 2: Core features
 - [ ] Real SVG body map, clickable, with function and status

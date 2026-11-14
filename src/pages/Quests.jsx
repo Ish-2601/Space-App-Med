@@ -1,6 +1,8 @@
 import React from "react";
 import { useStore, tasksFor, streak, points, badgesFor } from "../backend/api.js";
 
+const QUEST_PAGE = { checkin: "checkin", exercise: "log", water: "log", meds: "log", checks: "checks", journal: "mind" };
+
 export default function Quests({ person, go }) {
   const state = useStore();
   const pid = person.id;
@@ -23,12 +25,11 @@ export default function Quests({ person, go }) {
         {tasks.map((t) => (
           <li key={t.id} className={t.done ? "done" : ""}>
             {t.done ? "✅" : "⬜"} {t.label} <span className="muted small">+{t.points}</span>
-            {!t.done && (t.id === "checkin" || t.id === "vision") && <button className="btn small" onClick={() => go("checkin")}>Go</button>}
-            {!t.done && t.id === "journal" && <button className="btn small" onClick={() => go("mind")}>Go</button>}
+            {!t.done && QUEST_PAGE[t.id] && <button className="btn small" onClick={() => go(QUEST_PAGE[t.id])}>Go</button>}
           </li>
         ))}
       </ul>
-      <p className="muted small">Exercise, water and sleep complete automatically from your sensors.</p>
+      <p className="muted small">Exercise, water and sleep also count minutes and drinks from your sensors.</p>
 
       <h3>Badges</h3>
       <div className="badges">

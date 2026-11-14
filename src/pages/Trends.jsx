@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceArea, ReferenceLine, CartesianGrid } from "recharts";
 import { useStore, historyOf } from "../backend/api.js";
-import { indicators, indicatorSummary, COLORS, round1 } from "../lib.js";
+import { indicators, indicatorSummary, greenBand, rangeText, COLORS, round1 } from "../lib.js";
 
 export default function Trends({ person, params }) {
   const state = useStore();
@@ -12,8 +12,9 @@ export default function Trends({ person, params }) {
   const data = full.slice(-range);
   const sum = indicatorSummary(ind, full);
   const vals = data.map((r) => r[id]);
-  const lo = Math.min(...vals, ind.green[0]);
-  const hi = Math.max(...vals, Math.min(ind.green[1], Math.max(...vals) * 1.2));
+  const band = greenBand(ind, sum.baseline);
+  const lo = Math.min(...vals, band[0]);
+  const hi = Math.max(...vals, Math.min(band[1], Math.max(...vals) * 1.2));
 
   return (
     <div>
@@ -39,12 +40,12 @@ export default function Trends({ person, params }) {
             <XAxis dataKey="day" stroke="#9aa6c4" />
             <YAxis domain={[Math.floor(lo * 0.95), Math.ceil(hi * 1.05)]} stroke="#9aa6c4" />
             <Tooltip contentStyle={{ background: "#131a33", border: "1px solid #34406a" }} />
-            <ReferenceArea y1={ind.green[0]} y2={ind.green[1]} fill={COLORS.green} fillOpacity={0.08} />
+            <ReferenceArea y1={band[0]} y2={band[1]} fill={COLORS.green} fillOpacity={0.08} />
             <ReferenceLine y={sum.baseline} stroke="#8fb3ff" strokeDasharray="4 4" label={{ value: "your baseline", fill: "#8fb3ff", fontSize: 12 }} />
             <Line type="monotone" dataKey={id} stroke={COLORS[sum.status]} strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
-        <p className="muted small">Green band = healthy range ({ind.green[0]}–{ind.green[1]} {ind.unit}). Dashed line = your own baseline (first week of data).</p>
+        <p className="muted small">Green band = healthy range ({rangeText(ind, sum.baseline)}). Dashed line = your own baseline (first week of data).</p>
       </div>
       <p><b>Why it matters:</b> {ind.why}</p>
       <p className="muted small">

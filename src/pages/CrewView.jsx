@@ -1,18 +1,25 @@
 import React from "react";
-import { useStore, crewOverview, activeEmergencies, markNotificationsRead } from "../backend/api.js";
+import { useStore, crewOverview, activeEmergencies, markNotificationsRead, habitatToday, co2Status, lowStock } from "../backend/api.js";
 import { COLORS, STATUS_LABEL } from "../lib.js";
 
-// Crew medical officer (CMO) view: everyone's status, notifications and emergencies
-export default function CrewView({ onOpenPerson }) {
+// Crew medical officer (CMO) view: everyone's status, notifications, emergencies, habitat and med kit
+export default function CrewView({ onOpenPerson, go }) {
   const state = useStore();
   const rows = crewOverview(state);
   const ems = activeEmergencies(state);
   const name = (pid) => state.crew.find((p) => p.id === pid)?.name;
+  const hab = habitatToday(state);
+  const low = lowStock(state);
 
   return (
     <div>
       <h2>Crew medical officer view</h2>
       {ems.map((e) => <div key={e.id} className="alert red">🚨 {name(e.pid)}: {e.title} in progress</div>)}
+      <p className="small">
+        Cabin CO₂ <b style={{ color: COLORS[co2Status(hab.co2)] }}>{hab.co2} mmHg</b>
+        {" · "}Med kit: {low.length ? <b className="warn">{low.length} item(s) low ({low.map((m) => m.name).join(", ")})</b> : "stock OK"}
+        {go && <> {" "}<button className="btn small" onClick={() => go("medkit")}>Med kit</button> <button className="btn small" onClick={() => go("habitat")}>Habitat</button></>}
+      </p>
 
       <table className="table">
         <thead>

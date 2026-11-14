@@ -44,7 +44,7 @@ export function useStore() {
 // Clock: calls tick(state, now) every second; tick returns true when it changed something
 let clock = null;
 export function startClock(tick) {
-  if (clock) return;
+  if (clock || typeof window === "undefined") return; // no clock in unit tests (call tick directly)
   clock = setInterval(() => {
     if (tick(state, Date.now())) emit();
   }, 1000);

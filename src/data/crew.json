@@ -1,14 +1,15 @@
 {
-  "_note": "Fictional crew with SIMULATED data. 'baseline' = typical value at mission start; 'drift' = total change by the last simulated day. 'notes' = personal context shown in the body-part detail panel.",
-  "mission": { "name": "Mars transit", "day": 120, "earthDelayMin": 14 },
+  "_note": "Fictional crew with SIMULATED data. 'baseline' = typical value at mission start; 'drift' = total change by the last simulated day. 'notes' = personal context shown in the body-part detail panel. 'medSchedule' = supplements from the shared med kit (prototype, not prescriptions).",
+  "mission": { "name": "Mars transit", "day": 120, "environment": "transit" },
   "crew": [
     {
       "id": "chen", "name": "A. Chen", "role": "Commander", "color": "#E24B4A",
       "priorDose": 160,
-      "baseline": { "heartRate": 62, "systolic": 114, "diastolic": 72, "spo2": 98, "glucose": 86, "temp": 36.7, "sleep": 7.4, "mood": 8, "exercise": 95, "water": 2.4 },
+      "baseline": { "heartRate": 62, "systolic": 114, "diastolic": 72, "spo2": 98, "glucose": 86, "temp": 36.7, "sleep": 7.4, "mood": 8, "exercise": 95, "water": 2.4, "mass": 74 },
       "drift": { "sleep": -2.0, "exercise": -35, "heartRate": 8 },
+      "medSchedule": [{ "med": "vitd", "freq": "daily" }, { "med": "bvit", "freq": "daily" }, { "med": "bisphos", "freq": "weekly" }],
       "notes": {
-        "brain": "Your sleep has dropped steadily as the command workload increased.",
+        "brain": "Your sleep has dropped steadily as the command workload increased, and your reaction tests are slowing.",
         "bones": "Second long-duration flight. Pre-flight scan showed hip bone density in the normal range.",
         "wholeBody": "Your dose includes a previous ISS mission."
       }
@@ -16,19 +17,21 @@
     {
       "id": "okafor", "name": "T. Okafor", "role": "Flight engineer", "color": "#378ADD",
       "priorDose": 40,
-      "baseline": { "heartRate": 66, "systolic": 118, "diastolic": 76, "spo2": 98, "glucose": 90, "temp": 36.6, "sleep": 7.8, "mood": 8, "exercise": 100, "water": 2.6 },
+      "baseline": { "heartRate": 66, "systolic": 118, "diastolic": 76, "spo2": 98, "glucose": 90, "temp": 36.6, "sleep": 7.8, "mood": 8, "exercise": 100, "water": 2.6, "mass": 81 },
       "drift": { "systolic": 18, "diastolic": 10, "water": -0.8 },
+      "medSchedule": [{ "med": "vitd", "freq": "daily" }, { "med": "bvit", "freq": "daily" }],
       "notes": {
         "heart": "Your blood pressure has been rising over the last few weeks. Keep logging it daily.",
         "kidneys": "Water intake is trending down. This matters more for you because blood pressure is also rising.",
-        "eyes": "Reported mild near-vision blurriness on day 98. Vision check recommended weekly."
+        "eyes": "Reported mild near-vision blurriness on day 98. Your near vision chart has slipped 2 lines since the start of this window."
       }
     },
     {
       "id": "rivera", "name": "M. Rivera", "role": "Medical officer", "color": "#1D9E75",
       "priorDose": 0,
-      "baseline": { "heartRate": 66, "systolic": 110, "diastolic": 70, "spo2": 98, "glucose": 84, "temp": 36.6, "sleep": 7.6, "mood": 9, "exercise": 108, "water": 2.5 },
+      "baseline": { "heartRate": 66, "systolic": 110, "diastolic": 70, "spo2": 98, "glucose": 84, "temp": 36.6, "sleep": 7.6, "mood": 9, "exercise": 108, "water": 2.5, "mass": 63 },
       "drift": {},
+      "medSchedule": [{ "med": "vitd", "freq": "daily" }],
       "notes": {
         "brain": "First long-duration mission. Mood has been stable.",
         "immune": "No symptoms reported this mission."
@@ -37,12 +40,14 @@
     {
       "id": "sato", "name": "K. Sato", "role": "Mission specialist", "color": "#EF9F27",
       "priorDose": 90,
-      "baseline": { "heartRate": 70, "systolic": 116, "diastolic": 74, "spo2": 97, "glucose": 92, "temp": 36.7, "sleep": 7.2, "mood": 7, "exercise": 90, "water": 2.2 },
-      "drift": { "mood": -4, "temp": 0.9, "spo2": -2 },
+      "baseline": { "heartRate": 70, "systolic": 116, "diastolic": 74, "spo2": 97, "glucose": 92, "temp": 36.7, "sleep": 7.2, "mood": 7, "exercise": 90, "water": 2.2, "mass": 68 },
+      "drift": { "mood": -4, "temp": 0.9, "spo2": -2, "mass": -3.2 },
+      "medSchedule": [{ "med": "vitd", "freq": "daily" }, { "med": "bvit", "freq": "daily" }],
       "notes": {
         "brain": "Mood has dropped over the last month. Talking to someone is part of staying mission-ready.",
         "immune": "Reported a cold sore on day 112. Spaceflight stress can reactivate dormant viruses.",
-        "lungs": "Oxygen saturation has dipped slightly since the cabin pressure change on day 100."
+        "lungs": "Oxygen saturation has dipped slightly since the cabin pressure change on day 100.",
+        "gut": "Appetite has been low; body mass is drifting down from your baseline."
       }
     }
   ]

@@ -44,6 +44,7 @@ footer { margin-top: 24px; text-align: center; }
 .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
 .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
 .stat .big { font-size: 40px; font-weight: 600; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .stat .big-ish { font-size: 20px; font-weight: 600; display: flex; align-items: center; }
 
 .alert { padding: 10px 12px; border-radius: 8px; margin: 6px 0; }
@@ -104,7 +105,56 @@ footer { margin-top: 24px; text-align: center; }
 .reading { border-left: 4px solid; padding: 6px 0 6px 10px; margin-bottom: 8px; }
 .detail ul { margin: 0; padding-left: 20px; }
 
+/* Navigation groups */
+.nav-group { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
+.nav-heading { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6f7ba0; padding: 4px 10px 0; }
+
+.hidden { display: none !important; }
+.center { text-align: center; }
+.big { font-size: 40px; font-weight: 600; }
+.big-btn { font-size: 20px; padding: 16px 28px; margin-top: 8px; }
+.pill-due { border-color: #f1c40f; color: #f1c40f; }
+.results { list-style: none; padding: 0; }
+.results li { padding: 4px 0; }
+.table tr.low td { background: #3a2a0a; }
+button.card { text-align: left; color: inherit; border: 1px solid transparent; cursor: pointer; font: inherit; width: 100%; }
+button.card.selected { border-color: #2f5bd3; }
+
+/* Camera */
+.cam-box { position: relative; width: 100%; max-width: 420px; aspect-ratio: 4 / 3; background: #000; border-radius: 12px; overflow: hidden; margin: 8px 0; }
+.cam-box video, .cam-box img { width: 100%; height: 100%; object-fit: cover; }
+.cam-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #6f7ba0; }
+.roi { position: absolute; border: 2px solid #2ecc71; border-radius: 6px; }
+.oval { position: absolute; left: 28%; top: 10%; width: 44%; height: 78%; border: 3px dashed #2ecc71; border-radius: 50%; }
+
+/* Photos */
+.gallery { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; }
+.gallery-item { width: 140px; }
+.thumb { background: #0b1020; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid transparent; }
+.thumb.selected { border-color: #2f5bd3; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.compare { display: flex; gap: 16px; flex-wrap: wrap; }
+
+/* Amsler grid */
+.amsler { position: relative; display: grid; grid-template-columns: repeat(20, 1fr); width: min(100%, 400px); aspect-ratio: 1; background: #fff; border: 2px solid #000; margin: 8px 0; }
+.amsler-cell { border: 0; border-right: 1px solid #000; border-bottom: 1px solid #000; background: #fff; padding: 0; cursor: pointer; }
+.amsler-cell.marked { background: #f1c40f; }
+.amsler-dot { position: absolute; left: 50%; top: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; background: #000; border-radius: 50%; pointer-events: none; }
+
+/* Near vision chart */
+.e-box { height: 220px; display: flex; align-items: center; justify-content: center; background: #000; border-radius: 12px; }
+.arrows { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 10px 0; }
+.arrows .btn { font-size: 22px; width: 64px; height: 52px; margin: 0 24px; }
+.card-cal { border: 2px solid #8fb3ff; border-radius: 10px; background: #1b2440; margin: 10px 0; }
+
+/* Reaction test */
+.pvt-box { height: 240px; display: flex; align-items: center; justify-content: center; background: #0b1020; border: 2px solid #34406a; border-radius: 12px; cursor: pointer; user-select: none; touch-action: manipulation; }
+.pvt-box.on { border-color: #f1c40f; }
+.pvt-counter { font-size: 64px; font-weight: 700; color: #f1c40f; font-variant-numeric: tabular-nums; }
+
 @media (max-width: 800px) {
+  .nav-group { flex-direction: row; margin: 0; }
+  .nav-heading { display: none; }
   .layout { grid-template-columns: 1fr; }
   .sidebar { flex-direction: row; overflow-x: auto; }
   .nav-btn { white-space: nowrap; }

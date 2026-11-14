@@ -118,6 +118,26 @@ The NASA resources describe **risks and trends**, not per-reading cutoffs. For g
 | Exercise | ≥90 min/day | 45–89 | <45 | NASA: ISS crews exercise 1.5 h/day, 6–7 days/week. |
 | Water intake | ≥2.0 L/day | 1.5–1.9 L | <1.5 L | Team default; NASA links dehydration to kidney stones and fainting at landing. |
 | Cumulative radiation | <50% of career limit (<300 mSv) | 50–80% (300–480) | >80% (>480) | NASA career limit 600 mSv (NASA-STD-3001). Bands are our design choice. |
+| Body mass | within ±3% of personal baseline | ±3–6% | beyond ±6% | Team-defined; NASA nutrition risk. Relative to the astronaut's own first-week average. |
+| Cabin CO₂ | ≤2.5 mmHg | 2.5–3.0 | >3.0 | NASA-STD-3001 Vol 2: ≤3 mmHg (1-h avg); OCHMO: ~2.5 keeps headache risk ~1%. |
+| Reaction self-test | within 10% of baseline speed, <3 lapses | ≥10% slower or 3–7 lapses | ≥20% slower or ≥8 lapses | Lapse = response >355 ms (3-min PVT-B). Speed/lapse bands team-defined. |
+| Near vision chart | same as baseline | 2–3 lines worse | 4+ lines worse | Change from own first test; SANS near-vision loss. Team-defined bands. |
+| Amsler grid | no marks | any distortion marked | — | Any distortion → CMO review (retinal/choroidal folds in SANS). |
+| Balance (one leg, eyes open) | ≥20 s | 10–19 s | <10 s | Team-defined screening; only in gravity (Moon/Mars/Earth). |
+
+## 7b. Numbers added in the full build (verified 2026-11-14)
+
+| Fact | Value | Source |
+|---|---|---|
+| Mars cruise dose (Curiosity RAD) | 1.84 mSv/day | [Space.com](https://www.space.com/23875-mars-radiation-life-manned-mission.html) |
+| Mars surface dose (Curiosity RAD) | 0.64 mSv/day | same |
+| Moon surface dose (Chang'e-4 LND) | 1.37 mSv/day (ISS at the same time: 0.73) | [ScienceDaily](https://www.sciencedaily.com/releases/2020/09/200926145212.htm) |
+| ISS dose used in the app | 0.5 mSv/day (range 0.2–0.7) | NTRS / LND comparison |
+| CO₂ limit | ≤3 mmHg, 1-hour average; each +1 mmHg doubled headache odds on ISS | [NASA OCHMO CO₂ brief](https://www.nasa.gov/wp-content/uploads/2023/12/ochmo-tb-004-carbon-dioxide.pdf) |
+| Reaction Self-Test | 3-min PVT used on ISS since 2009; taken every 4 days in-flight; response speed is the most sleep-loss-sensitive measure | [NASA Spinoff](https://spinoff.nasa.gov/Spinoff2013/hm_1.html) · [Penn](https://www.med.upenn.edu/uep/cognition.html) |
+| SANS symptom | Decreased near vision (hyperopic shift +0.5 to +1.75 D); choroidal folds | [SANS review (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC7005826/) |
+| Exploration atmosphere | 56.5 kPa (8.2 psia), 34% O₂ for surface habitats (team assumption based on NASA's reduced-pressure plans in the HRP hypoxia risk) | [HRP hypoxia risk](https://www.nasa.gov/reference/risk-of-hypoxia/) |
+| Near vision optotype | 5 arcmin at 40 cm = 0.58 mm for 20/20 | standard logMAR geometry |
 
 Clinical reference links **[clinical]**:
 [AHA blood pressure categories](https://www.heart.org/en/health-topics/high-blood-pressure/understanding-blood-pressure-readings) · [AHA resting heart rate](https://www.heart.org/en/healthy-living/fitness/fitness-basics/target-heart-rates) · [ADA diabetes diagnosis](https://diabetes.org/about-diabetes/diagnosis) · [CDC fever definition](https://www.cdc.gov/quarantine/maritime/definitions-signs-symptoms-conditions-ill-travelers.html) · [CDC sleep](https://www.cdc.gov/sleep/about/index.html)

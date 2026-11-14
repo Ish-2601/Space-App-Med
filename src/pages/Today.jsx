@@ -1,8 +1,8 @@
 import React from "react";
-import { useStore, alertsFor, healthScore, overallStatus, tasksFor, streak, points, notifyCMO, sendReport } from "../backend/api.js";
-import { COLORS, STATUS_LABEL } from "../lib.js";
-
-const LEVEL_CLASS = { red: "red", yellow: "yellow", info: "info" };
+import {
+  useStore, alertsFor, healthScore, overallStatus, tasksFor, streak, points, notifyCMO, sendReport, dueChecks, medsDue, envOf, habitatToday, co2Status,
+} from "../backend/api.js";
+import { COLORS, STATUS_LABEL, bodyParts } from "../lib.js";
 
 export default function Today({ person, go }) {
   const state = useStore();
@@ -10,6 +10,10 @@ export default function Today({ person, go }) {
   const alerts = alertsFor(state, pid);
   const status = overallStatus(state, pid);
   const tasks = tasksFor(state, pid);
+  const due = dueChecks(state, pid).filter((d) => d.due);
+  const meds = medsDue(state, pid);
+  const env = envOf(state);
+  const hab = habitatToday(state);
 
   return (
     <div>
@@ -29,10 +33,18 @@ export default function Today({ person, go }) {
         </div>
       </div>
 
+      <p className="small">
+        <b>{env.label} focus:</b>{" "}
+        {env.focus.map((f) => (
+          <button key={f} className="btn small" onClick={() => go("body", { part: f })}>{bodyParts[f].name}</button>
+        ))}{" "}
+        · Cabin CO₂ <span style={{ color: COLORS[co2Status(hab.co2)] }}>{hab.co2} mmHg</span>
+      </p>
+
       <h3>Alerts ({alerts.length})</h3>
       {alerts.length === 0 && <p className="muted">All clear. Nice work.</p>}
       {alerts.map((a) => (
-        <div key={a.id} className={"alert " + LEVEL_CLASS[a.level]}>
+        <div key={a.id} className={"alert " + a.level}>
           <b>{a.title}</b>
           <div>{a.action}</div>
           <div className="row">
@@ -49,14 +61,32 @@ export default function Today({ person, go }) {
         </div>
       ))}
 
-      <h3>Today's tasks</h3>
-      <ul className="tasks">
-        {tasks.map((t) => (
-          <li key={t.id} className={t.done ? "done" : ""}>
-            {t.done ? "✅" : "⬜"} {t.label} <span className="muted small">+{t.points}{t.weekly ? " · weekly" : ""}</span>
-          </li>
-        ))}
-      </ul>
+      <div className="grid2">
+        <div>
+          <h3>Checks due</h3>
+          {due.length === 0 && <p className="muted">Nothing due. ✅</p>}
+          {due.map((d) => (
+            <div key={d.check.id} className="row">
+              <span>🩺 {d.check.title}</span>
+              <button className="btn small" onClick={() => (d.check.photo ? go("photos", { category: "face" }) : go("checks", { check: d.check.id }))}>Start</button>
+            </div>
+          ))}
+          <h3>Supplements</h3>
+          {meds.length === 0 && <p className="muted">None scheduled.</p>}
+          {meds.map((m) => <div key={m.med}>{m.done ? "✅" : "⬜"} {m.name} <span className="muted small">({m.freq})</span></div>)}
+          {meds.some((m) => !m.done) && <button className="btn small" onClick={() => go("log")}>Log supplements</button>}
+        </div>
+        <div>
+          <h3>Today's quests</h3>
+          <ul className="tasks">
+            {tasks.map((t) => (
+              <li key={t.id} className={t.done ? "done" : ""}>
+                {t.done ? "✅" : "⬜"} {t.label} <span className="muted small">+{t.points}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }

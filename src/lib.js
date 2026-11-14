@@ -7,12 +7,35 @@ export const COLORS = { green: "#2ecc71", yellow: "#f1c40f", red: "#e74c3c", unk
 export const STATUS_LABEL = { green: "OK", yellow: "Needs attention", red: "Alert crew / flight surgeon", unknown: "No data" };
 const RANK = { unknown: 0, green: 1, yellow: 2, red: 3 };
 
-// green if inside green range, yellow if inside yellow range, otherwise red
-export function statusOf(ind, value) {
+// Average of the first 7 days = the astronaut's own baseline
+export function personalBaseline(ind, history) {
+  const rows = history.slice(0, 7).filter((r) => r[ind.id] != null);
+  return rows.length ? rows.reduce((s, r) => s + r[ind.id], 0) / rows.length : null;
+}
+
+// green if inside green range, yellow if inside yellow range, otherwise red.
+// "relative" indicators (e.g. body mass) use % change from the personal baseline.
+export function statusOf(ind, value, baseline = null) {
   if (value == null || Number.isNaN(value)) return "unknown";
-  if (value >= ind.green[0] && value <= ind.green[1]) return "green";
-  if (value >= ind.yellow[0] && value <= ind.yellow[1]) return "yellow";
+  let v = value;
+  if (ind.relative) {
+    if (!baseline) return "unknown";
+    v = ((value - baseline) / baseline) * 100;
+  }
+  if (v >= ind.green[0] && v <= ind.green[1]) return "green";
+  if (v >= ind.yellow[0] && v <= ind.yellow[1]) return "yellow";
   return "red";
+}
+
+// Healthy band in the indicator's own units
+export function greenBand(ind, baseline) {
+  if (!ind.relative) return ind.green;
+  return ind.green.map((p) => Math.round(baseline * (1 + p / 100) * 10) / 10);
+}
+
+export function rangeText(ind, baseline) {
+  if (ind.relative) return `within ±${ind.green[1]}% of your baseline (${greenBand(ind, baseline).join("–")} ${ind.unit})`;
+  return `${ind.green[0]}–${ind.green[1]} ${ind.unit}`;
 }
 
 export function worstStatus(statuses) {
@@ -31,13 +54,14 @@ export function round1(n) {
 export function indicatorSummary(ind, history) {
   const latest = history[history.length - 1][ind.id];
   const avg = (rows) => rows.reduce((s, r) => s + r[ind.id], 0) / rows.length;
-  const baseline = avg(history.slice(0, 7));
+  const baseline = personalBaseline(ind, history);
   const recent = avg(history.slice(-7));
-  const status = statusOf(ind, latest);
+  const status = statusOf(ind, latest, baseline);
   const change = recent - baseline;
   const pct = baseline ? (change / baseline) * 100 : 0;
   let trend = "steady";
-  if (Math.abs(pct) >= 5) trend = change > 0 ? "rising" : "falling";
+  const threshold = ind.relative ? 2 : 5; // body mass changes matter at smaller percentages
+  if (Math.abs(pct) >= threshold) trend = change > 0 ? "rising" : "falling";
   return { latest, baseline, status, trend, change, pct };
 }
 
@@ -52,7 +76,13 @@ export const bodyParts = {
     name: "Eyes (SANS)",
     info: "Fluid shifting toward the head can swell the optic nerve and flatten the back of the eye. About 70% of ISS astronauts show some swelling.",
     prevention: ["Weekly vision self-check", "Report any blurry or changed vision", "Countermeasures under study: B vitamins, thigh cuffs"],
-    check: "the weekly vision self-check in your check-in",
+    check: "the Amsler grid and near vision chart in Checks",
+  },
+  vestibular: {
+    name: "Inner ear and balance",
+    info: "Gravity changes confuse the balance organs in the inner ear. Most astronauts get space motion sickness, and after landing they can be dizzy, unsteady and uncoordinated.",
+    prevention: ["Slow head movements in the first days", "Balance test after landing on the Moon, Mars or Earth", "No ladders, EVA or rover driving until balance is back"],
+    check: "the balance test (in gravity) and the motion-sickness rating in your check-in",
   },
   heart: {
     name: "Heart and circulation",

@@ -3,7 +3,7 @@ import { bodyParts, COLORS } from "../lib.js";
 
 // Hotspot positions on the figure (viewBox 0 0 200 340)
 const SPOTS = {
-  brain: [88, 26], eyes: [116, 44], lungs: [80, 105], heart: [114, 108],
+  brain: [100, 22], eyes: [116, 44], vestibular: [80, 44], lungs: [80, 105], heart: [114, 108],
   immune: [52, 150], gut: [100, 150], kidneys: [124, 162], bones: [82, 260],
 };
 

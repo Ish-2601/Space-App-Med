@@ -1,17 +1,17 @@
 import React, { useState } from "react";
-import { useStore, rowFor, submitCheckIn, SYMPTOMS } from "../backend/api.js";
-import { indicators, statusOf, COLORS } from "../lib.js";
+import { useStore, rowFor, historyOf, submitCheckIn, SYMPTOMS } from "../backend/api.js";
+import { indicators, statusOf, personalBaseline, rangeText, COLORS } from "../lib.js";
 
-// Daily check-in: measurements (pre-filled from sensors where available), vision, motion sickness, symptoms
+// Daily check-in: measurements (pre-filled from sensors where available), motion sickness, symptoms
 const AUTO = ["sleep", "exercise", "water", "radiation", "heartRate"]; // read from wearable / devices
 
 export default function CheckIn({ person, go }) {
   const state = useStore();
   const pid = person.id;
   const row = rowFor(state, pid);
+  const history = historyOf(state, pid);
   const existing = state.checkins[pid][state.mission.day];
   const [values, setValues] = useState(() => Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])));
-  const [vision, setVision] = useState(existing?.vision || "");
   const [motion, setMotion] = useState(existing?.motion || 0);
   const [symptoms, setSymptoms] = useState(existing?.symptoms || []);
   const [error, setError] = useState("");
@@ -24,7 +24,7 @@ export default function CheckIn({ person, go }) {
       setError(`Enter a number for: ${missing.map((i) => i.label).join(", ")}`);
       return;
     }
-    submitCheckIn(pid, { values, vision: vision || null, motion, symptoms });
+    submitCheckIn(pid, { values, motion, symptoms });
     go("today");
   }
 
@@ -32,10 +32,11 @@ export default function CheckIn({ person, go }) {
     <div>
       <h2>Daily check-in</h2>
       {existing && !existing.auto && <p className="alert info">You already checked in today. Submitting again updates today's entry.</p>}
-      <p className="muted">Sensor values are pre-filled. Measure the others, then submit. Tap "How and why" for instructions.</p>
+      <p className="muted">Sensor values are pre-filled. Measure the others, then submit. Tap "How and why" for instructions. Vision checks are in Checks.</p>
 
       {indicators.map((i) => {
-        const s = statusOf(i, Number(values[i.id]));
+        const base = personalBaseline(i, history);
+        const s = statusOf(i, Number(values[i.id]), base);
         return (
           <div key={i.id} className="field" style={{ borderLeftColor: COLORS[s] }}>
             <label>
@@ -50,20 +51,11 @@ export default function CheckIn({ person, go }) {
               <summary className="small">How and why</summary>
               <p className="small"><b>How:</b> {i.how}</p>
               <p className="small"><b>Why:</b> {i.why}</p>
-              <p className="small muted">Green range: {i.green[0]}–{i.green[1]} {i.unit}</p>
+              <p className="small muted">Healthy range: {rangeText(i, base)}</p>
             </details>
           </div>
         );
       })}
-
-      <div className="field">
-        <b>Vision self-check</b> <span className="muted small">(weekly: read the near and far chart with each eye)</span>
-        <div className="row">
-          {[["", "Not done today"], ["normal", "Normal"], ["changed", "Blurry or changed"]].map(([v, label]) => (
-            <label key={v} className="radio"><input type="radio" name="vision" checked={vision === v} onChange={() => setVision(v)} /> {label}</label>
-          ))}
-        </div>
-      </div>
 
       <div className="field">
         <b>Motion sickness: {motion}/10</b>

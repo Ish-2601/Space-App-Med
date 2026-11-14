@@ -126,12 +126,24 @@
       "green": [0, 300], "yellow": [0, 480],
       "hazards": ["radiation"], "risk": "Radiation-Induced Cancers (+ CNS effects)",
       "how": "Read automatically from your personal dosimeter. You cannot see or feel radiation.",
-      "why": "Radiation raises cancer risk and can affect the brain, heart and eyes. NASA's career limit is 600 mSv. ISS crews get about 0.2–0.5 mSv per day, and more beyond Earth's magnetic field.",
+      "why": "Radiation raises cancer risk and can affect the brain, heart and eyes. NASA's career limit is 600 mSv. Daily dose: ~0.5 mSv on the ISS, 1.84 in Mars transit, 1.37 on the Moon, 0.64 on Mars.",
       "action": {
         "yellow": "Over 50% of the career limit. Minimize time in low-shielding areas and review the EVA plan with the flight surgeon.",
         "red": "Over 80% of the career limit. The flight surgeon must review all further exposure. During a solar storm alert, go to the shielded shelter."
       },
-      "sources": ["https://www.nasa.gov/reference/risk-of-radiation-induced-cancers/", "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf", "https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp"]
+      "sources": ["https://www.nasa.gov/reference/risk-of-radiation-induced-cancers/", "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf", "https://www.asc-csa.gc.ca/eng/news/articles/2026/2026-02-26-monitoring-radiation-astronaut-health.asp", "https://www.space.com/23875-mars-radiation-life-manned-mission.html", "https://www.sciencedaily.com/releases/2020/09/200926145212.htm"]
+    },
+    {
+      "id": "mass", "label": "Body mass", "unit": "kg", "bodyPart": "gut", "relative": true,
+      "green": [-3, 3], "yellow": [-6, 6],
+      "hazards": ["distance", "hostile"], "risk": "Inadequate Food and Nutrition",
+      "how": "Use the body mass measuring device. Scales don't work in weightlessness, so on the ISS it uses springs and Newton's second law.",
+      "why": "Menu fatigue, nausea and stress can make crews eat less. Over months that shows up as weight loss, which hurts strength, bone and performance.",
+      "action": {
+        "yellow": "More than 3% change from your baseline. Eat full rations and log meals; tell the CMO if it continues.",
+        "red": "More than 6% change from your baseline. Notify the CMO and flight surgeon for a nutrition review."
+      },
+      "sources": ["https://www.nasa.gov/reference/risk-of-inadequate-food-and-nutrition/"]
     }
   ]
 }
