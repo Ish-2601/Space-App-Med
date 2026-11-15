@@ -275,3 +275,75 @@ html.circadian-redshift .console-app { background: none !important; }
   .t-verdict { width: 100%; } .t-verdict .btn { flex: 1; justify-content: center; }
   .t-nav { flex-direction: column; }
 }
+
+/* ---------- Guided tour: welcome popup, coach marks, bottom Tutorial button ---------- */
+.gt-backdrop { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgba(4, 5, 9, 0.78); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); animation: gt-fade 240ms ease; }
+.gt-welcome {
+  width: min(520px, 100%); padding: 28px; border-radius: 22px;
+  background: linear-gradient(180deg, rgba(30, 32, 40, 0.98), rgba(16, 17, 22, 0.98));
+  border: 1px solid var(--line-strong); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(169, 184, 255, 0.08);
+  animation: gt-pop 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gt-welcome h2 { font-size: 28px; margin: 12px 0 8px; }
+.gt-welcome p { color: var(--muted); }
+.gt-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); background: var(--brand-soft); border: 1px solid rgba(169, 184, 255, 0.3); }
+.gt-list { margin: 14px 0 18px; padding-left: 20px; display: grid; gap: 8px; }
+.gt-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.gt-welcome .gt-actions .btn { min-height: 52px; }
+.gt-layer { position: fixed; inset: 0; z-index: 200; pointer-events: none; }
+.gt-shade { position: fixed; background: rgba(4, 5, 9, 0.74); pointer-events: auto; transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1); }
+.gt-shield { position: fixed; pointer-events: auto; }
+.gt-ring {
+  position: fixed; border-radius: 14px; pointer-events: none; transition: all 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 0 2px var(--brand), 0 0 0 6px rgba(169, 184, 255, 0.18), 0 0 30px rgba(169, 184, 255, 0.35);
+}
+.gt-ring-click { box-shadow: 0 0 0 2px var(--live), 0 0 0 6px rgba(255, 90, 54, 0.2), 0 0 30px rgba(255, 90, 54, 0.4); animation: gt-pulse 1.6s ease-in-out infinite; }
+.gt-card {
+  position: fixed; pointer-events: auto; padding: 16px 18px; border-radius: 16px;
+  background: linear-gradient(180deg, rgba(32, 34, 42, 0.99), rgba(18, 19, 24, 0.99));
+  border: 1px solid var(--line-strong); box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.9);
+  transition: top 220ms cubic-bezier(0.16, 1, 0.3, 1), left 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gt-card h3 { margin: 6px 0 6px; font-size: 18px; }
+.gt-card p { margin: 0 0 10px; font-size: 15px; line-height: 1.5; }
+.gt-card-head { display: flex; justify-content: space-between; align-items: center; }
+.gt-count { font-family: var(--mono); font-size: 12px; color: var(--brand); letter-spacing: 0.06em; }
+.gt-x { display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, 0.06); color: var(--muted); cursor: pointer; }
+.gt-x:hover { color: var(--text); background: rgba(255, 255, 255, 0.12); }
+.gt-do { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; color: #ffd3c7; background: rgba(255, 90, 54, 0.12); border: 1px solid rgba(255, 90, 54, 0.35); font-weight: 600; font-size: 14px !important; }
+.gt-do svg { color: var(--live); }
+.gt-dots { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 12px; }
+.gt-dots i { width: 14px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.12); }
+.gt-dots i.done { background: rgba(169, 184, 255, 0.5); }
+.gt-dots i.on { background: var(--brand); width: 22px; }
+.gt-card .gt-actions .text-button { margin-right: auto; }
+.gt-dock { position: fixed; left: 16px; bottom: 18px; z-index: 40; display: grid; justify-items: start; gap: 8px; }
+.gt-pill {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 10px 16px; border-radius: 999px; cursor: pointer;
+  font: inherit; font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text);
+  background: rgba(16, 17, 21, 0.86); border: 1px solid var(--line-strong); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.8);
+}
+.gt-pill svg { color: var(--brand); }
+.gt-pill:hover { border-color: var(--brand); }
+.gt-menu, .gt-done { display: grid; gap: 4px; padding: 6px; border-radius: 14px; background: rgba(20, 21, 26, 0.97); border: 1px solid var(--line-strong); box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.85); animation: gt-pop 200ms ease; }
+.gt-menu button { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--text); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.gt-menu button:hover { background: rgba(255, 255, 255, 0.07); }
+.gt-menu svg { color: var(--brand); }
+.gt-done { grid-template-columns: 1fr auto; align-items: start; gap: 8px; max-width: 300px; padding: 12px 14px; font-size: 14px; color: var(--muted); }
+.gt-done b { color: var(--text); }
+@keyframes gt-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes gt-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes gt-pulse { 0%, 100% { box-shadow: 0 0 0 2px var(--live), 0 0 0 6px rgba(255, 90, 54, 0.2), 0 0 24px rgba(255, 90, 54, 0.35); } 50% { box-shadow: 0 0 0 2px var(--live), 0 0 0 10px rgba(255, 90, 54, 0.1), 0 0 36px rgba(255, 90, 54, 0.5); } }
+@media (max-width: 760px) {
+  .gt-dock { left: 10px; bottom: 84px; }
+  .gt-pill { min-height: 44px; padding: 8px 12px; }
+  .gt-welcome { padding: 22px; }
+  .gt-welcome h2 { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gt-ring-click, .gt-backdrop, .gt-welcome, .gt-menu, .gt-done { animation: none; }
+  .gt-shade, .gt-ring, .gt-card { transition: none; }
+}
+html.circadian-redshift .gt-do { color: #ff8e48; }
+.gt-done p { margin: 0; line-height: 1.45; }

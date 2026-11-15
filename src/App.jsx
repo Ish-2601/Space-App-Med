@@ -4,6 +4,7 @@ import Dashboard from "./components/Dashboard.jsx";
 import { useStore } from "./backend/api.js";
 import { parseHash, setHash } from "./router.js";
 import MissionUtilityBar from "./components/MissionUtilityBar.jsx";
+import GuidedTour from "./components/GuidedTour.jsx";
 import { sandboxEnabled } from "./backend/sandbox.js";
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
           />
         )}
       </div>
+      <GuidedTour />
     </div>
   );
 }
