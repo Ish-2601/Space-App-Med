@@ -186,7 +186,11 @@ export default function Today({ person, go }) {
         <Icon name="arrow" size={28} />
       </button>
       <div className="today-hero">
-        <Panel className="status-window" aria-label="Your status">
+        <Panel
+          className="status-window"
+          aria-label="Your status"
+          id="health-summary"
+        >
           <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
           <div className="health-overview">
             <div className={`health-ring tone-${status}`}>

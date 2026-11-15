@@ -22,15 +22,15 @@ const METRICS = [
     "Relative vigilance index · today = 100",
   ],
 ];
-export default function DigitalTwin({ pid }) {
+export default function DigitalTwin({ pid, defaultOpen = false }) {
   const state = useStore(),
-    [open, setOpen] = useState(false),
+    [open, setOpen] = useState(defaultOpen),
     uid = useId();
   const settings = twinSettings(state, pid),
     data = forecastTwin(settings, state.mission.environment),
     reference = forecastTwin(TWIN_DEFAULTS, state.mission.environment);
   return (
-    <section className="twin-section">
+    <section className="twin-section" id="digital-twin">
       <button
         className="btn twin-launch"
         aria-expanded={open}

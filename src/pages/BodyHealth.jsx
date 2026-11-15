@@ -12,6 +12,7 @@ import {
 import { HEALTH_AREAS, areaPage } from "../data/healthAreas.js";
 import BodyMap from "../components/BodyMap.jsx";
 import BodyPartDetail from "../components/BodyPartDetail.jsx";
+import RecommendedCountermeasures from "../components/catalog/RecommendedCountermeasures.jsx";
 import SpecializedTools from "../components/clinical/SpecializedTools.jsx";
 import {
   Back,
@@ -240,6 +241,11 @@ export default function BodyHealth({ person, go, partKey = "brain" }) {
             </div>
           </Panel>
           <SpecializedTools person={person} partKey={partKey} go={go} />
+          <RecommendedCountermeasures
+            person={person}
+            partKey={partKey}
+            go={go}
+          />
           <Panel title="Readings, trends and care">
             <BodyPartDetail
               key={partKey}

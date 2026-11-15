@@ -12,6 +12,7 @@ import {
 } from "../backend/api.js";
 import useNow from "../components/useNow.js";
 import Triage from "../components/Triage.jsx";
+import RecommendedCountermeasures from "../components/catalog/RecommendedCountermeasures.jsx";
 import { sandboxEnabled } from "../backend/sandbox.js";
 import {
   EMERGENCY_SOURCES,
@@ -116,7 +117,7 @@ export default function Emergency({ person, go, params = {} }) {
     em =
       active.find((e) => e.id === localId) ||
       active.find((e) => e.id === params.emergencyId) ||
-      active[0],
+      (params.type ? active.find((e) => e.type === params.type) : active[0]),
     def = EMERGENCIES.find((d) => d.id === (em?.type || type));
   const past = privateMode
     ? rehearsals.filter((e) => e.resolvedAt)
@@ -173,6 +174,24 @@ export default function Emergency({ person, go, params = {} }) {
                 <h2>{e.title}</h2>
                 <p className="muted">{e.when}</p>
                 <button
+                  className="btn"
+                  aria-pressed={type === e.id}
+                  aria-label={`Preview ${e.title} countermeasures`}
+                  onClick={() => {
+                    setType(e.id);
+                    requestAnimationFrame(() =>
+                      document
+                        .getElementById("emergency-protocol-preview")
+                        ?.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        }),
+                    );
+                  }}
+                >
+                  Preview countermeasures
+                </button>
+                <button
                   className="btn danger"
                   onClick={() => {
                     beginProtocol(e.id);
@@ -183,6 +202,13 @@ export default function Emergency({ person, go, params = {} }) {
                 </button>
               </Panel>
             ))}
+          </div>
+          <div id="emergency-protocol-preview">
+            <RecommendedCountermeasures
+              person={state.crew.find((p) => p.id === pid) || person}
+              emergencyType={type}
+              go={go}
+            />
           </div>
         </>
       ) : (
@@ -474,6 +500,11 @@ export default function Emergency({ person, go, params = {} }) {
               </Panel>
             </aside>
           </div>
+          <RecommendedCountermeasures
+            person={state.crew.find((p) => p.id === em.pid) || person}
+            emergencyType={em.type}
+            go={go}
+          />
           {active.length > 1 && (
             <Panel title="Active protocols">
               <div className="row">
@@ -492,10 +523,12 @@ export default function Emergency({ person, go, params = {} }) {
         </>
       )}
       <PackLegend />
-      <CPRMetronome
-        key={pid + (privateMode ? "-private" : "-public")}
-        pid={pid}
-      />
+      <div id="cpr-metronome">
+        <CPRMetronome
+          key={pid + (privateMode ? "-private" : "-public")}
+          pid={pid}
+        />
+      </div>
       {!!past.length && (
         <Panel title="Protocol history">
           {past.map((e) => (

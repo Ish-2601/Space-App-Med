@@ -26,6 +26,7 @@ export default function Checklists({ person, params = {} }) {
           return (
             <Panel
               key={list.id}
+              id={"checklist-" + list.id}
               title={count === list.items.length ? "Complete" : "Checklist"}
               tone={count === list.items.length ? "green" : "neutral"}
             >

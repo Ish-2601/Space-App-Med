@@ -83,6 +83,22 @@ Users and CMO screens include a public Raw NASA-TLX/sleep-debt heatmap and a loc
 
 Validation: **302 tests passing**, preserving the preceding 241 tests; production build passes. Browser checks cover private CBT/SANS records, AR alignment, emergency vitals/timer restoration, queue priority, pharmacy scenario restoration and local proof generation. Hardware ultrasound, scent cartridges, clinical wearables and a VR headset are not controlled by this prototype.
 
+## 1,000-item Spaceflight Catalog
+
+Open **All tools → 1,000-Item Spaceflight Catalog & Countermeasure Explorer**, or enter from **Medical-kit inventory**. The catalog contains every supplied name verbatim, numbered 001–1000, with 100 entries in each of ten categories. A separate source fixture verifies every name and number. Metadata is generated from category rules and explicit item mappings; the original compact list is in `src/data/spaceflightCatalog1000.ts`.
+
+- Search all entries instantly, including exact item codes such as `#936`. Combine category, body system, pack color and item-type filters. Pagination exposes every matching item.
+- Dispense simulated inventory units, log an exercise or behavioral session, or complete an equipment-readiness check. Validation prevents negative stock, invalid quantities and incomplete checks. Medication inventory rehearsals require acknowledgement of an approved plan; quantities are stock units, not prescribed doses.
+- All 100 software entries launch working interactions: 60 open and focus existing tools, and 40 open distinct local simulation or worksheet modules. These include structured triage, ultrasound geometry, clinical-note dictation, inventory forecasting, glossary, skill rehearsal, recovery tracking and a persistent health passport. Original titles mentioning AI, hardware or encryption are preserved; each tool explains the capability actually implemented.
+- Each of the ten body-system pages and ten emergency protocols includes curated **Recommended Spaceflight Countermeasures & Hardware**, with direct actions and links to the complete related selection. Browsing emergency equipment does not start a protocol.
+- Activity, module results and drafts persist locally. Public inventory consumption is shared across crew; private consumption and records stay in the selected profile's Sandbox and do not alter public stock, health, notifications or reports. Critical triage findings retain the existing explicit escalation prompt. Ordinary exports exclude private records.
+
+The catalog is a user-supplied prototype reference, not an endorsed NASA manifest. Stock and pack assignments are simulated; no physical devices are controlled or medicines administered. Research and unvalidated concepts are identified in the connected tools.
+
+Catalog validation covers exact source fidelity, all filters and action types, all 100 launcher contracts, all 40 standalone evaluations, focus targets, every body/emergency recommendation, persistence and Sandbox isolation. Browser checks cover phone/desktop layouts, inventory actions, restored module results, critical prompts and the requested AR, CO₂/headache, renal-risk and CPR launch paths.
+
+Validation after the catalog upgrade: **411 tests passing**, including all preceding 302 tests; production build passes. Vite still reports its non-blocking bundle-size advisory (about 345 kB gzip for the application JavaScript).
+
 ## Features
 
 **Daily**
