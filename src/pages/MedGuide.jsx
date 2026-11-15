@@ -31,7 +31,15 @@ export default function MedGuide({ person, go, params = {} }) {
         title="Something's wrong?"
         description="Pick a symptom for possible causes, next steps, and when to get help."
       />
-      <Panel title="Symptoms">
+      <button className="fast-help" onClick={() => go("emergency")}>
+        <span>
+          More than one symptom, or it's serious?
+          <small>Fast diagnosis: tap all symptoms and get the most likely causes using live data</small>
+        </span>
+        <Icon name="arrow" size={28} />
+      </button>
+      <Panel title="Symptom guides">
+        <p className="muted small">The guide for one symptom: causes, self-care and when to escalate.</p>
         <label className="search-field">
           <Icon name="search" />
           <input
