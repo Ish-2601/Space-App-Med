@@ -2,6 +2,12 @@ import React from "react";
 import { PageTitle, Panel, Icon } from "../components/ConsoleUI.jsx";
 const links = [
   [
+    "tutorial",
+    "book",
+    "Tutorial and test run",
+    "Learn every feature step by step and mark what works",
+  ],
+  [
     "catalog",
     "grid",
     "1,000-Item Spaceflight Catalog & Countermeasure Explorer",

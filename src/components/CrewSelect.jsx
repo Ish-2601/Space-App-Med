@@ -142,7 +142,10 @@ export default function CrewSelect({ onSelect, onMedical }) {
               <circle cx="17" cy="11" r="3" />
             </svg>
             Crew medical officer view <span aria-hidden="true">→</span>
-          </button>
+          </button>{" "}
+          <a className="crew-medical-button crew-tutorial-link" href="#/okafor/tutorial">
+            New here? Tutorial and test run <span aria-hidden="true">→</span>
+          </a>
           <p className="crew-disclaimer">
             NASA Space Apps prototype · Simulated data · Not medical advice
           </p>

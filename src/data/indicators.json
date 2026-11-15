@@ -71,7 +71,7 @@
         "yellow": "Rest, hydrate, recheck in 2 hours, and log any rash, cold sore or sore throat.",
         "red": "Limit close contact with crewmates and notify the crew medical officer and flight surgeon."
       },
-      "sources": ["https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/", "https://www.cdc.gov/quarantine/maritime/definitions-signs-symptoms-conditions-ill-travelers.html", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5701078"]
+      "sources": ["https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/", "https://www.cdc.gov/port-health/php/definitions-symptoms-reportable-illness", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5701078"]
     },
     {
       "id": "sleep", "label": "Sleep", "unit": "hours", "bodyPart": "brain",

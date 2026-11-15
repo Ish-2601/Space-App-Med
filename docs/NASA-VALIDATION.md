@@ -69,3 +69,19 @@ Resting heart rate, blood pressure, SpO₂, glucose, temperature, sleep hours, m
 7. Decompression sickness: "end the spacewalk" replaced with NASA's "variable-pressure suits (in development)".
 8. Teamwork: "shared activities" replaced with NASA's crew selection and recovering after conflicts.
 9. SANS wording now matches NASA ("folds in the retina, flattening of the back of the eye"). The near-vision claim is credited to the SANS review.
+
+## 6. Source audit after the full feature build (2026-11-15)
+
+Every external link in `src/` was listed, grouped and opened with a script.
+
+| Group | Links | Examples |
+|---|---|---|
+| **Challenge resources** (required by the Space Apps challenge) | 21 | NASA HRP hazards, risks and ongoing-research pages; all 17 HRP risk pages used; both CSA pages; the challenge page |
+| **Other official NASA documents** | 23 | NASA-STD-3001 radiation and CO₂ briefs, SANS and urinary-health briefs, ISS medical kit checklist, NASA-TLX, NASA Spinoff, Human Integration Design Handbook |
+| **Non-NASA references** | 22 | Clinical normal ranges (AHA, ADA, CDC, NIH, NHS), peer-reviewed studies (PMC), science news |
+
+- **The Space Apps rule** that a project must use at least one NASA data source or resource is met many times over: 44 NASA sources, plus the CSA partner-agency pages.
+- **Non-NASA links** are used only where NASA's challenge pages give no number, for example the normal blood-pressure range. The app labels these as screening ranges and compares each astronaut with their own baseline.
+- **Simulated models** (pharmacy potency, digital twin, dose calculator, risk indices, patterns) are labelled "simulated", "illustrative" or "prototype" on screen.
+- **Link check:** 60 of 65 links opened. One was dead and was replaced: the CDC fever definition (100.4 °F / 38 °C) moved to `https://www.cdc.gov/port-health/php/definitions-symptoms-reportable-illness`. The other 4 block automated checks (AHA, NIH) or failed on this machine's certificate store (spaceappschallenge.org) but open normally in a browser.
+- **Tutorial:** every one of the 50 steps in `docs/TUTORIAL.md` names its data source. 34 rest on the challenge resources, 9 on other NASA documents, and 7 are app features with no external data (navigation, tour, reset and similar).

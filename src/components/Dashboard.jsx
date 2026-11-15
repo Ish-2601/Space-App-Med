@@ -24,6 +24,7 @@ import ConsoleShell from "./ConsoleShell.jsx";
 import More from "../pages/More.jsx";
 import CrewHub from "../pages/CrewHub.jsx";
 import Summary from "../pages/Summary.jsx";
+import Tutorial from "../pages/Tutorial.jsx";
 import BodyHealth from "../pages/BodyHealth.jsx";
 import BodyDiagnostic from "../pages/BodyDiagnostic.jsx";
 import SpaceflightCatalog from "../pages/SpaceflightCatalog.jsx";
@@ -84,6 +85,7 @@ export const PAGES = [
   { id: "more", C: More },
   { id: "crewHub", C: CrewHub },
   { id: "summary", C: Summary },
+  { id: "tutorial", C: Tutorial },
   ...Object.keys(HEALTH_AREAS).flatMap((partKey) => [
     {
       id: areaPage(partKey),

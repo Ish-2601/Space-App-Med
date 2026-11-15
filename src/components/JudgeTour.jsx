@@ -48,7 +48,9 @@ export default function JudgeTour({ go }) {
                 Next: {TOUR[step + 1].title} <Icon name="arrow" size={16} />
               </button>
             ) : (
-              <button className="btn primary" onClick={() => setOpen(false)}>Finish tour</button>
+              <button className="btn primary" onClick={() => { setOpen(false); go("tutorial"); }}>
+                Finish: open full tutorial <Icon name="arrow" size={16} />
+              </button>
             )}
           </div>
         </div>

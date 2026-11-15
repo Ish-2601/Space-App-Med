@@ -219,3 +219,59 @@ html.circadian-redshift .console-app { background: none !important; }
 @media (prefers-reduced-motion: reduce) {
   .hero-ring .ring-value { filter: none; }
 }
+
+/* ---------- Tutorial and test run ---------- */
+.crew-tutorial-link { text-decoration: none; margin-left: 8px; border-color: rgba(169, 184, 255, 0.5) !important; color: var(--brand) !important; }
+.tutorial-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.tutorial-progress { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 20px; padding: 14px 18px; border-radius: 16px; border: 1px solid var(--glass-line); background: linear-gradient(180deg, var(--card-top), var(--card-bottom)); }
+.tp-bar { flex: 1 1 260px; display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: rgba(255, 255, 255, 0.07); }
+.tp-pass { background: var(--ok); transition: width 300ms var(--ease, ease); }
+.tp-fail { background: var(--live); transition: width 300ms var(--ease, ease); }
+.tp-numbers { margin: 0; font-family: var(--mono); font-size: 13px; }
+.tp-numbers b { font-size: 18px; }
+.tp-ok { color: var(--ok); } .tp-bad { color: var(--live); }
+.tp-filter { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+.tutorial-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 20px; align-items: start; }
+.tutorial-chapters { position: sticky; top: 12px; display: grid; gap: 6px; padding: 8px; border-radius: 16px; border: 1px solid var(--glass-line); background: linear-gradient(180deg, var(--card-top), var(--card-bottom)); }
+.tc { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: 8px; min-height: 48px; padding: 8px 12px; border: 0; border-radius: 12px; background: transparent; color: var(--muted); font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.tc:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+.tc.on { background: rgba(255, 255, 255, 0.08); color: var(--text); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.tc-num { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.tc.on .tc-num { color: var(--brand); }
+.tc-count { font-family: var(--mono); font-size: 12px; padding: 2px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.05); }
+.tc-count.ok { color: var(--ok); } .tc-count.bad { color: var(--live); }
+.tutorial-intro { font-size: 16px; color: var(--muted); margin: 0 0 16px; }
+.t-step { padding: 20px 22px; margin-bottom: 14px; border-radius: 18px; border: 1px solid var(--glass-line); background: linear-gradient(180deg, var(--card-top), var(--card-bottom)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+.t-step.is-pass { border-color: var(--ok-line); box-shadow: inset 3px 0 0 var(--ok); }
+.t-step.is-fail { border-color: var(--crit-line); box-shadow: inset 3px 0 0 var(--live); }
+.t-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.t-head h2 { flex: 1; margin: 0; font-size: 19px; }
+.t-num { font-family: var(--mono); font-weight: 700; color: var(--brand); font-size: 14px; }
+.t-why { color: var(--muted); margin: 0 0 14px; max-width: 75ch; }
+.t-cols { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 16px; margin-bottom: 14px; }
+.t-try { margin: 6px 0 0; padding-left: 20px; display: grid; gap: 6px; }
+.t-expect { padding: 12px 14px; border-radius: 12px; background: rgba(169, 184, 255, 0.07); border: 1px solid rgba(169, 184, 255, 0.22); }
+.t-expect p:last-child { margin: 4px 0 0; }
+.t-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.t-source { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; }
+.t-tier { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line-strong); color: var(--muted); }
+.tier-challenge .t-tier { color: var(--ok); border-color: var(--ok-line); background: var(--ok-bg); }
+.tier-nasa .t-tier { color: var(--brand); border-color: rgba(169, 184, 255, 0.4); background: var(--brand-soft); }
+.tier-clinical .t-tier { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+.t-verdict { display: inline-flex; gap: 6px; }
+.t-verdict .pass-on { background: var(--ok-bg) !important; border-color: var(--ok) !important; color: var(--ok) !important; }
+.t-verdict .fail-on { background: var(--crit-bg) !important; border-color: var(--live) !important; color: var(--live) !important; }
+.t-note { display: grid; gap: 6px; margin-top: 12px; font-size: 14px; color: var(--muted); }
+.t-note textarea { width: 100%; }
+.t-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 8px; }
+@media (max-width: 900px) {
+  .tutorial-layout { grid-template-columns: 1fr; }
+  .tutorial-chapters { position: static; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .t-cols { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .t-head { flex-wrap: wrap; }
+  .t-open { width: 100%; justify-content: center; }
+  .t-verdict { width: 100%; } .t-verdict .btn { flex: 1; justify-content: center; }
+  .t-nav { flex-direction: column; }
+}
