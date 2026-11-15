@@ -1,34 +1,30 @@
 export const GROUPS = [
   {
     id: "today",
-    label: "Today",
-    icon: "today",
+    label: "Home",
+    icon: "home",
     pages: ["today", "checkin", "log", "quests", "checks"],
   },
   {
     id: "body",
     label: "Body",
     icon: "body",
-    pages: ["body", "trends", "radiation", "photos"],
+    pages: ["body", "bodyReview", "trends", "radiation", "photos", "mind"],
   },
   {
-    id: "medguide",
-    label: "Help",
-    icon: "help",
-    pages: ["medguide", "medkit", "checklists"],
+    id: "emergency",
+    label: "Emergency",
+    icon: "alert",
+    pages: ["emergency"],
   },
   {
-    id: "crewHub",
-    label: "Crew",
+    id: "users",
+    label: "Users",
     icon: "crew",
-    pages: ["crewHub", "crew", "earth", "habitat", "mind"],
-  },
-  {
-    id: "more",
-    label: "More",
-    icon: "more",
-    pages: ["more", "mission", "learn", "summary"],
+    pages: [],
   },
 ];
 export const activeGroup = (page) =>
-  GROUPS.find((g) => g.pages.includes(page))?.id;
+  page.startsWith("body-") || page.startsWith("review-")
+    ? "body"
+    : GROUPS.find((g) => g.pages.includes(page))?.id;

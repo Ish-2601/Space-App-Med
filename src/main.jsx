@@ -4,6 +4,7 @@ import App from "./App.jsx";
 import "./styles.css";
 import "./console.css";
 import "./clean.css";
+import "./health-screens.css";
 import { applyDisplay } from "./display.js";
 
 applyDisplay();

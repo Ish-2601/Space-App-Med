@@ -9,15 +9,24 @@ import {
   rowFor, personOf, alertsFor, healthScore, indicatorStatuses, activeEvent, earthDelayMs, evaluateTest, habitatToday, envOf,
 } from "./rules.js";
 import { indicators } from "../lib.js";
+import { HEALTH_AREAS, SLEEP_QUALITY } from "../data/healthAreas.js";
 
 export * from "./rules.js";
 export * from "./content.js";
+export * from "./bodyHealth.js";
 export * from "./assess.js";
 export { useStore, getState };
 
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const today = (s) => s.mission.day;
 const round1 = (n) => Math.round(n * 10) / 10;
+
+// Preserve answer order even when two local updates happen in one millisecond.
+const symptomTimestamp = (s, pid) => Math.max(Date.now(), 1 + Math.max(
+  s.checkins[pid][today(s)]?.ts || 0,
+  s.bodyDiagnostics?.[pid]?.[0]?.ts || 0,
+  s.symptomLog[pid]?.[0]?.ts || 0,
+));
 
 // ---------- Check-in ----------
 
@@ -28,7 +37,7 @@ export function submitCheckIn(pid, { values = {}, motion = 0, symptoms = [] }) {
     for (const [k, v] of Object.entries(values)) {
       if (v !== "" && v != null && !Number.isNaN(Number(v))) row[k] = Number(v);
     }
-    s.checkins[pid][today(s)] = { ts: Date.now(), values, motion: Number(motion) || 0, symptoms };
+    s.checkins[pid][today(s)] = { ts: symptomTimestamp(s, pid), values, motion: Number(motion) || 0, symptoms };
     // Automatic escalation: red readings notify the crew medical officer
     const reds = alertsFor(s, pid).filter((a) => a.level === "red" && a.indicator);
     if (reds.length) pushNotification(s, pid, "red", `${personOf(s, pid).name}: ${reds.map((a) => a.title).join("; ")}`);
@@ -37,6 +46,33 @@ export function submitCheckIn(pid, { values = {}, motion = 0, symptoms = [] }) {
 }
 
 // ---------- Medical checks ----------
+
+// A focused review updates only this body area's readings. It does not complete
+// the eight-question daily check-in or overwrite another crew member's record.
+export function saveBodyDiagnostic(pid, part, { values = {}, answers = {}, sleepQuality, stress } = {}) {
+  const area = HEALTH_AREAS[part];
+  if (!area || !personOf(getState(), pid)) throw new Error("Choose a valid crew member and body area.");
+  const fields = indicators.filter((i) => i.bodyPart === part);
+  const cleaned = {};
+  for (const ind of fields) {
+    const value = values[ind.id];
+    if (value === "" || value == null || !Number.isFinite(Number(value)) || Number(value) < 0 || (ind.id === "spo2" && Number(value) > 100) || (ind.id === "mood" && (Number(value) < 1 || Number(value) > 10)) || (ind.id === "sleep" && Number(value) > 24)) throw new Error("Enter a valid value for " + ind.label + ".");
+    cleaned[ind.id] = Number(value);
+  }
+  if (area.symptoms.some((id) => typeof answers[id] !== "boolean")) throw new Error("Answer Yes or No for each symptom.");
+  if (part === "brain" && (!SLEEP_QUALITY.includes(sleepQuality) || stress === "" || stress == null || !Number.isFinite(Number(stress)) || Number(stress) < 0 || Number(stress) > 10)) throw new Error("Record sleep quality and stress from 0 to 10.");
+  return update((s) => {
+    const record = { id: newId(), day: today(s), ts: symptomTimestamp(s, pid), part, values: cleaned, answers: Object.fromEntries(area.symptoms.map((id) => [id, answers[id]])) };
+    if (part === "brain") Object.assign(record, { sleepQuality, stress: Number(stress) });
+    s.bodyDiagnostics ||= {};
+    s.bodyDiagnostics[pid] ||= [];
+    s.bodyDiagnostics[pid].unshift(record);
+    Object.assign(rowFor(s, pid), cleaned);
+    const red = alertsFor(s, pid).filter((a) => a.level === "red" && fields.some((i) => i.id === a.indicator));
+    if (red.length) pushNotification(s, pid, "red", `${personOf(s, pid).name}: ${red.map((a) => a.title).join("; ")}`);
+    return record;
+  });
+}
 
 // type: "pvt" | "amsler" | "acuity" | "hr" | "balance"
 export function saveTest(pid, type, result) {
@@ -148,7 +184,7 @@ export function logMeal(pid, { meal = "Meal", rating, portion = "all" }) {
 
 export function logSymptom(pid, symptom, note = "") {
   update((s) => {
-    s.symptomLog[pid].unshift({ id: newId(), day: today(s), ts: Date.now(), symptom, note });
+    s.symptomLog[pid].unshift({ id: newId(), day: today(s), ts: symptomTimestamp(s, pid), symptom, note });
   });
 }
 
@@ -192,6 +228,8 @@ export function buildHealthSummary(s, pid) {
     "",
     ...indicators.map((i) => `${st[i.id] === "green" ? "  " : "! "}${i.label}: ${row[i.id]} ${i.unit} (${st[i.id]})`),
   ];
+  const headReview = s.bodyDiagnostics?.[pid]?.find((r) => r.day === today(s) && r.part === "brain");
+  if (headReview) lines.push("", "Head wellbeing (self-reported):", `Sleep quality: ${headReview.sleepQuality}`, `Stress: ${headReview.stress}/10`);
   const alerts = alertsFor(s, pid).filter((a) => a.level !== "info");
   if (alerts.length) lines.push("", "Alerts:", ...alerts.map((a) => `- [${a.level}] ${a.title}`));
   return lines.join("\n");
@@ -299,11 +337,11 @@ export function setCo2Fault(on) {
 
 // ---------- Emergencies ----------
 
-export function startEmergency(pid, type) {
+export function startEmergency(pid, type, { simulated = false } = {}) {
   update((s) => {
     const def = EMERGENCIES.find((e) => e.id === type);
     if (!def || !personOf(s, pid) || s.emergencies.some((e) => e.pid === pid && e.type === type && !e.resolvedAt)) return;
-    s.emergencies.unshift({ id: newId(), pid, type, title: def.title, startedAt: Date.now(), stepsDone: {}, resolvedAt: null });
+    s.emergencies.unshift({ id: newId(), pid, type, title: def.title, startedAt: Date.now(), stepsDone: {}, resolvedAt: null, simulated });
     pushNotification(s, pid, "red", `EMERGENCY: ${def.title} (${personOf(s, pid).name})`);
     queueReport(s, pid, "emergency", `Emergency started: ${def.title}`);
   });

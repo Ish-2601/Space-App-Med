@@ -16,13 +16,19 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 (or the port Vite prints). Run the tests with `npm test`. To start over with fresh demo data: More → Demo controls → Reset all data.
+Open http://localhost:5173 (or the port Vite prints). Run the tests with `npm test`. To start over with fresh demo data: All tools → Demo controls → Reset all data.
 
 ## NASA Med console
 
-The interface uses a dark, desaturated space theme with glass controls, bracketed panels, and the supplied galaxy background. The responsive navigation connects Today, Body, Help, Crew, and More.
+The personal Home screen shows the current mission, daily tasks and diagnostics, and a health score out of 100. The bottom navigation is **Home → Body → Emergency → Users**; Users returns to profile selection. Other existing features remain under **All tools**.
 
-- Today combines a live health score, priority action, daily routine, and streak.
+Body opens a menu with ten dedicated system screens, including head and mental wellbeing, heart, respiratory health, and bones/joints/muscles. Focused diagnostic checks update only the selected person's relevant readings and symptoms. Head checks also record self-reported sleep quality and stress, alongside mood and daily journal status. These prototype scores are not clinical diagnoses. Missing measurements remain unscored.
+
+Home includes an emergency simulator. The global banner appears only for active emergency protocols, solar events, or cabin faults, and disappears when they end. A simulated protocol can be ended from Home. Existing camera, vision, hearing, reaction, standing, workload, and hydration checks remain available from the related body screens.
+
+The interface uses dark surfaces, muted glass controls, and the supplied galaxy background in the crew lobby. The responsive navigation connects Home, Body, Emergency, and Users.
+
+- Home combines a live health score, priority action, daily routine, and streak.
 - The eight-step check-in reviews all 12 indicators and symptoms before saving.
 - Body links system status, baseline trends, medical checks, radiation, and photos.
 - Medical checks use a shared measurement workspace; the Amsler grid supports both eyes, clearing, and keyboard arrow/Space controls.
@@ -37,7 +43,7 @@ All reports, notifications, and replies are simulated locally. Camera and motion
 **Daily**
 - **NASA Med crew lobby:** galaxy background, personal profile photos, live health percentages and checkup status; select a portrait to open that astronaut's dashboard. Checkups show as necessary when alerts, a daily check-in or scheduled medical checks need attention. The CMO view remains available for the whole crew.
 - **Profile photos:** use the camera button to add a JPG, PNG, WebP or GIF (up to 5 MB). Photos are cropped to a 512px square and stored locally in IndexedDB, separately from medical photos. They also appear in the personal dashboard; use Remove photo to restore the default avatar.
-- **Today:** health score, alerts with actions (notify CMO, send to flight surgeon), checks due, supplements, quests, environment focus.
+- **Home:** health score, alerts with actions (notify CMO, send to flight surgeon), checks due, supplements, quests, environment focus.
 - **Check-in:** 12 indicators (sensor values pre-filled), motion sickness, symptoms, with how/why for each.
 - **Log activity:** workouts, water, scheduled supplements.
 - **Quests:** NASA countermeasures as quests, streaks, points, badges, leaderboard.

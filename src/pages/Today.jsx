@@ -12,9 +12,12 @@ import {
   addWater,
   notifyCMO,
   sendReport,
+  envOf,
+  delayText,
 } from "../backend/api.js";
 import { Panel, Icon, Status, Segments } from "../components/ConsoleUI.jsx";
 import { Patterns } from "./Trends.jsx";
+import EmergencySimulator from "../components/EmergencySimulator.jsx";
 
 const TASKS = {
   checkin: [
@@ -94,14 +97,20 @@ const CHECK_STEP = {
 export function nextStepTitle(a) {
   if (!a) return null;
   if (a.indicator && IND_STEP[a.indicator]) return IND_STEP[a.indicator];
-  if (a.id.startsWith("check-")) return CHECK_STEP[a.id.slice(6)] || "Repeat this check";
-  if (a.id.startsWith("sym-")) return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
-  if (a.id === "co2") return a.level === "red" ? "Move to fresh air and follow the CO₂ steps" : "Check cabin ventilation";
+  if (a.id.startsWith("check-"))
+    return CHECK_STEP[a.id.slice(6)] || "Repeat this check";
+  if (a.id.startsWith("sym-"))
+    return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
+  if (a.id === "co2")
+    return a.level === "red"
+      ? "Move to fresh air and follow the CO₂ steps"
+      : "Check cabin ventilation";
   return a.title;
 }
 
 export default function Today({ person, go }) {
   const state = useStore();
+  const env = envOf(state);
   const pid = person.id;
   const row = rowFor(state, pid);
   const status = overallStatus(state, pid);
@@ -119,6 +128,43 @@ export default function Today({ person, go }) {
     );
   return (
     <div className="today-screen">
+      <div className="home-heading">
+        <div>
+          <p className="eyebrow">Home · Day {state.mission.day}</p>
+          <h1>Your mission, your health</h1>
+        </div>
+        <button className="btn" onClick={() => go("more")}>
+          <Icon name="more" />
+          All tools
+        </button>
+      </div>
+      <Panel title="Current mission" className="home-mission">
+        <div className="mission-identity">
+          <span className="icon-tile">
+            <Icon name="orbit" size={32} />
+          </span>
+          <div>
+            <h2>{state.mission.name}</h2>
+            <p className="muted">
+              {person.name} · {person.role}
+            </p>
+          </div>
+        </div>
+        <div className="mission-facts">
+          <span>
+            <small>Mission day</small>
+            <b>{state.mission.day}</b>
+          </span>
+          <span>
+            <small>Environment</small>
+            <b>{env.gravity}</b>
+          </span>
+          <span>
+            <small>Earth delay</small>
+            <b>{delayText(env)}</b>
+          </span>
+        </div>
+      </Panel>
       <div className="today-hero">
         <Panel className="status-window" aria-label="Your status">
           <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
@@ -136,7 +182,10 @@ export default function Today({ person, go }) {
                 />
               </svg>
               <div>
-                <strong>{score}</strong>
+                <strong>
+                  {score}
+                  <span className="score-denominator"> / 100</span>
+                </strong>
                 <small>Health score</small>
               </div>
             </div>
@@ -148,7 +197,8 @@ export default function Today({ person, go }) {
                   : "Your readings are in range. Keep your daily routine on track."}
               </p>
               <p className="small muted score-note">
-                The score starts at 100 and drops for each reading, symptom or check outside its range.
+                The score starts at 100 and drops for each reading, symptom or
+                check outside its range.
               </p>
             </div>
           </div>
@@ -311,9 +361,9 @@ export default function Today({ person, go }) {
               );
             })}
           </div>
-          {due.length > 0 && (
+          {due.length > 0 ? (
             <div className="due-checks">
-              <h3>Scheduled checks</h3>
+              <h3>Daily diagnostics · {due.length} due</h3>
               {due.map(({ check }) => (
                 <button
                   className="text-button"
@@ -330,9 +380,20 @@ export default function Today({ person, go }) {
                 </button>
               ))}
             </div>
+          ) : (
+            <div className="due-checks">
+              <h3>Daily diagnostics</h3>
+              <p className="small muted">
+                All scheduled checks are up to date.
+              </p>
+            </div>
           )}
+          <button className="text-button" onClick={() => go("checks")}>
+            View all diagnostics <Icon name="arrow" size={16} />
+          </button>
         </Panel>
         <div className="panel-stack">
+          <EmergencySimulator person={person} go={go} />
           <Panel title="Other signals">
             {alerts.slice(1).map((a) => (
               <div className="signal-row" key={a.id}>

@@ -68,7 +68,7 @@ export default function Checks({ person, go, params = {} }) {
     const past = testsOf(state, pid, check.id).slice(0, 8);
     return (
       <div>
-        <Back onClick={() => setOpen(null)}>All medical checks</Back>
+        <Back onClick={() => params.returnTo ? go(params.returnTo) : setOpen(null)}>{params.returnTo ? "Back to body health" : "All medical checks"}</Back>
         <PageTitle
           eyebrow={"Medical check · " + bodyParts[check.part].name}
           title={TITLES[open]}

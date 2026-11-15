@@ -1,6 +1,7 @@
 import React from "react";
 
 const paths = {
+  home: "M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10",
   today:
     "M8 3v4m8-4v4M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1m3 9 3 3 5-5",
   body: "M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m-7 3h14m-7-1v6m0 0-4 6m4-6 4 6",

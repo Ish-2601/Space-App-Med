@@ -1,6 +1,13 @@
 import React from "react";
 import { PageTitle, Panel, Icon } from "../components/ConsoleUI.jsx";
 const links = [
+  ["crewHub", "crew", "Crew and Earth link", "Messages, the habitat and your crewmates"],
+  ["medguide", "help", "Symptom guidance", "Related issues, care steps and when to escalate"],
+  ["mind", "brain", "Journal and wellbeing", "Mood, reflection and support"],
+  ["habitat", "air", "Habitat", "Cabin air, pressure and environmental alerts"],
+  ["medkit", "kit", "Med kit", "Supplies, schedules and stock levels"],
+  ["checklists", "today", "Mission checklists", "Spacewalk and landing preparation"],
+  ["radiation", "radiation", "Radiation and shelter", "Personal dose and storm readiness"],
   [
     "summary",
     "journal",
@@ -45,8 +52,8 @@ export default function More({ go, onSwitch }) {
   return (
     <>
       <PageTitle
-        eyebrow="More"
-        title="Your mission, at a glance"
+        eyebrow="Mission resources"
+        title="All tools"
         description="Everything you need. Even when Earth is far away."
       />
       <Panel title="More" className="directory-grid">

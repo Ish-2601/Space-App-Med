@@ -13,6 +13,7 @@ import {
 } from "../backend/api.js";
 import { bodyParts, indicators, indicatorSummary, round1 } from "../lib.js";
 import { Icon, Status, Sparkline } from "./ConsoleUI.jsx";
+import { HEALTH_AREAS } from "../data/healthAreas.js";
 export default function BodyPartDetail({ partKey, person, go }) {
   const state = useStore(),
     pid = person.id,
@@ -22,14 +23,14 @@ export default function BodyPartDetail({ partKey, person, go }) {
   const sums = indicators
     .filter((i) => i.bodyPart === partKey)
     .map((i) => ({ ind: i, ...indicatorSummary(i, history) }));
-  const syms = symptomsToday(state, pid).filter((s) => s.part === partKey),
+  const syms = symptomsToday(state, pid).filter((s) => HEALTH_AREAS[partKey].symptoms.includes(s.id)),
     checks = recentCheckResults(state, pid).filter(
       (r) => r.check.part === partKey,
     ),
     due = dueChecks(state, pid).filter(
       (d) => d.check.part === partKey && d.due,
     ),
-    guides = MED_GUIDE.filter((g) => g.part === partKey),
+    guides = MED_GUIDE.filter((g) => g.part === partKey || HEALTH_AREAS[partKey].symptoms.includes(g.id)),
     ci = state.checkins[pid][state.mission.day];
   const [msg, setMsg] = useState("");
   const primary = sums[0],

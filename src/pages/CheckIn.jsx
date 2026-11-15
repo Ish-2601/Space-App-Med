@@ -6,6 +6,7 @@ import {
   submitCheckIn,
   SYMPTOMS,
   habitatToday,
+  symptomsToday,
 } from "../backend/api.js";
 import { indicators, personalBaseline, rangeText } from "../lib.js";
 import { Panel, Back, Segments, Icon } from "../components/ConsoleUI.jsx";
@@ -50,15 +51,15 @@ export default function CheckIn({ person, go }) {
       Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])),
     );
   const [motion, setMotion] = useState(existing?.motion || 0),
-    [symptoms, setSymptoms] = useState(existing?.symptoms || []);
+    [symptoms, setSymptoms] = useState(() => symptomsToday(state, pid).map((s) => s.id));
   const [answers, setAnswers] = useState({
     headache:
       existing && !existing.auto
-        ? existing.symptoms?.includes("headache")
+        ? symptoms.includes("headache")
         : undefined,
     vision:
       existing && !existing.auto
-        ? existing.symptoms?.includes("vision")
+        ? symptoms.includes("vision")
         : undefined,
   });
   const [error, setError] = useState("");

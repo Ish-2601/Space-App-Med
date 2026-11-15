@@ -2,6 +2,7 @@
 import { indicators, statusOf, worstStatus, statusRank, personalBaseline } from "../lib.js";
 import { ENVIRONMENTS, QUESTS, BADGES, SYMPTOMS, CHECKS, MEDKIT } from "./content.js";
 import { snellen } from "./vision.js";
+import { HEALTH_AREAS } from "../data/healthAreas.js";
 import { evaluateHearing, evaluateStand, evaluateTlx, rawTlx, evaluateUrine, mealSummary, compareGroups } from "./assess.js";
 
 export const CAREER_LIMIT_MSV = 600; // NASA-STD-3001 Vol 1 Rev B
@@ -41,8 +42,16 @@ export function indicatorStatuses(state, pid) {
 
 // Symptoms reported today (check-in + symptom log)
 export function symptomsToday(state, pid, day = state.mission.day) {
-  const ids = new Set(state.checkins[pid][day]?.symptoms || []);
-  state.symptomLog[pid].filter((s) => s.day === day).forEach((s) => ids.add(s.symptom));
+  const ci = state.checkins[pid][day];
+  const ids = new Set(ci?.symptoms || []);
+  const events = ci && !ci.auto ? [{ ts: ci.ts || 0, answers: Object.fromEntries(SYMPTOMS.map((s) => [s.id, ci.symptoms?.includes(s.id) || false])) }] : [];
+  events.push(...state.symptomLog[pid].filter((s) => s.day === day).slice().reverse().map((s) => ({ ts: s.ts || 0, answers: { [s.symptom]: true } })));
+  for (const record of (state.bodyDiagnostics?.[pid] || []).slice().reverse()) {
+    if (record.day === day) events.push({ ts: record.ts, answers: record.answers });
+  }
+  events.sort((a, b) => a.ts - b.ts).forEach((event) => {
+    for (const [id, present] of Object.entries(event.answers)) present ? ids.add(id) : ids.delete(id);
+  });
   return SYMPTOMS.filter((s) => ids.has(s.id));
 }
 
@@ -193,7 +202,7 @@ export function daysOfSupply(state, medId) {
 export function partStatus(state, pid, part) {
   const statuses = indicatorStatuses(state, pid);
   const list = indicators.filter((i) => i.bodyPart === part).map((i) => statuses[i.id]);
-  if (symptomsToday(state, pid).some((s) => s.part === part)) list.push("yellow");
+  if (symptomsToday(state, pid).some((s) => HEALTH_AREAS[part]?.symptoms.includes(s.id) || s.part === part)) list.push("yellow");
   for (const res of recentCheckResults(state, pid)) {
     if (res.check.part === part && res.check.id !== "hr") list.push(res.status);
   }

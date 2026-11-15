@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import CrewAvatar from "./CrewAvatar.jsx";
-import { useStore, envOf, activeEvent, delayText } from "../backend/api.js";
+import {
+  useStore,
+  envOf,
+  activeEvent,
+  activeEmergencies,
+  delayText,
+} from "../backend/api.js";
 import { Brand, Icon } from "./ConsoleUI.jsx";
 import { GROUPS, activeGroup } from "./navigation.js";
 import { getDisplay, setDisplay } from "../display.js";
@@ -18,6 +24,7 @@ export default function ConsoleShell({
   const [display, setDisp] = useState(getDisplay);
   const env = envOf(state);
   const ev = activeEvent(state);
+  const emergencies = activeEmergencies(state);
   const unread = state.notifications.filter((n) => !n.read).length;
   const queued = state.reports.filter((r) => r.status === "queued").length;
   return (
@@ -48,6 +55,14 @@ export default function ConsoleShell({
           </span>
         </div>
         <div className="console-account">
+          <button
+            className="icon-button"
+            onClick={() => go("more")}
+            aria-label="All tools and settings"
+            title="All tools and settings"
+          >
+            <Icon name="more" />
+          </button>
           <button
             className="icon-button notification-button"
             onClick={() => go("crew")}
@@ -86,14 +101,31 @@ export default function ConsoleShell({
                     <small>{p.role}</small>
                   </button>
                 ))}
-                <div className="display-toggles" role="group" aria-label="Display">
+                <div
+                  className="display-toggles"
+                  role="group"
+                  aria-label="Display"
+                >
                   <label>
-                    <input type="checkbox" checked={display.night} onChange={(e) => setDisp(setDisplay({ night: e.target.checked }))} />
+                    <input
+                      type="checkbox"
+                      checked={display.night}
+                      onChange={(e) =>
+                        setDisp(setDisplay({ night: e.target.checked }))
+                      }
+                    />
                     Night mode <small>Dim red light for sleep periods</small>
                   </label>
                   <label>
-                    <input type="checkbox" checked={display.large} onChange={(e) => setDisp(setDisplay({ large: e.target.checked }))} />
-                    Larger text <small>Easier to read with vibration or tired eyes</small>
+                    <input
+                      type="checkbox"
+                      checked={display.large}
+                      onChange={(e) =>
+                        setDisp(setDisplay({ large: e.target.checked }))
+                      }
+                    />
+                    Larger text{" "}
+                    <small>Easier to read with vibration or tired eyes</small>
                   </label>
                 </div>
                 <button onClick={onSwitch}>
@@ -104,6 +136,23 @@ export default function ConsoleShell({
           </div>
         </div>
       </header>
+      {emergencies.map((em) => (
+        <div className="console-banner" role="alert" key={em.id}>
+          <Icon name="alert" />
+          <span>
+            <b>
+              {em.simulated ? "Emergency simulation" : "Emergency"}: {em.title}.
+            </b>{" "}
+            {state.crew.find((p) => p.id === em.pid)?.name} · Protocol active
+          </span>
+          <button
+            className="btn"
+            onClick={() => go("emergency", { emergencyId: em.id })}
+          >
+            Open protocol <Icon name="arrow" size={16} />
+          </button>
+        </div>
+      ))}
       {ev && (
         <div className="console-banner" role="alert">
           <Icon name="sun" />
@@ -144,7 +193,8 @@ export default function ConsoleShell({
               aria-current={activeGroup(page) === g.id ? "page" : undefined}
               onClick={() => {
                 setMenu(false);
-                go(g.id);
+                if (g.id === "users") onSwitch();
+                else if (page !== g.id) go(g.id);
               }}
             >
               <Icon name={g.icon} />
@@ -152,14 +202,6 @@ export default function ConsoleShell({
             </button>
           ))}
         </div>
-        <button
-          className={`dock-emergency ${page === "emergency" ? "active" : ""}`}
-          aria-label="Emergency"
-          onClick={() => go("emergency")}
-        >
-          <Icon name="emergency" />
-          <span>Emergency</span>
-        </button>
       </nav>
     </div>
   );

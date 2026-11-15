@@ -24,6 +24,9 @@ import ConsoleShell from "./ConsoleShell.jsx";
 import More from "../pages/More.jsx";
 import CrewHub from "../pages/CrewHub.jsx";
 import Summary from "../pages/Summary.jsx";
+import BodyHealth from "../pages/BodyHealth.jsx";
+import BodyDiagnostic from "../pages/BodyDiagnostic.jsx";
+import { HEALTH_AREAS, areaPage } from "../data/healthAreas.js";
 
 export const NAV = [
   { group: "Daily", pages: [
@@ -56,7 +59,10 @@ export const NAV = [
   ] },
   { group: "", pages: [{ id: "emergency", label: "🚨 Emergency", C: Emergency }] },
 ];
-export const PAGES = [...NAV.flatMap((g) => g.pages), { id: "more", C: More }, { id: "crewHub", C: CrewHub }, { id: "summary", C: Summary }];
+export const PAGES = [...NAV.flatMap((g) => g.pages), { id: "more", C: More }, { id: "crewHub", C: CrewHub }, { id: "summary", C: Summary }, ...Object.keys(HEALTH_AREAS).flatMap((partKey) => [
+  { id: areaPage(partKey), C: (props) => <BodyHealth {...props} partKey={partKey} /> },
+  { id: "review-" + partKey, C: (props) => <BodyDiagnostic {...props} partKey={partKey} /> },
+])];
 
 // One astronaut's personal app: mission bar, sidebar navigation, current page
 export default function Dashboard({ person, routeId = person.id, onSwitch, onOpenPerson, initialPage = "today" }) {
@@ -69,6 +75,7 @@ export default function Dashboard({ person, routeId = person.id, onSwitch, onOpe
     setNav((prev) => (prev.page === p ? prev : { page: p, params: {}, n: prev.n + 1 }));
   }, [initialPage]);
   const go = (page, params = {}) => {
+    if (page === "body" && HEALTH_AREAS[params.part]) page = areaPage(params.part);
     setNav((prev) => ({ page, params, n: prev.n + 1 })); // n forces a fresh page even if it's the same one
     setHash(routeId, page);
     window.scrollTo?.(0, 0);

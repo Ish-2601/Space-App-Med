@@ -24,10 +24,15 @@ export const PART_ICONS = {
   bones: "exercise",
   wholeBody: "radiation",
 };
-export default function BodyMap({ partStatus, selected, onSelect }) {
+export default function BodyMap({
+  partStatus,
+  selected,
+  onSelect,
+  figureOnly = false,
+}) {
   const id = useId().replace(/:/g, "");
   return (
-    <div className="bodymap">
+    <div className={"bodymap" + (figureOnly ? " figure-only" : "")}>
       <svg
         viewBox="0 0 200 360"
         className="figure"
@@ -113,24 +118,26 @@ export default function BodyMap({ partStatus, selected, onSelect }) {
           );
         })}
       </svg>
-      <div className="part-list">
-        {Object.entries(bodyParts).map(([key, p]) => (
-          <button
-            key={key}
-            className={"part " + (selected === key ? "active" : "")}
-            aria-pressed={selected === key}
-            onClick={() => onSelect(key)}
-          >
-            <Icon name={PART_ICONS[key]} size={18} />
-            <span>{p.name}</span>
-            <Status status={partStatus(key)} />
-          </button>
-        ))}
-        <p className="muted small body-map-hint">
-          Select a point or a row. Your readings are compared with your own
-          first-week baseline.
-        </p>
-      </div>
+      {!figureOnly && (
+        <div className="part-list">
+          {Object.entries(bodyParts).map(([key, p]) => (
+            <button
+              key={key}
+              className={"part " + (selected === key ? "active" : "")}
+              aria-pressed={selected === key}
+              onClick={() => onSelect(key)}
+            >
+              <Icon name={PART_ICONS[key]} size={18} />
+              <span>{p.name}</span>
+              <Status status={partStatus(key)} />
+            </button>
+          ))}
+          <p className="muted small body-map-hint">
+            Select a point or a row. Your readings are compared with your own
+            first-week baseline.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
