@@ -46,6 +46,7 @@ const paths = {
   search: "M10 17a7 7 0 1 0 0-14 7 7 0 0 0 0 14m5-2 7 7",
   download: "M12 3v12m-5-5 5 5 5-5M3 16v5h18v-5",
   refresh: "M20 7a9 9 0 1 0 1 9M20 2v6h-6",
+  close: "M6 6l12 12M18 6 6 18",
 };
 
 export function Icon({ name = "info", size = 20, ...props }) {

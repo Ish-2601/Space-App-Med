@@ -26,12 +26,19 @@ import {
   CrewBioDome,
 } from "../components/HomeUpgrades.jsx";
 import { recoveryStatus, completeRecovery } from "../backend/homeUpgrades.js";
+import {
+  TelemetryRibbon,
+  HealthHero,
+  nextSteps,
+  VitalsGrid,
+  HomeTabs,
+} from "../components/HomeHero.jsx";
 import { sandboxEnabled } from "../backend/sandbox.js";
 
 const TASKS = {
   checkin: [
     "Daily check-in",
-    "Eight short steps · about 3 minutes",
+    "Eight short steps Â· about 3 minutes",
     "today",
     "checkin",
     "Start",
@@ -112,12 +119,12 @@ export function nextStepTitle(a) {
     return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
   if (a.id === "co2")
     return a.level === "red"
-      ? "Move to fresh air and follow the CO₂ steps"
+      ? "Move to fresh air and follow the COâ‚‚ steps"
       : "Check cabin ventilation";
   return a.title;
 }
 
-export default function Today({ person, go }) {
+export default function Today({ person, go, params = {} }) {
   const state = useStore();
   const env = envOf(state);
   const pid = person.id;
@@ -136,8 +143,32 @@ export default function Today({ person, go }) {
       a.page || (a.part ? "body" : "checkin"),
       a.guide ? { guide: a.guide } : a.part ? { part: a.part } : {},
     );
+  const checkedIn = !!state.checkins[pid][state.mission.day];
+  const steps = nextSteps(state, pid, alerts, nextStepTitle, openAlert, go);
+  const primary = !checkedIn
+    ? { label: "Start 8-step daily check-in", onClick: () => go("checkin") }
+    : priority
+      ? { label: nextStepTitle(priority) || "Review this signal", reason: priority.title, onClick: () => openAlert(priority) }
+      : { label: "Open medical checks", onClick: () => go("checks") };
+  const [tab, setTabState] = useState(() => {
+    if (params.catalogFocus) return "all"; // jump links must land on a visible section
+    try {
+      return localStorage.getItem("nasa-med-home-tab") || "plan";
+    } catch {
+      return "plan";
+    }
+  });
+  const setTab = (t) => {
+    setTabState(t);
+    try {
+      localStorage.setItem("nasa-med-home-tab", t);
+    } catch {
+      /* storage blocked: tab just isn't remembered */
+    }
+  };
+  const show = (id) => tab === "all" || tab === id;
   return (
-    <div className="today-screen">
+    <div className="today-screen home-v2">
       <div className="home-heading">
         <div>
           <p className="eyebrow">Home · Day {state.mission.day}</p>
@@ -148,167 +179,80 @@ export default function Today({ person, go }) {
           All tools
         </button>
       </div>
-      <WearablesBar person={person} />
-      <Panel title="Current mission" className="home-mission">
-        <div className="mission-identity">
-          <span className="icon-tile">
-            <Icon name="orbit" size={32} />
-          </span>
-          <div>
-            <h2>{state.mission.name}</h2>
-            <p className="muted">
-              {person.name} · {person.role}
-            </p>
-          </div>
-        </div>
-        <div className="mission-facts">
-          <span>
-            <small>Mission day</small>
-            <b>{state.mission.day}</b>
-          </span>
-          <span>
-            <small>Environment</small>
-            <b>{env.gravity}</b>
-          </span>
-          <span>
-            <small>Earth delay</small>
-            <b>{delayText(env)}</b>
-          </span>
-        </div>
-      </Panel>
-      <button className="fast-help" onClick={() => go("emergency")}>
-        <span>
-          Feeling unwell or something's wrong?
-          <small>
-            Tap the symptoms to get the most likely cause and what to do
-          </small>
-        </span>
-        <Icon name="arrow" size={28} />
-      </button>
-      <div className="today-hero">
-        <Panel
-          className="status-window"
-          aria-label="Your status"
-          id="health-summary"
+      <TelemetryRibbon person={person} />
+      <div className="hero-bento">
+        <HealthHero
+          person={person}
+          score={score}
+          status={status}
+          alerts={alerts}
+          checkedIn={checkedIn}
+          primary={primary}
+          go={go}
         >
-          <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
-          <div className="health-overview">
-            <div className={`health-ring tone-${status}`}>
-              <svg viewBox="0 0 160 160" aria-hidden="true">
-                <circle className="ring-track" cx="80" cy="80" r="66" />
-                <circle
-                  className="ring-value"
-                  cx="80"
-                  cy="80"
-                  r="66"
-                  pathLength="100"
-                  strokeDasharray={`${score} 100`}
-                />
-              </svg>
-              <div>
-                <strong>
-                  {score}
-                  <span className="score-denominator"> / 100</span>
-                </strong>
-                <small>Health score</small>
-              </div>
-            </div>
-            <div>
-              <Status status={status} />
-              <p className="muted">
-                {alerts.length
-                  ? `${alerts.length} health signal${alerts.length === 1 ? "" : "s"} need${alerts.length === 1 ? "s" : ""} attention. Take it one step at a time.`
-                  : "Your readings are in range. Keep your daily routine on track."}
-              </p>
-              <p className="small muted score-note">
-                The score starts at 100 and drops for each reading, symptom or
-                check outside its range.
-              </p>
-            </div>
-          </div>
           <div className="mini-stats">
             {[
-              [`${row.sleep} h`, "Sleep"],
-              [`${row.heartRate} bpm`, "Resting HR"],
-              [`${row.water} L`, "Water"],
-            ].map(([value, label]) => (
+              [row.sleep, "h", "Sleep"],
+              [row.heartRate, "bpm", "Resting HR"],
+              [row.water, "L", "Water"],
+            ].map(([value, unit, label]) => (
               <div key={label}>
-                <b>{value}</b>
-                <small>{label}</small>
+                <b className="tabular">
+                  {value} <small className="unit">{unit}</small>
+                </b>
+                <small className="micro-label">{label}</small>
               </div>
             ))}
           </div>
           <ReadinessBadge person={person} />
-        </Panel>
+        </HealthHero>
         <Panel
           title="Do this next"
           tone={priority?.level || "neutral"}
-          className="priority-window"
+          className="priority-window next-steps glass"
         >
-          <div className="priority-copy">
-            <span className="icon-tile">
-              <Icon
-                name={
-                  priority?.part === "eyes"
-                    ? "eyes"
-                    : priority?.part === "heart"
-                      ? "heart"
-                      : "medical"
-                }
-                size={30}
-              />
-            </span>
-            <div>
-              <h2>
-                {nextStepTitle(priority) ||
-                  (state.checkins[pid][state.mission.day]
-                    ? "Keep your routine going"
-                    : "Take a moment to check in")}
-              </h2>
-              {priority && priority.title !== nextStepTitle(priority) && (
-                <p className="priority-reason">
-                  <Status status={priority.level}>Why</Status> {priority.title}
-                </p>
-              )}
-              <p>
-                {priority?.action ||
-                  "Review today's readings and complete any scheduled checks. Your record stays with you, even offline."}
-              </p>
+          {steps.map((s, i) => (
+            <div className={"next-step" + (i === 0 ? " first" : "")} key={s.key}>
+              <div className="next-step-meta">
+                <span className={`sev-pill pill-${s.level}`}>{s.pill}</span>
+                <span className="micro-label">
+                  <Icon name="clock" size={13} /> {s.time}
+                </span>
+              </div>
+              <div className="next-step-row">
+                <div>
+                  <h3>{s.title}</h3>
+                  {i === 0 && priority && s.key === priority.id && priority.title !== s.title ? (
+                    <p className="priority-reason">
+                      <Status status={priority.level}>Why</Status> {priority.title}
+                    </p>
+                  ) : (
+                    <p className="small muted">{s.reason}</p>
+                  )}
+                </div>
+                <button className={"btn" + (i === 0 ? " primary" : "")} onClick={s.go} aria-label={"Start: " + s.title}>
+                  {i === 0 ? "Start" : "Open"} <Icon name="arrow" size={16} />
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="row priority-actions">
+          ))}
+          {!steps.length && <p className="muted">Nothing due right now. Nice work.</p>}
+          {priority && (
             <button
-              className="btn primary"
-              onClick={() => (priority ? openAlert(priority) : go("checkin"))}
+              className="text-button"
+              onClick={() => {
+                notifyCMO(pid, `${person.name}: ${priority.title}`, priority.level);
+                setNotice(
+                  sandboxEnabled(state)
+                    ? "Request saved only to Private Sandbox; the medical officer was not notified."
+                    : "The medical officer has been notified.",
+                );
+              }}
             >
-              {priority ? "Review this signal" : "Start daily check-in"}
-              <Icon name="arrow" size={18} />
+              <Icon name="medical" size={18} />
+              Notify CMO
             </button>
-            {priority && (
-              <button
-                className="text-button"
-                onClick={() => {
-                  notifyCMO(
-                    pid,
-                    `${person.name}: ${priority.title}`,
-                    priority.level,
-                  );
-                  setNotice(
-                    sandboxEnabled(state)
-                      ? "Request saved only to Private Sandbox; the medical officer was not notified."
-                      : "The medical officer has been notified.",
-                  );
-                }}
-              >
-                <Icon name="medical" size={18} />
-                Notify CMO
-              </button>
-            )}
-          </div>
-          <p className="small muted">
-            <Icon name="info" size={14} /> Compared with your own readings and
-            the app's screening ranges.
-          </p>
+          )}
           {notice && (
             <p role="status" className="small">
               {notice}
@@ -316,7 +260,16 @@ export default function Today({ person, go }) {
           )}
         </Panel>
       </div>
-      <div className="main-with-aside">
+      <button className="fast-help" onClick={() => go("emergency")}>
+        <span>
+          Feeling unwell or something's wrong?
+          <small>Tap the symptoms to get the most likely cause and what to do</small>
+        </span>
+        <Icon name="arrow" size={28} />
+      </button>
+      <HomeTabs tab={tab} setTab={setTab} />
+      <section className="home-tab-panel" hidden={!show("plan")} aria-label="Today's plan">
+        <div className="main-with-aside">
         <Panel title="Today's routine">
           <QuickPulse person={person} />
           <RecoveryNotice person={person} />
@@ -408,7 +361,7 @@ export default function Today({ person, go }) {
           </div>
           {due.length > 0 ? (
             <div className="due-checks">
-              <h3>Daily diagnostics · {due.length} due</h3>
+              <h3>Daily diagnostics Â· {due.length} due</h3>
               {due.map(({ check }) => (
                 <button
                   className="text-button"
@@ -437,7 +390,7 @@ export default function Today({ person, go }) {
             View all diagnostics <Icon name="arrow" size={16} />
           </button>
         </Panel>
-        <div className="panel-stack">
+          <div className="panel-stack">
           <EmergencySimulator person={person} go={go} />
           <Panel title="Other signals">
             {alerts.slice(1).map((a) => (
@@ -468,6 +421,17 @@ export default function Today({ person, go }) {
             )}
           </Panel>
           <Patterns person={person} limit={1} />
+          </div>
+        </div>
+      </section>
+      <section className="home-tab-panel" hidden={!show("vitals")} aria-label="Live vitals and wearables">
+        <Panel title="Live vitals" className="vitals-window">
+          <p className="small muted">Latest readings, change from your own first-week baseline, and the last 7 days. Tap a card for the full trend.</p>
+          <VitalsGrid person={person} go={go} />
+        </Panel>
+        <WearablesBar person={person} />
+      </section>
+      <section className="home-tab-panel crew-tab" hidden={!show("crew")} aria-label="Crew bio-dome and streaks">
           <CrewBioDome />
           <Panel title="Consistency">
             <div className="row spread">
@@ -509,8 +473,7 @@ export default function Today({ person, go }) {
               Your progress <Icon name="arrow" size={15} />
             </button>
           </Panel>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

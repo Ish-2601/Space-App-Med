@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import JudgeTour from "./JudgeTour.jsx";
 import CrewAvatar from "./CrewAvatar.jsx";
 import {
   useStore,
@@ -62,6 +63,7 @@ export default function ConsoleShell({
           </span>
         </div>
         <div className="console-account">
+          <JudgeTour go={go} />
           <button
             className="icon-button"
             onClick={() => go("more")}

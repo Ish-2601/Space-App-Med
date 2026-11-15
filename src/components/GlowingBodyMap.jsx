@@ -84,7 +84,7 @@ const DETAIL = [
   "M78 300Q86 296 96 300M240 300Q250 296 258 300", // elbows
 ];
 
-export default function GlowingBodyMap({ partStatus, selected, onSelect, figureOnly }) {
+export default function GlowingBodyMap({ partStatus, selected, onSelect, figureOnly, scoreOf }) {
   const id = useId().replace(/:/g, "");
   const [hover, setHover] = useState(null);
   const focus = hover || selected;
@@ -109,6 +109,7 @@ export default function GlowingBodyMap({ partStatus, selected, onSelect, figureO
         {focus && <Status status={statuses[focus]}>{STATUS_WORD[statuses[focus]]}</Status>}
       </div>
       <div className="bm-stage">
+        <div className="bm-figure-wrap">
         <svg viewBox="0 0 336 735" className="bm-neon" role="group" aria-label="Body map. Each badge shows the status of one body area." onMouseLeave={() => setHover(null)}>
           <defs>
             <linearGradient id={`${id}-fill`} x1="0" y1="0" x2="0" y2="1">
@@ -174,8 +175,11 @@ export default function GlowingBodyMap({ partStatus, selected, onSelect, figureO
                 onKeyDown={press(key)}
                 onMouseEnter={() => setHover(key)}
                 onMouseLeave={() => setHover(null)}
+                onFocus={() => setHover(key)}
+                onBlur={() => setHover(null)}
               >
                 <title>{bodyParts[key].name}</title>
+                {(st === "yellow" || st === "red") && <circle cx={x} cy={y} r={r + 4} className="badge-pulse" />}
                 <circle cx={x} cy={y} r={r + 8} className="badge-glow" filter={`url(#${id}-soft)`} />
                 {sel && <circle cx={x} cy={y} r={r + 6} className="badge-halo" />}
                 <circle cx={x} cy={y} r={r} className="badge-disc" />
@@ -190,6 +194,26 @@ export default function GlowingBodyMap({ partStatus, selected, onSelect, figureO
             );
           })}
         </svg>
+        {hover && SPOTS[hover] && (() => {
+          const [x, y] = SPOTS[hover];
+          const right = x < 190; // label goes to the side with more room
+          const st = statuses[hover] || "unknown";
+          const score = scoreOf?.(hover);
+          return (
+            <div
+              className={`bm-callout bm-callout-${st} ${right ? "to-right" : "to-left"}`}
+              style={right ? { left: `calc(${(x / 336) * 100}% + 26px)`, top: `${(y / 735) * 100}%` } : { right: `calc(${100 - (x / 336) * 100}% + 26px)`, top: `${(y / 735) * 100}%` }}
+              aria-hidden="true"
+            >
+              <b>{bodyParts[hover].name}</b>
+              <span>
+                {score != null && <strong className="tabular">{score}<small>/100</small></strong>}
+                <i>{STATUS_WORD[st]}</i>
+              </span>
+            </div>
+          );
+        })()}
+        </div>
       </div>
       <ul className="bm-legend" aria-label="Badge key">
         <li><i className="bm-key bm-green">✓</i>All good</li>

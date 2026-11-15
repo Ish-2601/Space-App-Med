@@ -36,6 +36,20 @@ import {
   Status,
   Segments,
 } from "../components/ConsoleUI.jsx";
+// Icon and severity for each protocol card. Critical = life-threatening within minutes.
+const PROTOCOL_LOOK = {
+  dcs: ["air", "critical"],
+  spe: ["radiation", "critical"],
+  faint: ["heart", "critical"],
+  hypoxia: ["air", "critical"],
+  co2: ["air", "critical"],
+  chest: ["heart", "critical"],
+  toxic: ["alert", "critical"],
+  ocular: ["eyes", "urgent"],
+  renal: ["water", "urgent"],
+  dental: ["kit", "urgent"],
+};
+
 function Vitals({ em, onPrivateSave }) {
   const [v, setV] = useState(
       em.vitals || { heartRate: "", systolic: "", diastolic: "", spo2: "" },
@@ -143,8 +157,15 @@ export default function Emergency({ person, go, params = {} }) {
     setEnding(false);
   };
   const [ending, setEnding] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const seconds = em ? Math.max(0, Math.floor((now - em.startedAt) / 1000)) : 0,
     done = em ? Object.values(em.stepsDone).filter(Boolean).length : 0;
+  const toggleStep = (i) =>
+    privateMode
+      ? savePrivateProtocol({ ...em, stepsDone: { ...em.stepsDone, [i]: !em.stepsDone[i] } })
+      : toggleEmergencyStep(em.id, i);
+  // The first step not yet done is the one to do now (cockpit-checklist style)
+  const currentStep = em && def ? def.steps.findIndex((_, i) => !em.stepsDone[i]) : -1;
   return (
     <div>
       {!em ? (
@@ -168,17 +189,27 @@ export default function Emergency({ person, go, params = {} }) {
               for {state.crew.find((p) => p.id === pid)?.name}
             </span>
           </h2>
-          <div className="emergency-options">
+          <div className="emergency-options tactical">
             {EMERGENCIES.map((e) => (
-              <Panel key={e.id} tone="neutral">
+              <Panel key={e.id} tone="neutral" className={"protocol-card sev-" + (PROTOCOL_LOOK[e.id]?.[1] || "urgent")}>
+                <div className="protocol-card-head">
+                  <span className="icon-tile">
+                    <Icon name={PROTOCOL_LOOK[e.id]?.[0] || "emergency"} size={26} />
+                  </span>
+                  <span className={"sev-pill sev-" + (PROTOCOL_LOOK[e.id]?.[1] || "urgent")}>
+                    {(PROTOCOL_LOOK[e.id]?.[1] || "urgent") === "critical" ? "Critical" : "Urgent"}
+                  </span>
+                </div>
                 <h2>{e.title}</h2>
                 <p className="muted">{e.when}</p>
+                <div className="protocol-card-actions">
                 <button
                   className="btn"
                   aria-pressed={type === e.id}
                   aria-label={`Preview ${e.title} countermeasures`}
                   onClick={() => {
                     setType(e.id);
+                    setPreviewOpen(true);
                     requestAnimationFrame(() =>
                       document
                         .getElementById("emergency-protocol-preview")
@@ -200,16 +231,32 @@ export default function Emergency({ person, go, params = {} }) {
                   {privateMode ? "Start private rehearsal" : "Start protocol"}{" "}
                   <Icon name="arrow" />
                 </button>
+                </div>
               </Panel>
             ))}
           </div>
-          <div id="emergency-protocol-preview">
+          <details
+            id="emergency-protocol-preview"
+            className="disclosure"
+            open={previewOpen}
+            onToggle={(e) => setPreviewOpen(e.currentTarget.open)}
+          >
+            <summary>
+              <Icon name="kit" size={20} />
+              <span>
+                Equipment and countermeasures
+                <small>
+                  {EMERGENCIES.find((x) => x.id === type)?.title || "Selected protocol"}
+                  {" · "}open to see recommended hardware
+                </small>
+              </span>
+            </summary>
             <RecommendedCountermeasures
               person={state.crew.find((p) => p.id === pid) || person}
               emergencyType={type}
               go={go}
             />
-          </div>
+          </details>
         </>
       ) : (
         <>
@@ -284,6 +331,32 @@ export default function Emergency({ person, go, params = {} }) {
           </Panel>
           <div className="main-with-aside">
             <Panel title="Steps">
+              {currentStep >= 0 ? (
+                (() => {
+                  const guide = protocolStepGuide(def, currentStep);
+                  return (
+                    <div className="step-focus" aria-live="polite">
+                      <p className="eyebrow">
+                        Do now · step {currentStep + 1} of {def.steps.length}
+                      </p>
+                      <h2>{def.steps[currentStep]}</h2>
+                      <div className="step-focus-meta">
+                        <PackBadge pack={guide.pack} />
+                        {guide.note && <span className="small muted">{guide.note}</span>}
+                      </div>
+                      <button className="btn primary step-focus-done" onClick={() => toggleStep(currentStep)}>
+                        <Icon name="check" size={22} />
+                        {currentStep === def.steps.length - 1 ? "Done: last step" : "Done: next step"}
+                      </button>
+                    </div>
+                  );
+                })()
+              ) : (
+                <div className="step-focus all-done" role="status">
+                  <p className="eyebrow">All steps done</p>
+                  <h2>Keep monitoring and end the protocol when the patient is stable.</h2>
+                </div>
+              )}
               <Segments
                 value={done}
                 max={def.steps.length}
@@ -297,7 +370,7 @@ export default function Emergency({ person, go, params = {} }) {
                   return (
                     <div
                       className={
-                        "protocol-step " + (em.stepsDone[i] ? "done" : "")
+                        "protocol-step " + (em.stepsDone[i] ? "done" : "") + (i === currentStep ? " current" : "")
                       }
                       key={s}
                     >
@@ -305,17 +378,7 @@ export default function Emergency({ person, go, params = {} }) {
                         <input
                           type="checkbox"
                           checked={!!em.stepsDone[i]}
-                          onChange={() =>
-                            privateMode
-                              ? savePrivateProtocol({
-                                  ...em,
-                                  stepsDone: {
-                                    ...em.stepsDone,
-                                    [i]: !em.stepsDone[i],
-                                  },
-                                })
-                              : toggleEmergencyStep(em.id, i)
-                          }
+                          onChange={() => toggleStep(i)}
                         />
                         <span>
                           <b>

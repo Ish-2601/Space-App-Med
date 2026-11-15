@@ -40,6 +40,7 @@ export default function Body({ person, go, params = {} }) {
             layers
             environment={state.mission.environment}
             partStatus={(key) => partStatus(state, person.id, key)}
+            scoreOf={(key) => (HEALTH_AREAS[key] ? bodyHealthScore(state, person.id, key) : null)}
             onSelect={(key) => go(areaPage(key))}
           />
           <p className="small muted">
