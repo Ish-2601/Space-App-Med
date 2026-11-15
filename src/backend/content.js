@@ -15,7 +15,7 @@ export const ENVIRONMENTS = {
     label: "Mars transit", gravity: "Microgravity", microgravity: true, doseRate: 1.84, delayMin: 14,
     atmosphere: { pressureKpa: 101.3, o2Pct: 21 },
     focus: ["wholeBody", "bones", "eyes", "brain"],
-    note: "Outside the magnetosphere: the highest radiation of any phase. Earth delay 4–24 min one way.",
+    note: "Outside the magnetosphere: the highest radiation of any phase. Earth delay up to 20 min one way (NASA).",
   },
   moon: {
     label: "Moon base", gravity: "1/6 g", microgravity: false, doseRate: 1.37, delayMin: 0.022,
@@ -57,7 +57,7 @@ export const CHECKS = [
   {
     id: "pvt", title: "Reaction self-test", every: 4, part: "brain",
     what: "3-minute alertness test: tap as soon as the counter appears.",
-    why: "NASA's Reaction Self-Test (a 3-minute psychomotor vigilance test) has been used on the ISS since 2009 to show astronauts when sleep loss and workload slow them down. ISS crews took it every 4 days.",
+    why: "NASA's Reaction Self-Test (a 3-minute psychomotor vigilance test) has been used on the ISS since 2009 to show astronauts when their performance drops, for example from heavy workloads and reduced sleep. NASA has scheduled it periodically and around events like sleep shifts; the every-4-days schedule here is this app's choice.",
     action: { yellow: "You're slower than your baseline. Avoid safety-critical tasks if you can, protect tonight's sleep, retest tomorrow.", red: "Strong signs of fatigue. Tell the commander before any safety-critical task and ask for rest." },
   },
   {
@@ -181,7 +181,7 @@ export const MED_GUIDE = [
   },
   {
     id: "backpain", title: "Back pain", part: "bones",
-    causes: ["Spine lengthens up to 3% in weightlessness", "Muscle deconditioning"],
+    causes: ["Height can increase as much as 3% in space as the spine lengthens", "Muscle deconditioning"],
     selfCare: ["Curl into a fetal position to stretch the spine", "Core exercises in your routine"],
     escalate: ["Pain with numbness or weakness in the legs", "Pain after an impact or landing"],
   },

@@ -5,7 +5,7 @@ import { snellen } from "./vision.js";
 
 export const CAREER_LIMIT_MSV = 600; // NASA-STD-3001 Vol 1 Rev B
 export const CO2_LIMIT_MMHG = 3.0; // NASA-STD-3001 Vol 2 Rev D, 1-hour average
-export const CO2_TARGET_MMHG = 2.5; // NASA OCHMO: keeps headache risk around 1%
+export const CO2_TARGET_MMHG = 2.5; // Recommended level from Law et al. 2014 (NASA, 7-day average); not part of NASA-STD-3001
 const RECENT_DAYS = 7;
 
 // ---------- Basic lookups ----------
@@ -210,7 +210,7 @@ export function alertsFor(state, pid) {
   if (co2 !== "green") {
     alerts.push({
       id: "co2", level: co2, title: `Cabin CO₂ ${hab.co2} mmHg`,
-      action: co2 === "red" ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol." : "Above the 2.5 mmHg target. Headache risk is rising; check ventilation.",
+      action: co2 === "red" ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol." : "Above the 2.5 mmHg level a NASA study recommends. Headache risk is rising; check ventilation.",
       page: "habitat",
     });
   }
