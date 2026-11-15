@@ -14,6 +14,7 @@ import "./ar-crew-tools.css";
 import "./catalog.css";
 import "./mission-utility.css";
 import "./mission-ui.css";
+import "./final-theme.css";
 import { applyDisplay } from "./display.js";
 
 applyDisplay();
