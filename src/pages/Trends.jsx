@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { PageTitle } from "../components/ConsoleUI.jsx";
+import { PageTitle, Panel, Icon } from "../components/ConsoleUI.jsx";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceArea, ReferenceLine, CartesianGrid } from "recharts";
-import { useStore, historyOf } from "../backend/api.js";
+import { useStore, historyOf, insightsFor } from "../backend/api.js";
 import { indicators, indicatorSummary, greenBand, rangeText, COLORS, round1 } from "../lib.js";
 
 export default function Trends({ person, params }) {
@@ -37,12 +37,12 @@ export default function Trends({ person, params }) {
       <div className="card">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
-            <CartesianGrid stroke="#26315a" strokeDasharray="3 3" />
-            <XAxis dataKey="day" stroke="#9aa6c4" />
-            <YAxis domain={[Math.floor(lo * 0.95), Math.ceil(hi * 1.05)]} stroke="#9aa6c4" />
-            <Tooltip contentStyle={{ background: "#131a33", border: "1px solid #34406a" }} />
+            <CartesianGrid stroke="#233040" vertical={false} />
+            <XAxis dataKey="day" stroke="#9cadbd" tickLine={false} axisLine={false} />
+            <YAxis domain={[Math.floor(lo * 0.95), Math.ceil(hi * 1.05)]} stroke="#9cadbd" tickLine={false} axisLine={false} />
+            <Tooltip contentStyle={{ background: "#19232f", border: "1px solid #33445a", borderRadius: 10 }} />
             <ReferenceArea y1={band[0]} y2={band[1]} fill={COLORS.green} fillOpacity={0.08} />
-            <ReferenceLine y={sum.baseline} stroke="#8fb3ff" strokeDasharray="4 4" label={{ value: "your baseline", fill: "#8fb3ff", fontSize: 12 }} />
+            <ReferenceLine y={sum.baseline} stroke="#8ec9ff" strokeDasharray="4 4" label={{ value: "your baseline", fill: "#8ec9ff", fontSize: 12 }} />
             <Line type="monotone" dataKey={id} stroke={COLORS[sum.status]} strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
@@ -53,6 +53,33 @@ export default function Trends({ person, params }) {
         NASA risk: {ind.risk} · Sources:{" "}
         {ind.sources.map((s, n) => <a key={s} href={s} target="_blank" rel="noreferrer">[{n + 1}] </a>)}
       </p>
+      <Patterns person={person} />
     </div>
+  );
+}
+
+// Patterns in your own data (Bearable-style comparisons between groups of days)
+export function Patterns({ person, limit }) {
+  const state = useStore();
+  const list = insightsFor(state, person.id);
+  const shown = limit ? list.slice(0, limit) : list;
+  if (limit && !shown.length) return null; // on Today, only show a card when there is something to say
+  return (
+    <Panel title="Patterns in your data" className="patterns-panel">
+      {shown.length ? (
+        shown.map((i) => (
+          <div className="signal-row" key={i.id}>
+            <Icon name="star" />
+            <div>
+              <b className="signal-title">{i.title}</b>
+              <p className="muted small">{i.detail}</p>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="muted">Not enough data for patterns yet. Keep logging: each pattern needs at least 3 days on each side.</p>
+      )}
+      <p className="small muted">A pattern is not proof that one thing causes the other.</p>
+    </Panel>
   );
 }

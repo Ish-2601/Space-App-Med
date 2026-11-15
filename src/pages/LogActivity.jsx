@@ -7,6 +7,10 @@ import {
   takeMed,
   medsDue,
   WORKOUTS,
+  logMeal,
+  mealSummary,
+  PORTIONS,
+  HEDONIC,
 } from "../backend/api.js";
 import {
   PageTitle,
@@ -38,7 +42,7 @@ export default function LogActivity({ person }) {
       <PageTitle
         eyebrow={"Today · Day " + state.mission.day}
         title="A little care, every day"
-        description="Log your movement, water and scheduled supplements."
+        description="Log your movement, water, supplements and meals."
       />
       <div className="activity-layout">
         <Panel title="Workout">
@@ -160,7 +164,75 @@ export default function LogActivity({ person }) {
             Logging a dose uses one item from the shared medical kit.
           </p>
         </Panel>
+        <MealCard person={person} />
       </div>
     </div>
+  );
+}
+
+// Meal rating on NASA's 9-point food acceptability scale, plus how much was eaten.
+function MealCard({ person }) {
+  const state = useStore();
+  const pid = person.id;
+  const [meal, setMeal] = useState("Lunch");
+  const [rating, setRating] = useState(7);
+  const [portion, setPortion] = useState("all");
+  const [msg, setMsg] = useState("");
+  const summary = mealSummary(state.mealLog?.[pid] || [], state.mission.day);
+  const todays = (state.mealLog?.[pid] || []).filter((m) => m.day === state.mission.day);
+  return (
+    <Panel title="Meals">
+      <div className="row spread">
+        <h2>How was your meal?</h2>
+        <Icon name="kit" size={30} />
+      </div>
+      <p className="muted small">
+        NASA rates space food from 1 to 9 and replaces foods that don't average
+        above 6. Eating less for weeks can lead to body-mass loss.
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          logMeal(pid, { meal, rating, portion });
+          setMsg(`${meal} saved.`);
+        }}
+      >
+        <div className="activity-form">
+          <label>
+            Meal
+            <select value={meal} onChange={(e) => setMeal(e.target.value)}>
+              {["Breakfast", "Lunch", "Dinner", "Snack"].map((m) => (
+                <option key={m}>{m}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            How much did you eat?
+            <select value={portion} onChange={(e) => setPortion(e.target.value)}>
+              {PORTIONS.map((p) => (
+                <option key={p.id} value={p.id}>{p.label}</option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label className="tlx-scale">
+          <span className="row spread">
+            <b>Rating</b>
+            <span className="muted">{rating} · {HEDONIC[rating - 1]}</span>
+          </span>
+          <input type="range" min="1" max="9" value={rating} onChange={(e) => setRating(Number(e.target.value))} aria-label="Meal rating from 1 to 9" />
+        </label>
+        <button className="btn primary" type="submit">Save meal <Icon name="check" /></button>
+        {msg && <p role="status" className="small">{msg}</p>}
+      </form>
+      {summary && (
+        <p className="small muted section-label">
+          Last 7 days: average rating {summary.avgRating} over {summary.count} meals
+          {summary.lowIntake ? ` · ate half or less at ${summary.lowIntake}` : ""}.
+          {summary.menuFatigue ? " Your ratings suggest menu fatigue: try different items." : ""}
+        </p>
+      )}
+      {todays.length > 0 && <p className="small muted">Logged today: {todays.map((m) => m.meal).join(", ")}</p>}
+    </Panel>
   );
 }

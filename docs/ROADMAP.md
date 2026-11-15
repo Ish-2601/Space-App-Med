@@ -26,22 +26,27 @@ Assign an owner to each line (initials) and tick when done.
 - [x] Med kit, activity log, habitat monitor, Learn page (NASA hazards and risks), offline PWA, GitHub Pages workflow, unit tests
 - [ ] Test camera heart rate and offline install on a real laptop/phone (embedded preview browser can't)
 - [ ] Turn on GitHub Pages (Settings → Pages → Source: GitHub Actions) and put the link in the submission
-- [ ] UI redesign (team)
+- [x] UI redesign: team console + clean design layer (docs/RESEARCH-UI.md)
 - [ ] Demo video + project description (use DESIGN.md demo script and Learn page answers)
 
 ## Phase 2: Core features
-- [ ] Real SVG body map, clickable, with function and status
-- [ ] Daily check-in wizard with "how and why" explainers
-- [ ] Color-coded status plus "alert flight surgeon" rule
-- [ ] Trend charts with mission-day and environment selector
+- [x] Real SVG body map, clickable, with function and status
+- [x] Daily check-in wizard with "how and why" explainers
+- [x] Color-coded status plus "alert flight surgeon" rule
+- [x] Trend charts with mission-day and environment selector
 
 ## Phase 3: Standout features
-- [ ] Gamification: streaks, daily score, countermeasure quests
-- [ ] Guidance engine (rules from cited sources)
-- [ ] Optional: camera pulse estimate, radiation tracker, offline PWA
+- [x] Gamification: streaks, daily score, countermeasure quests
+- [x] Guidance engine (rules from cited sources)
+- [x] Optional: camera pulse estimate, radiation tracker, offline PWA
+
+## Phase 3b: Research-driven features (docs/RESEARCH-APPS.md)
+- [x] Hearing check, stand test, NASA-TLX workload, hydration colour, meal ratings
+- [x] Patterns in your data, printable health summary, night mode, larger text
+- [x] Accuracy audit: PVT-B timing, rPPG low heart rates, NASA data validation (docs/NASA-VALIDATION.md)
 
 ## Phase 4: Polish
-- [ ] Mobile/tablet layout, accessibility (colors plus icons, not color alone)
+- [x] Mobile/tablet layout, accessibility (colors plus icons, not color alone)
 - [ ] README, sources, limitations, ethics note
 - [ ] Deploy to a public URL
 

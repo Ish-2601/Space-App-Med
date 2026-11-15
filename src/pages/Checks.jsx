@@ -13,6 +13,10 @@ import AmslerGrid from "../components/checks/AmslerGrid.jsx";
 import AcuityTest from "../components/checks/AcuityTest.jsx";
 import ReactionTest from "../components/checks/ReactionTest.jsx";
 import BalanceTest from "../components/checks/BalanceTest.jsx";
+import HearingTest from "../components/checks/HearingTest.jsx";
+import StandTest from "../components/checks/StandTest.jsx";
+import WorkloadCheck from "../components/checks/WorkloadCheck.jsx";
+import UrineCheck from "../components/checks/UrineCheck.jsx";
 import {
   Back,
   PageTitle,
@@ -27,6 +31,10 @@ const RUNNERS = {
   acuity: AcuityTest,
   pvt: ReactionTest,
   balance: BalanceTest,
+  hearing: HearingTest,
+  stand: StandTest,
+  tlx: WorkloadCheck,
+  urine: UrineCheck,
 };
 const TITLES = {
   hr: "Heart rate with the camera",
@@ -34,7 +42,21 @@ const TITLES = {
   acuity: "Near vision chart",
   pvt: "Reaction self-test",
   balance: "Balance test",
+  hearing: "Hearing check",
+  stand: "Stand test (landing readiness)",
+  tlx: "Workload rating (NASA-TLX)",
+  urine: "Hydration colour check",
 };
+const DURATION = {
+  hr: "20 seconds",
+  pvt: "3 minutes",
+  balance: "30 seconds",
+  hearing: "About 3 minutes",
+  stand: "About 6 minutes",
+  tlx: "1 minute",
+  urine: "10 seconds",
+};
+const ICON = { eyes: "eyes", heart: "heart", brain: "brain", kidneys: "water", vestibular: "medical" };
 export default function Checks({ person, go, params = {} }) {
   const state = useStore(),
     pid = person.id,
@@ -53,13 +75,7 @@ export default function Checks({ person, go, params = {} }) {
         >
           <span className="telemetry-chip">
             <Icon name="clock" />
-            {open === "hr"
-              ? "20 seconds"
-              : open === "pvt"
-                ? "3 minutes"
-                : open === "balance"
-                  ? "30 seconds"
-                  : "About 2 minutes"}
+            {DURATION[open] || "About 2 minutes"}
           </span>
         </PageTitle>
         <div className="check-layout">
@@ -70,8 +86,8 @@ export default function Checks({ person, go, params = {} }) {
             {open === "amsler" ? (
               <ol className="instruction-steps">
                 <li>
-                  Hold the screen at reading distance, about 35 to 40 cm. Wear
-                  your glasses if you use them.
+                  Hold the screen at reading distance, about 30 to 35 cm. Wear
+                  your reading glasses if you use them.
                 </li>
                 <li>Cover the opposite eye to the one being tested.</li>
                 <li>Look only at the white dot in the middle.</li>
@@ -172,22 +188,13 @@ export default function Checks({ person, go, params = {} }) {
             tone={isDue ? "yellow" : "neutral"}
           >
             <div className="row spread">
-              <Icon
-                name={
-                  c.part === "eyes"
-                    ? "eyes"
-                    : c.part === "heart"
-                      ? "heart"
-                      : "medical"
-                }
-                size={28}
-              />
+              <Icon name={ICON[c.part] || "medical"} size={28} />
               <Status status={isDue ? "yellow" : "info"}>
                 {!applicable
                   ? "Needs gravity"
                   : isDue
                     ? "Due"
-                    : "Next in " + (c.every - daysSince) + " days"}
+                    : `Next in ${c.every - daysSince} day${c.every - daysSince === 1 ? "" : "s"}`}
               </Status>
             </div>
             <h2>{c.title}</h2>

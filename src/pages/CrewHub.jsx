@@ -11,7 +11,7 @@ export default function CrewHub({ person, go, onOpenPerson }) {
   return (
     <>
       <PageTitle
-        eyebrow="CREW"
+        eyebrow="Crew"
         title="Other people and the ship"
         description="Connected by a small ship. Supported across a long distance."
       />

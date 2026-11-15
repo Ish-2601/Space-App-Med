@@ -3,7 +3,7 @@ import data from "./data/indicators.json";
 
 export const indicators = data.indicators;
 
-export const COLORS = { green: "#91b5a5", yellow: "#c3af82", red: "#ca9396", unknown: "#8ca2b8" };
+export const COLORS = { green: "#7fd4b0", yellow: "#f2c879", red: "#f4a3a3", unknown: "#9cadbd" };
 export const STATUS_LABEL = { green: "OK", yellow: "Needs attention", red: "Alert crew / flight surgeon", unknown: "No data" };
 const RANK = { unknown: 0, green: 1, yellow: 2, red: 3 };
 
@@ -79,10 +79,10 @@ export const bodyParts = {
     check: "the Amsler grid and near vision chart in Checks",
   },
   vestibular: {
-    name: "Inner ear and balance",
-    info: "Gravity changes confuse the balance organs in the inner ear. Most astronauts get space motion sickness, and after landing they can be dizzy, unsteady and uncoordinated.",
-    prevention: ["Slow head movements in the first days", "Balance test after landing on the Moon, Mars or Earth", "No ladders, EVA or rover driving until balance is back"],
-    check: "the balance test (in gravity) and the motion-sickness rating in your check-in",
+    name: "Ears, hearing and balance",
+    info: "Gravity changes confuse the balance organs in the inner ear. Most astronauts get space motion sickness, and after landing they can be dizzy, unsteady and uncoordinated. Spacecraft are also noisy (about 72 dBA on the ISS), so NASA checks crew hearing on long missions.",
+    prevention: ["Slow head movements in the first days", "Wear hearing protection in noisy modules and during exercise", "Balance test after landing on the Moon, Mars or Earth", "No ladders, EVA or rover driving until balance is back"],
+    check: "the hearing check, the balance test (in gravity) and the motion-sickness rating in your check-in",
   },
   heart: {
     name: "Heart and circulation",

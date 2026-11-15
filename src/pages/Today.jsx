@@ -14,6 +14,7 @@ import {
   sendReport,
 } from "../backend/api.js";
 import { Panel, Icon, Status, Segments } from "../components/ConsoleUI.jsx";
+import { Patterns } from "./Trends.jsx";
 
 const TASKS = {
   checkin: [
@@ -119,8 +120,7 @@ export default function Today({ person, go }) {
   return (
     <div className="today-screen">
       <div className="today-hero">
-        <Panel title="Status" className="status-window">
-          <p className="eyebrow">PERSONAL HEALTH / DAY {state.mission.day}</p>
+        <Panel className="status-window" aria-label="Your status">
           <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
           <div className="health-overview">
             <div className={`health-ring tone-${status}`}>
@@ -137,23 +137,26 @@ export default function Today({ person, go }) {
               </svg>
               <div>
                 <strong>{score}</strong>
-                <small>HEALTH</small>
+                <small>Health score</small>
               </div>
             </div>
             <div>
               <Status status={status} />
               <p className="muted">
                 {alerts.length
-                  ? `${alerts.length} health signals need attention. Take it one step at a time.`
+                  ? `${alerts.length} health signal${alerts.length === 1 ? "" : "s"} need${alerts.length === 1 ? "s" : ""} attention. Take it one step at a time.`
                   : "Your readings are in range. Keep your daily routine on track."}
+              </p>
+              <p className="small muted score-note">
+                The score starts at 100 and drops for each reading, symptom or check outside its range.
               </p>
             </div>
           </div>
           <div className="mini-stats">
             {[
-              [`${row.sleep} h`, "SLEEP"],
-              [`${row.heartRate} bpm`, "RESTING HR"],
-              [`${row.water} L`, "WATER"],
+              [`${row.sleep} h`, "Sleep"],
+              [`${row.heartRate} bpm`, "Resting HR"],
+              [`${row.water} L`, "Water"],
             ].map(([value, label]) => (
               <div key={label}>
                 <b>{value}</b>
@@ -181,7 +184,6 @@ export default function Today({ person, go }) {
               />
             </span>
             <div>
-              <p className="eyebrow">YOUR NEXT STEP</p>
               <h2>
                 {nextStepTitle(priority) ||
                   (state.checkins[pid][state.mission.day]
@@ -359,6 +361,7 @@ export default function Today({ person, go }) {
               <p className="muted">No other health alerts right now.</p>
             )}
           </Panel>
+          <Patterns person={person} limit={1} />
           <Panel title="Consistency">
             <div className="row spread">
               <b>

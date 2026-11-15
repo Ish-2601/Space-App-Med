@@ -98,7 +98,7 @@ export default function Body({ person, go, params = {} }) {
           </div>
         </div>
         <Panel
-          title={bodyParts[part].name}
+          aria-label={bodyParts[part].name}
           tone={partStatus(state, person.id, part)}
         >
           <BodyPartDetail key={part} partKey={part} person={person} go={go} />

@@ -85,6 +85,30 @@ export const CHECKS = [
     action: { yellow: "Balance is reduced. Move carefully, use handholds, avoid ladders and driving rovers today.", red: "Balance is poor. No EVA, ladder or rover tasks. Notify the CMO." },
   },
   {
+    id: "hearing", title: "Hearing check", every: 30, part: "vestibular",
+    what: "Put on the same headphones at the same volume, in the quietest spot you can find. Tap when you hear each tone.",
+    why: "Spacecraft are noisy: the ISS background is about 72 dBA, and NASA tests the hearing of crew on missions longer than 30 days (On-Orbit Hearing Assessment). This screen is not calibrated, so it only compares you with your own first result.",
+    action: { yellow: "Hearing is worse than your baseline at 2–4 kHz. Wear hearing protection in noisy modules, retest in a quiet spot, and tell the CMO.", red: "Possible sudden hearing loss. Tell the CMO now: it is treated as urgent." },
+  },
+  {
+    id: "stand", title: "Stand test (landing readiness)", every: 7, part: "heart", gravityOnly: true,
+    what: "Lie down for 2 minutes, then stand still for 3.5 minutes. Record heart rate and blood pressure at the end of each part. Do it daily for the first few days after landing.",
+    why: "After weightlessness, blood pools in the legs when you stand, and many astronauts feel faint after landing. NASA uses lie-then-stand tests after landing. A fall of 20+ mmHg systolic (or 10+ diastolic) within 3 minutes of standing is called orthostatic hypotension.",
+    action: { yellow: "Your body is still adapting to gravity. Drink fluids, wear compression garments, stand up slowly and avoid ladders and driving today.", red: "Do not do tasks that need you to stand for long. Lie down with legs raised and notify the CMO." },
+  },
+  {
+    id: "tlx", title: "Workload rating (NASA-TLX)", every: 7, part: "brain",
+    what: "Rate six parts of your workload from 0 to 100: mental, physical, time pressure, performance, effort and frustration.",
+    why: "The NASA Task Load Index is NASA's standard way to measure workload. Work overload is one of the stressors behind the HRP sleep and behavioural-health risks. There is no official cut-off: the app flags 70+ or a jump of 15+ above your usual.",
+    action: { yellow: "Your workload is high. Talk to the commander about the schedule and protect your sleep window tonight.", red: "Your workload is very high. Talk to the commander today." },
+  },
+  {
+    id: "urine", title: "Hydration colour check", every: 3, part: "kidneys",
+    what: "Match your urine colour to the closest of 8 shades.",
+    why: "Dehydration plus calcium from shrinking bones raises kidney-stone risk in space (NASA gravity hazard). The 8-shade colour chart (Armstrong) is the one the US military uses for a quick self-check. B vitamins and some medicines can make urine bright yellow.",
+    action: { yellow: "Drink about 500 mL of water over the next hour and check again.", red: "You are likely dehydrated. Drink now; tell the CMO if you also have flank pain, dizziness or very little urine." },
+  },
+  {
     id: "face", title: "Face photo (fluid shift)", every: 7, part: "heart", photo: true,
     what: "Take a front-facing photo in the same spot and light each week.",
     why: "Fluid shifts toward the head in weightlessness ('puffy face, bird legs'). Comparing photos over time shows how your body is adapting.",

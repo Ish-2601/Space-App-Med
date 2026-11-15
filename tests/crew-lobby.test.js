@@ -60,6 +60,7 @@ describe("lobby checkup status", () => {
     api.saveTest("rivera", "hr", { bpm: 66 });
     api.saveTest("rivera", "pvt", api.testsOf(state(), "rivera", "pvt").at(-1).result);
     await api.savePhoto("rivera", portrait(), { category: "face", rating: 0 });
+    api.saveTest("rivera", "urine", { shade: 2 }); // hydration colour check (every 3 days) is also due on day 120
     expect(api.dueChecks(state(), "rivera").some((check) => check.due)).toBe(false);
     expect(overview().status).toBe("green");
   }
