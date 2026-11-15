@@ -38,7 +38,7 @@ import { sandboxEnabled } from "../backend/sandbox.js";
 const TASKS = {
   checkin: [
     "Daily check-in",
-    "Eight short steps Â· about 3 minutes",
+    "Eight short steps · about 3 minutes",
     "today",
     "checkin",
     "Start",
@@ -361,7 +361,7 @@ export default function Today({ person, go, params = {} }) {
           </div>
           {due.length > 0 ? (
             <div className="due-checks">
-              <h3>Daily diagnostics Â· {due.length} due</h3>
+              <h3>Daily diagnostics · {due.length} due</h3>
               {due.map(({ check }) => (
                 <button
                   className="text-button"

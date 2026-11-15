@@ -40,7 +40,7 @@ export default function ConsoleShell({
         <button
           className="brand-button"
           onClick={() => go("today")}
-          aria-label="NASA Med home"
+          aria-label="Space App Med home"
         >
           <Brand />
         </button>

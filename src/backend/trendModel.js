@@ -51,7 +51,11 @@ export function dailyTrendRows(rows) {
     }));
 }
 export const gravityOf = (environment) =>
-  environment === "moon" ? 0.16 : environment === "mars" ? 0.38 : 0;
+  environment === "moon"
+    ? 0.16
+    : environment === "mars" || environment === "rover"
+      ? 0.38
+      : 0;
 export function chartPreferences(state, pid, key) {
   return {
     mode: "personal",

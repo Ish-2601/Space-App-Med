@@ -30,6 +30,14 @@ export const ENVIRONMENTS = {
     focus: ["vestibular", "bones", "brain", "wholeBody"],
     note: "Partial gravity after months weightless: balance, fainting and injury risks after landing.",
   },
+  // Pressurized rover traverse away from the Mars base. Same surface dose and exploration
+  // atmosphere as the base (NASA's pressurized-rover concepts use it for quick spacewalks).
+  rover: {
+    label: "Mars rover traverse", gravity: "3/8 g", microgravity: false, doseRate: 0.64, delayMin: 14,
+    atmosphere: { pressureKpa: 56.5, o2Pct: 34 },
+    focus: ["vestibular", "lungs", "wholeBody", "brain"],
+    note: "Small cabin far from the base: frequent spacewalks, cramped sleep, and help may be hours away.",
+  },
 };
 
 // "14 min", "1.3 s" or "none"

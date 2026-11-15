@@ -7,7 +7,7 @@ import { TUTORIAL, ALL_STEPS, SOURCE_TIERS } from "../src/data/tutorial.js";
 
 export function tutorialMarkdown() {
   const L = [];
-  L.push("# NASA Med: tutorial and test run", "");
+  L.push("# Space App Med: tutorial and test run", "");
   L.push("> Generated from `src/data/tutorial.js` by `npm run docs:tutorial`. The same steps are in the app: **More → Tutorial and test run** (or the lobby link, or the end of the Judge tour), where you can mark each step **Works** or **Problem** and copy a test report.", "");
   L.push(`**${ALL_STEPS.length} steps in ${TUTORIAL.length} chapters.** Before a test run: Demo controls → Reset all data, so every expected result below matches.`, "");
   L.push("Demo crew stories: **A. Chen** (commander) slowing reaction times, poor sleep and high workload · **T. Okafor** (flight engineer) near vision 2 lines worse and borderline blood pressure · **M. Rivera** (medical officer) the healthy control · **K. Sato** (mission specialist) body-mass loss and eating less.", "");

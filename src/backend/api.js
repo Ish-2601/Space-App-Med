@@ -1,4 +1,4 @@
-// AstroHealth backend API. The UI only talks to the app through these functions.
+// Space App Med backend API. The UI only talks to the app through these functions.
 // Everything runs on the "onboard computer" (the browser), so it keeps working with no Earth link.
 import {
   getState,
@@ -419,7 +419,7 @@ export function buildHealthSummary(s, pid) {
   const row = rowFor(s, pid);
   const st = indicatorStatuses(s, pid);
   const lines = [
-    `AstroHealth report: ${p.name} (${p.role})`,
+    `Space App Med report: ${p.name} (${p.role})`,
     `${s.mission.name}, day ${s.mission.day}, ${envOf(s).label}`,
     `Health score ${healthScore(s, pid)}/100`,
     "",

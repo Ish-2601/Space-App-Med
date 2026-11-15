@@ -294,7 +294,7 @@ export default function CatalogModuleModal({ item, person, onClose, go }) {
     const url = URL.createObjectURL(blob),
       link = document.createElement("a");
     link.href = url;
-    link.download = `nasa-med-module-${item.id}-${person.id}.json`;
+    link.download = `space-app-med-module-${item.id}-${person.id}.json`;
     link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }

@@ -149,7 +149,7 @@ export default function GuidedTour() {
       <div className="gt-backdrop" role="dialog" aria-modal="true" aria-labelledby="gt-welcome-title">
         <div className="gt-welcome">
           <span className="gt-badge"><Icon name="star" size={16} /> First time here</span>
-          <h2 id="gt-welcome-title">Welcome to NASA Med</h2>
+          <h2 id="gt-welcome-title">Welcome to Space App Med</h2>
           <p>A health companion for astronauts on long missions, when help from Earth is minutes away. This prototype uses simulated data for a 4-person crew on day 120 of a trip to Mars.</p>
           <ul className="gt-list">
             <li><b>2-minute guided tour.</b> We'll shade the screen and show you exactly what to click.</li>

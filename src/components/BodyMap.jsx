@@ -524,7 +524,9 @@ export function PixelBodyMap({
                 ? "Moon"
                 : environment === "mars"
                   ? "Mars"
-                  : "Mars transit"}
+                  : environment === "rover"
+                    ? "Mars rover"
+                    : "Mars transit"}
           </b>
           <p>
             Arrows illustrate fluid moving toward the head and eyes as gravity

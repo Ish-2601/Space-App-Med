@@ -1,5 +1,5 @@
 // NASA Human Research Program content, summarized from the challenge resources (docs/RESEARCH.md).
-// "tracks" = pages in AstroHealth that monitor or counter each risk.
+// "tracks" = pages in Space App Med that monitor or counter each risk.
 
 const R = "https://www.nasa.gov/reference/";
 
@@ -60,7 +60,7 @@ export const RISKS = [
 export const GUIDING_QUESTIONS = [
   {
     q: "Which measurements can be performed in space?",
-    a: "Heart rate, blood pressure, SpO₂, temperature, glucose (fingerstick), body mass (spring-based device), sleep and activity (wrist actigraphy), dosimeter readings, vision checks, cognitive tests like NASA's Reaction Self-Test, mood surveys, and photos. AstroHealth collects all of these, plus camera-based pulse and screen-based vision tests.",
+    a: "Heart rate, blood pressure, SpO₂, temperature, glucose (fingerstick), body mass (spring-based device), sleep and activity (wrist actigraphy), dosimeter readings, vision checks, cognitive tests like NASA's Reaction Self-Test, mood surveys, and photos. Space App Med collects all of these, plus camera-based pulse and screen-based vision tests.",
   },
   {
     q: "Why is an exam needed?",

@@ -1,6 +1,6 @@
 {
-  "name": "NASA Med",
-  "short_name": "NASA Med",
+  "name": "Space App Med",
+  "short_name": "Space App Med",
   "description": "Health self-monitoring for astronauts on long space missions (NASA Space Apps 2026 prototype).",
   "start_url": "./",
   "scope": "./",

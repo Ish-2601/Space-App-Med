@@ -147,7 +147,11 @@ export default function CrewSelect({ onSelect, onMedical }) {
             New here? Tutorial and test run <span aria-hidden="true">→</span>
           </a>
           <p className="crew-disclaimer">
-            NASA Space Apps prototype · Simulated data · Not medical advice
+            Simulated data · Not medical advice
+          </p>
+          <p className="crew-disclaimer lobby-affiliation">
+            Built for the NASA Space Apps Challenge 2026. Not affiliated with
+            or endorsed by NASA.
           </p>
         </footer>
       </div>

@@ -20,7 +20,7 @@ const save = (r) => {
 };
 
 export function testReport(results, who = "") {
-  const lines = [`NASA Med test run${who ? " · " + who : ""} · ${new Date().toLocaleString()}`];
+  const lines = [`Space App Med test run${who ? " · " + who : ""} · ${new Date().toLocaleString()}`];
   const count = (r) => ALL_STEPS.filter((s) => results[s.id]?.result === r).length;
   lines.push(`Works: ${count("pass")} · Problems: ${count("fail")} · Not tested: ${ALL_STEPS.length - count("pass") - count("fail")}`, "");
   for (const c of TUTORIAL) {

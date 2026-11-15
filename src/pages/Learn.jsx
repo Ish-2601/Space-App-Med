@@ -28,7 +28,7 @@ export default function Learn({ go }) {
       <Back onClick={() => go("more")}>More</Back>
       <PageTitle
         eyebrow="Learn"
-        title="How NASA Med maps to NASA's research"
+        title="How Space App Med maps to NASA's research"
         description="Five hazards shape life beyond Earth. Explore the risks they create and the tools that watch for changes."
       />
       <div className="hazard-grid">
@@ -73,7 +73,7 @@ export default function Learn({ go }) {
               <tr>
                 <th>Risk</th>
                 <th>What happens</th>
-                <th>Where NASA Med helps</th>
+                <th>Where Space App Med helps</th>
               </tr>
             </thead>
             <tbody>
@@ -134,8 +134,9 @@ export default function Learn({ go }) {
           </ul>
           <p className="small muted">
             All crew data is simulated. Some screening thresholds are
-            team-defined. NASA Med is a Space Apps prototype, not a medical
-            device.
+            team-defined. Space App Med is a NASA Space Apps Challenge 2026
+            prototype, not a medical device. It is not affiliated with or
+            endorsed by NASA; NASA material is cited as public research only.
           </p>
         </Panel>
       </div>

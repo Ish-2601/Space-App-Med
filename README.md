@@ -1,9 +1,13 @@
-# AstroHealth
+# Space App Med
 
 NASA Space Apps Challenge 2026: *Create Health Monitoring Software for Astronauts on Space Missions*
 Challenge page: https://www.spaceappschallenge.org/2026/challenges/health-monitoring-software/
 
 A web app that helps astronauts check, understand and act on their own health when Earth is minutes away. It works fully offline, like an onboard computer.
+
+**Live app:** https://ish-2601.github.io/space-app-med/ (until the repository is renamed, the old address https://ish-2601.github.io/astro-health/ is the live one)
+
+> Built for the NASA Space Apps Challenge 2026. Space App Med is not affiliated with or endorsed by NASA. NASA research is cited as public reference material only, and the app uses no NASA logos or insignia.
 
 > Prototype using **simulated data**. Not medical advice. Thresholds and facts are sourced in `docs/RESEARCH.md` and in the app's Learn page.
 
@@ -18,7 +22,7 @@ npm run dev
 
 Open http://localhost:5173 (or the port Vite prints). Run the tests with `npm test`. To start over with fresh demo data: All tools → Demo controls → Reset all data.
 
-## NASA Med console
+## Space App Med console
 
 The personal Home screen shows the current mission, daily tasks and diagnostics, and a health score out of 100. The bottom navigation is **Home → Body → Emergency → Users**; Users returns to profile selection. Other existing features remain under **All tools**.
 
@@ -102,7 +106,7 @@ Validation after the catalog upgrade: **411 tests passing**, including all prece
 ## Features
 
 **Daily**
-- **NASA Med crew lobby:** galaxy background, personal profile photos, live health percentages and checkup status; select a portrait to open that astronaut's dashboard. Checkups show as necessary when alerts, a daily check-in or scheduled medical checks need attention. The CMO view remains available for the whole crew.
+- **Space App Med crew lobby:** galaxy background, personal profile photos, live health percentages and checkup status; select a portrait to open that astronaut's dashboard. Checkups show as necessary when alerts, a daily check-in or scheduled medical checks need attention. The CMO view remains available for the whole crew.
 - **Profile photos:** use the camera button to add a JPG, PNG, WebP or GIF (up to 5 MB). Photos are cropped to a 512px square and stored locally in IndexedDB, separately from medical photos. They also appear in the personal dashboard; use Remove photo to restore the default avatar.
 - **Home:** health score, alerts with actions (notify CMO, send to flight surgeon), checks due, supplements, quests, environment focus.
 - **Check-in:** 12 indicators (sensor values pre-filled), motion sickness, symptoms, with how/why for each.
@@ -137,7 +141,7 @@ Validation after the catalog upgrade: **411 tests passing**, including all prece
 
 ## Deploy (free)
 
-The included GitHub Actions workflow tests, builds and publishes to GitHub Pages on every push to `main`. One-time setup: GitHub repo → Settings → Pages → Source: **GitHub Actions**. The site will be at `https://<user>.github.io/astro-health/`.
+The included GitHub Actions workflow tests, builds and publishes to GitHub Pages on every push to `main`. One-time setup: GitHub repo → Settings → Pages → Source: **GitHub Actions**. The site will be at `https://<user>.github.io/<repository-name>/` (for this project: `https://ish-2601.github.io/space-app-med/` once the repository is named `space-app-med`). The build uses relative paths, so it works under any repository name.
 
 The camera needs HTTPS (GitHub Pages provides it) or `localhost`.
 

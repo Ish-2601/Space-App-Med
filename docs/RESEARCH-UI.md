@@ -1,4 +1,4 @@
-# UI research and the rules NASA Med now follows
+# UI research and the rules Space App Med now follows
 
 Researched on 2026-11-14. **Honest scope:** about 15 design systems and guides plus the interfaces of the apps in RESEARCH-APPS.md, not 100+ separate sites. The implementation is `src/clean.css`, which loads after the team's `console.css` and replaces its decorative parts.
 

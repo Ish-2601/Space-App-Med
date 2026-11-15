@@ -1,6 +1,6 @@
 # Research: Astronaut Health Monitoring
 
-Research base for AstroHealth. Everything here is summarized from the challenge's official resources plus a small number of clinical references (marked **[clinical]**). Every number used in the app should trace back to a line in this document.
+Research base for Space App Med. Everything here is summarized from the challenge's official resources plus a small number of clinical references (marked **[clinical]**). Every number used in the app should trace back to a line in this document.
 
 > Last researched: 2026-11-14. Sources were read directly; links at the bottom of each section.
 

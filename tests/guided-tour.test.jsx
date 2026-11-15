@@ -26,14 +26,14 @@ describe("guided tour", () => {
   it("shows the welcome popup on a first visit", () => {
     globalThis.localStorage = fakeStorage({});
     const html = renderToStaticMarkup(<GuidedTour />);
-    expect(html).toContain("Welcome to NASA Med");
+    expect(html).toContain("Welcome to Space App Med");
     expect(html).toContain("Start the guided tour");
     expect(html).toContain("Skip for now");
   });
   it("after the first visit, only a Tutorial button stays at the bottom", () => {
     globalThis.localStorage = fakeStorage({ "nasa-med-onboarding": "done" });
     const html = renderToStaticMarkup(<GuidedTour />);
-    expect(html).not.toContain("Welcome to NASA Med");
+    expect(html).not.toContain("Welcome to Space App Med");
     expect(html).toContain("gt-pill");
     expect(html).toContain("Tutorial");
   });

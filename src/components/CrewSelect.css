@@ -1,9 +1,9 @@
-/* NASA Med crew lobby, using the supplied starfield as the background. */
+/* Space App Med crew lobby, using the supplied starfield as the background. */
 .crew-select {
   min-height: 100vh;
   min-height: 100svh;
   padding: clamp(28px, 4vw, 58px) clamp(20px, 4.8vw, 80px) 24px;
-  background: #07091b url("/nasa-med-galaxy.png") center / cover no-repeat;
+  background: #07091b url("/space-app-med-galaxy.png") center / cover no-repeat;
   color: #f5f7ff;
 }
 .crew-select-inner { max-width: 1512px; margin: 0 auto; }
@@ -30,7 +30,7 @@
 .crew-card:hover, .crew-card:focus-within { box-shadow: 0 12px 35px #0004, 0 0 22px #91b9ff18; }
 .crew-avatar-group { width: 100%; }
 .crew-avatar-wrap { position: relative; width: 78%; max-width: 210px; margin: 0 auto; }
-.crew-avatar { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 1; padding: 0; border: 1px solid #6577b4; border-radius: 28px; overflow: hidden; color: #b1d1fb; background: linear-gradient(145deg, #10122b55, #10122b99), url("/nasa-med-galaxy.png") 45% 40% / 700px auto; }
+.crew-avatar { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 1; padding: 0; border: 1px solid #6577b4; border-radius: 28px; overflow: hidden; color: #b1d1fb; background: linear-gradient(145deg, #10122b55, #10122b99), url("/space-app-med-galaxy.png") 45% 40% / 700px auto; }
 button.crew-avatar { cursor: pointer; transition: border-color 160ms ease, transform 160ms ease; }
 button.crew-avatar:hover { border-color: #d0e2ff; transform: translateY(-3px); }
 .crew-avatar img { width: 100%; height: 100%; object-fit: cover; }

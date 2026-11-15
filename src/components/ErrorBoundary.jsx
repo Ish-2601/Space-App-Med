@@ -12,7 +12,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    console.error("AstroHealth page error:", error, info?.componentStack);
+    console.error("Space App Med page error:", error, info?.componentStack);
   }
 
   render() {

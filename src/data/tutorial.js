@@ -52,7 +52,7 @@ export const TUTORIAL = [
   {
     id: "start",
     title: "Getting started",
-    intro: "NASA Med is a health companion for astronauts far from Earth. Everything runs on this device with simulated data for a 4-person Mars-transit crew on mission day 120.",
+    intro: "Space App Med is a health companion for astronauts far from Earth. Everything runs on this device with simulated data for a 4-person Mars-transit crew on mission day 120.",
     steps: [
       { id: "lobby", title: "Pick a crew member in the lobby", go: { lobby: true }, source: S.hazards,
         why: "Each astronaut has their own health record. The lobby shows the whole crew at a glance.",

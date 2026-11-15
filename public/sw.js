@@ -1,6 +1,6 @@
-﻿// Offline support: cache the app shell and every file it loads, so AstroHealth works with no network
+﻿// Offline support: cache the app shell and every file it loads, so Space App Med works with no network
 // (like an onboard computer with the Earth link down).
-const CACHE = "astrohealth-v11";
+const CACHE = "space-app-med-v12";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -12,7 +12,7 @@ self.addEventListener("install", (event) => {
           "./index.html",
           "./manifest.webmanifest",
           "./icon.svg",
-          "./nasa-med-galaxy.png",
+          "./space-app-med-galaxy.png",
         ]),
       ),
   );

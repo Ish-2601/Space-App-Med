@@ -1,5 +1,5 @@
 /* =====================================================================
-   NASA Med — final theme (loaded last).
+   Space App Med — final theme (loaded last).
    Blends three references:
    · glass dashboard: near-black canvas, soft blue glow, graphite glass cards, periwinkle accent
    · DeerFlow AIoT: numbered card headers "01 STATUS", mono instrument numerals, dotted gauges,
@@ -184,7 +184,7 @@ a { color: var(--brand); }
 .console-banner { background: linear-gradient(90deg, rgba(255, 90, 54, 0.2), rgba(255, 90, 54, 0.06)) !important; border: 1px solid var(--crit-line) !important; }
 
 /* ---------- Lobby: graphite crew cards ---------- */
-.crew-select { background: radial-gradient(70% 55% at 50% 0%, rgba(86, 112, 255, 0.22), transparent 70%), url("/nasa-med-galaxy.png") center / cover, var(--bg) !important; }
+.crew-select { background: radial-gradient(70% 55% at 50% 0%, rgba(86, 112, 255, 0.22), transparent 70%), url("/space-app-med-galaxy.png") center / cover, var(--bg) !important; }
 .crew-select .crew-card::before, .crew-select .crew-card::after { display: none !important; }
 .crew-select .crew-card { counter-increment: crew; }
 .crew-select .crew-grid { counter-reset: crew; }
@@ -347,3 +347,33 @@ html.circadian-redshift .console-app { background: none !important; }
 }
 html.circadian-redshift .gt-do { color: #ff8e48; }
 .gt-done p { margin: 0; line-height: 1.45; }
+
+/* ===== Space App Med brand mark (header, lobby, favicon share one design) ===== */
+.brand { gap: 10px !important; }
+.brand-mark { flex: 0 0 auto; display: block; overflow: visible; }
+.brand-mark .bm-tile { fill: #121836; stroke: rgba(169, 184, 255, 0.38); stroke-width: 1.5; }
+.brand-mark .bm-cross { fill: #f2f4ff; }
+.brand-mark .bm-orbit-back { fill: none; stroke: var(--brand, #a9b8ff); stroke-width: 3; opacity: 0.55; }
+.brand-mark .bm-orbit-gap { fill: none; stroke: #121836; stroke-width: 7.5; stroke-linecap: round; }
+.brand-mark .bm-orbit-front { fill: none; stroke: var(--brand, #a9b8ff); stroke-width: 3.2; stroke-linecap: round; }
+.brand-mark .bm-sat { fill: var(--live, #ff5a36); filter: drop-shadow(0 0 3px rgba(255, 90, 54, 0.85)); }
+.brand-word { white-space: nowrap; letter-spacing: -0.02em; }
+.brand-word b { font-weight: 800; color: var(--brand, #a9b8ff); }
+.crew-select .crew-heading h1 > .brand { gap: 18px !important; align-items: center; }
+.crew-select .crew-heading .brand-mark { width: 64px; height: 64px; }
+.lobby-affiliation { margin: 6px 0 0; font-size: 12px; color: var(--muted, #8b93a7); }
+@media (max-width: 760px) {
+  .crew-select .crew-heading .brand-mark { width: 46px; height: 46px; }
+}
+@media (max-width: 520px) {
+  .crew-select .crew-heading h1, .crew-select .crew-heading h1 > .brand { font-size: clamp(26px, 9.5vw, 48px) !important; }
+  .crew-select .crew-heading h1 > .brand { gap: 12px !important; }
+  .crew-select .crew-heading .brand-mark { width: 40px; height: 40px; }
+}
+@media (max-width: 420px) {
+  .console-topbar .brand-word { display: none; }
+}
+html.circadian-redshift .brand-mark .bm-tile { fill: #1a0703; stroke: rgba(255, 111, 56, 0.45); }
+html.circadian-redshift .brand-mark .bm-orbit-gap { stroke: #1a0703; }
+html.circadian-redshift .brand-mark .bm-cross { fill: #ffc4a3; }
+html.circadian-redshift .brand-word b { color: #ff8e48; }

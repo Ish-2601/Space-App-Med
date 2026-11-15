@@ -22,9 +22,9 @@ Researched on 2026-11-14 through about 45 searches of review roundups, compariso
 | Remote patient monitoring | Inhealthcare virtual wards, Patient Status Engine (NICE), Current Health, Biofourmis, Vivify |
 | Space-specific tools | NASA Playbook (crew self-scheduling), NASA Cognition battery, Reaction Self-Test, NASA-TLX, On-Orbit Hearing Assessment, CSA Astroskin / Bio-Monitor, ESA EveryWear, NASA Exploration Medical Capability work (Earth-independent medical operations) |
 
-## What people like (and what NASA Med now does)
+## What people like (and what Space App Med now does)
 
-| Pattern people like | Seen in | In NASA Med |
+| Pattern people like | Seen in | In Space App Med |
 |---|---|---|
 | One score plus **one thing to do next** | Oura "Today" (one big daily insight), Whoop, Apple Health Highlights | Today: health score and **Do this next**, written as an action ("Recheck your blood pressure") with the reading as the reason |
 | **Patterns between your own habits and symptoms** | Bearable "Factor Effect" (needs about 3 days with and 3 without) | **Patterns in your data**: sleep vs reaction speed, exercise vs mood, sleep vs mood, CO₂ vs headaches. Needs 3+ days per group and says "not proof" |
@@ -37,9 +37,9 @@ Researched on 2026-11-14 through about 45 searches of review roundups, compariso
 | Validated self-tests | Peek Acuity (best evidence), NASA Reaction Self-Test | Near-vision chart (logMAR, calibrated), Amsler grid, PVT-B, camera heart rate |
 | Circadian advice | Timeshifter (built with a NASA adviser), Rise | Sleep guidance; a full light/sleep-shift planner is still a future idea |
 
-## What people complain about or miss (and how NASA Med avoids it)
+## What people complain about or miss (and how Space App Med avoids it)
 
-| Complaint | Evidence | NASA Med |
+| Complaint | Evidence | Space App Med |
 |---|---|---|
 | **Inaccurate data**, e.g. sleep trackers counting awake time as sleep | Top category in review analyses (≈28% of negative reviews) | Every algorithm is tested; quality labels on camera heart rate; it refuses a reading when the frame rate would alias |
 | Paywalls and upsell pop-ups | Fitbit, Welltory, CareClinic reviews | None |

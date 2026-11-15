@@ -1,4 +1,4 @@
-# NASA Med: tutorial and test run
+# Space App Med: tutorial and test run
 
 > Generated from `src/data/tutorial.js` by `npm run docs:tutorial`. The same steps are in the app: **More → Tutorial and test run** (or the lobby link, or the end of the Judge tour), where you can mark each step **Works** or **Problem** and copy a test report.
 
@@ -31,7 +31,7 @@ See `docs/NASA-VALIDATION.md` for the line-by-line check of every NASA figure.
 
 ## 01 Getting started
 
-NASA Med is a health companion for astronauts far from Earth. Everything runs on this device with simulated data for a 4-person Mars-transit crew on mission day 120.
+Space App Med is a health companion for astronauts far from Earth. Everything runs on this device with simulated data for a 4-person Mars-transit crew on mission day 120.
 
 ### 01. Pick a crew member in the lobby
 

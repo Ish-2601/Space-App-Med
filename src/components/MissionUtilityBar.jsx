@@ -248,7 +248,7 @@ export default function MissionUtilityBar({ person, navigate }) {
       }
       setListening(true);
       setVoiceStatus(
-        "Listening for one of the five commands. No audio is stored by NASA Med.",
+        "Listening for one of the five commands. No audio is stored by Space App Med.",
       );
     };
     listener.onresult = (event) => {

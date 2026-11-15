@@ -87,7 +87,7 @@ export default function MissionControl({ person, go, onSwitch }) {
                 onClick={() =>
                   download(
                     exportCsv(person.id),
-                    "nasa-med-" +
+                    "space-app-med-" +
                       person.id +
                       "-day" +
                       state.mission.day +
@@ -104,7 +104,7 @@ export default function MissionControl({ person, go, onSwitch }) {
                 onClick={() =>
                   download(
                     exportData(),
-                    "nasa-med-day" + state.mission.day + ".json",
+                    "space-app-med-day" + state.mission.day + ".json",
                     "application/json",
                   )
                 }

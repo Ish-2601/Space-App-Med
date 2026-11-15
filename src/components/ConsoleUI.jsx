@@ -67,14 +67,42 @@ export function Icon({ name = "info", size = 20, ...props }) {
     </svg>
   );
 }
+// Space App Med mark: a medical cross with an orbit ring passing behind it at
+// the top and in front at the bottom, and one "live" dot riding the orbit.
+// Original artwork; it deliberately does not resemble any NASA insignia.
+export function BrandMark({ size = 32, className = "" }) {
+  return (
+    <svg
+      className={"brand-mark " + className}
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <rect className="bm-tile" x="1" y="1" width="62" height="62" rx="15" />
+      <g transform="rotate(-28 32 32)">
+        <ellipse className="bm-orbit-back" cx="32" cy="32" rx="28" ry="9.5" />
+      </g>
+      <path
+        className="bm-cross"
+        d="M26.5 14h11a2 2 0 0 1 2 2v8.5H48a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-8.5V48a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-8.5H16a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2h8.5V16a2 2 0 0 1 2-2Z"
+      />
+      <g transform="rotate(-28 32 32)">
+        <path className="bm-orbit-gap" d="M4 32a28 9.5 0 0 0 56 0" />
+        <path className="bm-orbit-front" d="M4 32a28 9.5 0 0 0 56 0" />
+      </g>
+      <circle className="bm-sat" cx="54.8" cy="26" r="3.6" />
+    </svg>
+  );
+}
 export function Brand() {
   return (
     <span className="brand">
-      <span className="brand-orb">
-        <Icon name="orbit" size={30} />
-        <span>+</span>
+      <BrandMark />
+      <span className="brand-word">
+        Space App <b>Med</b>
       </span>
-      NASA Med
     </span>
   );
 }

@@ -1,6 +1,6 @@
 # Backend
 
-AstroHealth's backend runs **inside the browser** (the "onboard computer"). There's no server, so the app works fully offline, which is exactly the situation on a Mars mission with a 4–24 minute Earth delay. It deploys as a static site (GitHub Pages / Netlify / Vercel) and installs as an offline app (PWA).
+Space App Med's backend runs **inside the browser** (the "onboard computer"). There's no server, so the app works fully offline, which is exactly the situation on a Mars mission with a 4–24 minute Earth delay. It deploys as a static site (GitHub Pages / Netlify / Vercel) and installs as an offline app (PWA).
 
 The UI never touches data directly. **Everything goes through `src/backend/api.js`**, so the frontend can be redesigned freely, and storage can later be swapped for a real server without touching the UI.
 

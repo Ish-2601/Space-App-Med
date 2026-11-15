@@ -1,5 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0b1020"/>
-  <circle cx="256" cy="256" r="176" fill="none" stroke="#2f5bd3" stroke-width="20"/>
-  <path d="M96 268h88l32-72 48 152 40-112 24 32h88" fill="none" stroke="#2ecc71" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Space App Med mark: original artwork, not a NASA insignia. -->
+  <rect x="0" y="0" width="64" height="64" rx="14" fill="#121836"/>
+  <ellipse cx="32" cy="32" rx="28" ry="9.5" fill="none" stroke="#a9b8ff" stroke-width="3" opacity="0.55" transform="rotate(-28 32 32)"/>
+  <path fill="#f2f4ff" d="M26.5 14h11a2 2 0 0 1 2 2v8.5H48a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-8.5V48a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-8.5H16a2 2 0 0 1-2-2v-11a2 2 0 0 1 2-2h8.5V16a2 2 0 0 1 2-2Z"/>
+  <g transform="rotate(-28 32 32)" fill="none" stroke-linecap="round">
+    <path d="M4 32a28 9.5 0 0 0 56 0" stroke="#121836" stroke-width="7.5"/>
+    <path d="M4 32a28 9.5 0 0 0 56 0" stroke="#a9b8ff" stroke-width="3.2"/>
+  </g>
+  <circle cx="54.8" cy="26" r="3.6" fill="#ff5a36"/>
 </svg>
