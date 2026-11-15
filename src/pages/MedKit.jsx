@@ -11,7 +11,7 @@ import {
 import PharmacyStability from "../components/PharmacyStability.jsx";
 
 // Shared crew medical kit: inventory, doses taken, low-stock warnings
-export default function MedKit({ person }) {
+export default function MedKit({ person, go }) {
   const state = useStore();
   const pid = person.id;
   const [msg, setMsg] = useState("");
@@ -25,12 +25,24 @@ export default function MedKit({ person }) {
         title="The crew's medical kit"
         description="Track the supplies on board and the doses in your record."
       />
+      <section className="catalog-entry-link" id="medkit-packs">
+        <div>
+          <h2>1,000-Item Spaceflight Catalog & Countermeasure Explorer</h2>
+          <p>
+            Search the full concept inventory, log simulated usage and open
+            connected medical tools.
+          </p>
+        </div>
+        <button className="btn primary" onClick={() => go?.("catalog")}>
+          Open all 1,000 items →
+        </button>
+      </section>
       <p className="muted">
         {env.microgravity && env.delayMin > 1
           ? "No resupply is possible in deep space: every dose counts. Low items are flagged to the CMO."
           : "Resupply is possible here, but plan ahead. Low items are flagged to the CMO."}
       </p>
-      <div className="table-scroll">
+      <div className="table-scroll" id="medkit-inventory">
         <table className="table inventory-table">
           <thead>
             <tr>
@@ -106,7 +118,9 @@ export default function MedKit({ person }) {
         Prototype list for demonstration, not a prescription. Only take
         medicines as directed by your flight surgeon.
       </p>
-      <PharmacyStability person={person} />
+      <div id="catalog-pharmacy">
+        <PharmacyStability person={person} />
+      </div>
     </div>
   );
 }

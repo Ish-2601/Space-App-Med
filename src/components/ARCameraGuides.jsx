@@ -137,7 +137,11 @@ export default function ARCameraGuides({ person, onPulse, initialGuide }) {
     });
   }
   return (
-    <Panel title="AR camera alignment guides" className="ar-guides">
+    <Panel
+      title="AR camera alignment guides"
+      className="ar-guides"
+      id="ar-guides"
+    >
       <p className="muted">
         Practise positioning before a self-check. Camera frames stay on this
         device; only the manual alignment settings are saved.

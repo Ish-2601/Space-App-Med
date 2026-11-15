@@ -146,7 +146,17 @@ export function History({ pid, module }) {
 }
 export function Tool({ title, children, source, note }) {
   return (
-    <Panel title={title} className="clinical-tool">
+    <Panel
+      title={title}
+      className="clinical-tool"
+      id={
+        "tool-" +
+        title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+      }
+    >
       <div className="clinical-tool-content">
         {children}
         {note && <p className="small muted clinical-model-note">{note}</p>}

@@ -34,7 +34,7 @@ export default function Body({ person, go, params = {} }) {
         </Status>
       </PageTitle>
       <div className="body-menu-layout">
-        <Panel title="Body map" className="body-menu-figure">
+        <Panel title="Body map" className="body-menu-figure" id="body-anatomy">
           <BodyMap
             figureOnly
             layers
@@ -108,7 +108,7 @@ export default function Body({ person, go, params = {} }) {
           Health trends
         </button>
       </div>
-      <DigitalTwin pid={person.id} />
+      <DigitalTwin pid={person.id} defaultOpen={!!params.openTwin} />
     </div>
   );
 }

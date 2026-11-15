@@ -45,7 +45,10 @@ export default function PharmacyStability({ person }) {
   };
   return (
     <div className="pharmacy-stability panel-stack">
-      <Panel title="Space radiation drug-decay & potency calculator">
+      <Panel
+        title="Space radiation drug-decay & potency calculator"
+        id="pharmacy-stability"
+      >
         <h2>Plan storage, compare assumptions</h2>
         <p className="alert info">
           Illustrative stress-test only. Radiation does not have an established
@@ -264,7 +267,10 @@ export default function PharmacyStability({ person }) {
           </a>
         </details>
       </Panel>
-      <Panel title="Microgravity pharmacokinetic dosing notes">
+      <Panel
+        title="Microgravity pharmacokinetic dosing notes"
+        id="medication-dosing-notes"
+      >
         <p>{PHARMACY_DRUGS.find((d) => d.id === form.drug)?.note}</p>
         <ul>
           <li>

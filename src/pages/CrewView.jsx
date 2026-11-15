@@ -81,7 +81,7 @@ export default function CrewView({ onOpenPerson, go }) {
       </div>
       <CrewWorkloadHeatmap onOpenPerson={onOpenPerson} />
       <div className="main-with-aside">
-        <div className="crew-medical-grid">
+        <div className="crew-medical-grid" id="crew-readiness">
           {rows.map((r) => (
             <Panel
               key={r.person.id}

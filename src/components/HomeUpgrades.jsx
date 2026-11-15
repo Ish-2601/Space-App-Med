@@ -43,7 +43,11 @@ export function WearablesBar({ person }) {
     return () => clearInterval(interval);
   }, []);
   return (
-    <Panel title="Connected biometric wearables" className="wearables-window">
+    <Panel
+      title="Connected biometric wearables"
+      className="wearables-window"
+      id="wearables"
+    >
       <div className="row spread">
         <p className="small muted">
           Simulated BLE / ANT+ · sample refreshed every 15 seconds
@@ -166,7 +170,11 @@ export function QuickPulse({ person }) {
     }, 200);
   }
   return (
-    <section className="quick-pulse" aria-labelledby="quick-pulse-title">
+    <section
+      className="quick-pulse"
+      aria-labelledby="quick-pulse-title"
+      id="quick-pulse"
+    >
       <div className="row spread">
         <div>
           <h3 id="quick-pulse-title">5-second Quick Pulse</h3>
@@ -271,7 +279,7 @@ export function ReadinessBadge({ person }) {
   const state = useStore();
   const readiness = motorReadiness(state, person.id);
   return (
-    <details className="readiness-badge">
+    <details className="readiness-badge" id="motor-readiness">
       <summary>
         <Icon name="brain" size={18} />
         <span>Cognitive Motor Readiness</span>
@@ -387,7 +395,11 @@ export function CrewBioDome() {
     }
   };
   return (
-    <Panel title="Cooperative Crew Bio-Dome" className="biodome-panel">
+    <Panel
+      title="Cooperative Crew Bio-Dome"
+      className="biodome-panel"
+      id="crew-biodome"
+    >
       <div className="row spread">
         <b>A small garden, grown together</b>
         <span className="small muted">{todayCompleted} crew tasks today</span>

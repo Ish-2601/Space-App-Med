@@ -22,6 +22,7 @@ export default function EarthPriorityQueue({ pid }) {
     <Panel
       title="3-tier bandwidth priority delta-sync"
       className="priority-queue"
+      id="priority-queue"
     >
       <div className="row spread">
         <div>
