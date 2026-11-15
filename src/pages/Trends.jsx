@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PageTitle } from "../components/ConsoleUI.jsx";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceArea, ReferenceLine, CartesianGrid } from "recharts";
 import { useStore, historyOf } from "../backend/api.js";
 import { indicators, indicatorSummary, greenBand, rangeText, COLORS, round1 } from "../lib.js";
@@ -18,9 +19,9 @@ export default function Trends({ person, params }) {
 
   return (
     <div>
-      <h2>Trends</h2>
+      <PageTitle eyebrow="Personal health · History" title="Your changes over time" description="Compare recent readings with your own first-week baseline." />
       <div className="row">
-        <select value={id} onChange={(e) => setId(e.target.value)}>
+        <select aria-label="Health indicator" value={id} onChange={(e) => setId(e.target.value)}>
           {indicators.map((i) => <option key={i.id} value={i.id}>{i.label}</option>)}
         </select>
         {[7, 14, 30, 365].map((n) => (

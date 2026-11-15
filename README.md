@@ -16,7 +16,21 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173. Run the tests with `npm test`. To start over with fresh demo data: Mission control → Reset all data.
+Open http://localhost:5173 (or the port Vite prints). Run the tests with `npm test`. To start over with fresh demo data: More → Demo controls → Reset all data.
+
+## NASA Med console
+
+The interface uses a dark, desaturated space theme with glass controls, bracketed panels, and the supplied galaxy background. The responsive navigation connects Today, Body, Help, Crew, and More.
+
+- Today combines a live health score, priority action, daily routine, and streak.
+- The eight-step check-in reviews all 12 indicators and symptoms before saving.
+- Body links system status, baseline trends, medical checks, radiation, and photos.
+- Medical checks use a shared measurement workspace; the Amsler grid supports both eyes, clearing, and keyboard arrow/Space controls.
+- Crew combines the simulated Earth link, delivery timeline, habitat readings, personal journal, and the medical officer's overview.
+- Emergency protocols support patient selection, persistent steps, a timer, vitals, priority updates, and completion or early termination.
+- Solar storm checklists retain per-person steps after the all-clear. Demo controls change environments, link status, and events.
+
+All reports, notifications, and replies are simulated locally. Camera and motion checks require device support and permission. Photo files stay in IndexedDB and are not included in JSON/CSV exports.
 
 ## Features
 

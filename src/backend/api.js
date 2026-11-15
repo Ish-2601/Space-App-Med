@@ -237,6 +237,20 @@ export function setSheltered(pid, sheltered) {
   });
 }
 
+// Event-scoped checklist: retained after the all-clear for the final dose log.
+export function toggleShelterStep(eventId, pid, idx) {
+  if (!Number.isInteger(idx) || idx < 1 || idx > 4) return;
+  update((s) => {
+    const ev = s.events.find((e) => e.id === eventId);
+    if (!ev || !personOf(s, pid)) return;
+    if ((idx === 3 || idx === 4) && ev.active) return;
+    if (idx === 2 && !s.crew.every((p) => ev.sheltered[p.id])) return;
+    ev.checklists ||= {};
+    ev.checklists[pid] ||= {};
+    ev.checklists[pid][idx] = !ev.checklists[pid][idx];
+  });
+}
+
 function finishSolarEvent(s) {
   const ev = activeEvent(s);
   if (!ev) return;
@@ -276,22 +290,43 @@ export function setCo2Fault(on) {
 export function startEmergency(pid, type) {
   update((s) => {
     const def = EMERGENCIES.find((e) => e.id === type);
+    if (!def || !personOf(s, pid) || s.emergencies.some((e) => e.pid === pid && e.type === type && !e.resolvedAt)) return;
     s.emergencies.unshift({ id: newId(), pid, type, title: def.title, startedAt: Date.now(), stepsDone: {}, resolvedAt: null });
     pushNotification(s, pid, "red", `EMERGENCY: ${def.title} (${personOf(s, pid).name})`);
     queueReport(s, pid, "emergency", `Emergency started: ${def.title}`);
   });
 }
 
+// Emergency readings update the patient record without completing a daily check-in.
+export function saveEmergencyVitals(id, values) {
+  const keys = ["heartRate", "systolic", "diastolic", "spo2"];
+  const vitals = Object.fromEntries(keys.map((key) => [key, Number(values[key])]));
+  if (keys.some((key) => !Number.isFinite(vitals[key]) || vitals[key] <= 0) || vitals.spo2 > 100) {
+    throw new Error("Enter positive numeric readings, with oxygen at or below 100%.");
+  }
+  update((s) => {
+    const em = s.emergencies.find((e) => e.id === id && !e.resolvedAt);
+    if (!em) throw new Error("This protocol is no longer active.");
+    em.vitals = { ...vitals, ts: Date.now() };
+    Object.assign(rowFor(s, em.pid), vitals);
+    queueReport(s, em.pid, "emergency", em.title + ": HR " + vitals.heartRate + " bpm, BP " + vitals.systolic + "/" + vitals.diastolic + " mmHg, SpO₂ " + vitals.spo2 + "%.");
+    pushNotification(s, em.pid, "info", personOf(s, em.pid).name + ": emergency vitals updated.");
+  });
+}
+
 export function toggleEmergencyStep(id, idx) {
   update((s) => {
     const em = s.emergencies.find((e) => e.id === id);
+    if (!em || em.resolvedAt || !Number.isInteger(idx) || !EMERGENCIES.find((e) => e.id === em.type)?.steps[idx]) return;
     em.stepsDone[idx] = !em.stepsDone[idx];
   });
 }
 
-export function resolveEmergency(id) {
+export function resolveEmergency(id, { endedEarly = false } = {}) {
   update((s) => {
     const em = s.emergencies.find((e) => e.id === id);
+    if (!em || em.resolvedAt) return;
+    em.endedEarly = endedEarly;
     em.resolvedAt = Date.now();
   });
 }

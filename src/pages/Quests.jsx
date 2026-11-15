@@ -1,45 +1,121 @@
 import React from "react";
-import { useStore, tasksFor, streak, points, badgesFor } from "../backend/api.js";
-
-const QUEST_PAGE = { checkin: "checkin", exercise: "log", water: "log", meds: "log", checks: "checks", journal: "mind" };
-
+import {
+  useStore,
+  tasksFor,
+  streak,
+  points,
+  badgesFor,
+} from "../backend/api.js";
+import {
+  PageTitle,
+  Panel,
+  Segments,
+  Icon,
+  Status,
+} from "../components/ConsoleUI.jsx";
+const PAGES = {
+  checkin: "checkin",
+  exercise: "log",
+  water: "log",
+  sleep: "checkin",
+  meds: "log",
+  checks: "checks",
+  journal: "mind",
+};
 export default function Quests({ person, go }) {
-  const state = useStore();
-  const pid = person.id;
-  const tasks = tasksFor(state, pid);
-  const done = tasks.filter((t) => t.done).length;
-  const crewBoard = state.crew.map((p) => ({ p, pts: points(state, p.id) })).sort((a, b) => b.pts - a.pts);
-
+  const state = useStore(),
+    pid = person.id,
+    tasks = tasksFor(state, pid),
+    done = tasks.filter((t) => t.done).length,
+    board = state.crew
+      .map((p) => ({ p, pts: points(state, p.id) }))
+      .sort((a, b) => b.pts - a.pts);
   return (
     <div>
-      <h2>Quests</h2>
-      <p>Daily quests are NASA countermeasures. Doing them keeps your bones, heart, sleep and mind healthy.</p>
-      <div className="grid3">
-        <div className="card stat"><div className="muted small">Today</div><div className="big-ish">{done}/{tasks.length} done</div></div>
-        <div className="card stat"><div className="muted small">Check-in streak</div><div className="big-ish">🔥 {streak(state, pid)} days</div></div>
-        <div className="card stat"><div className="muted small">Points</div><div className="big-ish">⭐ {points(state, pid)}</div></div>
-      </div>
-
-      <h3>Today's quests</h3>
-      <ul className="tasks">
-        {tasks.map((t) => (
-          <li key={t.id} className={t.done ? "done" : ""}>
-            {t.done ? "✅" : "⬜"} {t.label} <span className="muted small">+{t.points}</span>
-            {!t.done && QUEST_PAGE[t.id] && <button className="btn small" onClick={() => go(QUEST_PAGE[t.id])}>Go</button>}
-          </li>
-        ))}
-      </ul>
-      <p className="muted small">Exercise, water and sleep also count minutes and drinks from your sensors.</p>
-
-      <h3>Badges</h3>
-      <div className="badges">
-        {badgesFor(state, pid).map((b) => (
-          <span key={b.id} className={"badge-item" + (b.earned ? " earned" : "")}>{b.earned ? "🏅" : "🔒"} {b.label}</span>
+      <PageTitle
+        eyebrow="Today · Progress"
+        title="Consistency, one day at a time"
+        description="Small routines support your health through a long mission."
+      />
+      <div className="summary-grid">
+        {[
+          [done + "/" + tasks.length, "Today's routine", "today"],
+          [streak(state, pid) + " days", "Check-in streak", "star"],
+          [points(state, pid).toLocaleString(), "Mission points", "shield"],
+        ].map(([value, label, icon]) => (
+          <Panel className="summary-stat" key={label}>
+            <Icon name={icon} size={28} />
+            <div>
+              <strong>{value}</strong>
+              <span className="muted">{label}</span>
+            </div>
+          </Panel>
         ))}
       </div>
-
-      <h3>Crew leaderboard</h3>
-      <ol>{crewBoard.map(({ p, pts }) => <li key={p.id}>{p.name}: {pts} pts</li>)}</ol>
+      <div className="main-with-aside">
+        <div className="panel-stack">
+          <Panel title="Today's routine">
+            <Segments
+              value={done}
+              max={tasks.length}
+              count={tasks.length}
+              label="Tasks completed"
+              tone="green"
+            />
+            <div className="progress-tasks">
+              {tasks.map((t) => (
+                <div className="routine-row" key={t.id}>
+                  <span className="task-check">
+                    <Icon name={t.done ? "check" : "today"} />
+                  </span>
+                  <div className="routine-copy">
+                    <b>{t.label}</b>
+                  </div>
+                  <span className="small muted">+{t.points}</span>
+                  {t.done ? (
+                    <Status status="green">Done</Status>
+                  ) : (
+                    <button className="btn" onClick={() => go(PAGES[t.id])}>
+                      Open
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </Panel>
+          <Panel title="Milestones">
+            <div className="progress-badges">
+              {badgesFor(state, pid).map((b) => (
+                <div
+                  key={b.id}
+                  className={"progress-badge " + (b.earned ? "earned" : "")}
+                >
+                  <Icon name={b.earned ? "shield" : "star"} />
+                  <span>
+                    {b.label}
+                    <small className="muted">
+                      {" "}
+                      · {b.earned ? "Earned" : "In progress"}
+                    </small>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Panel>
+        </div>
+        <Panel title="Crew progress">
+          {board.map(({ p, pts }, i) => (
+            <div className="resource-link" key={p.id}>
+              <span className="risk-number">0{i + 1}</span>
+              <span>
+                <b>{p.name}</b>
+                <small>{p.role}</small>
+              </span>
+              <strong>{pts.toLocaleString()}</strong>
+            </div>
+          ))}
+        </Panel>
+      </div>
     </div>
   );
 }

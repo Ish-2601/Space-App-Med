@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PageTitle } from "../components/ConsoleUI.jsx";
 import { useStore, takeMed, restockMed, daysOfSupply, medName, envOf } from "../backend/api.js";
 
 // Shared crew medical kit: inventory, doses taken, low-stock warnings
@@ -11,13 +12,13 @@ export default function MedKit({ person }) {
 
   return (
     <div>
-      <h2>Med kit</h2>
+      <PageTitle eyebrow="Help · Shared supplies" title="The crew's medical kit" description="Track the supplies on board and the doses in your record." />
       <p className="muted">
         {env.microgravity && env.delayMin > 1
           ? "No resupply is possible in deep space: every dose counts. Low items are flagged to the CMO."
           : "Resupply is possible here, but plan ahead. Low items are flagged to the CMO."}
       </p>
-      <table className="table">
+      <div className="table-scroll"><table className="table inventory-table">
         <thead><tr><th>Item</th><th>Use</th><th>Stock</th><th>Days left*</th><th /></tr></thead>
         <tbody>
           {state.medkit.map((m) => {
@@ -30,13 +31,13 @@ export default function MedKit({ person }) {
                 <td>{m.stock}{low ? " ⚠ low" : ""}</td>
                 <td>{days == null ? "–" : days}</td>
                 <td>
-                  <button className="btn small" disabled={m.stock <= 0} onClick={() => { takeMed(pid, m.id); setMsg(`Logged 1 dose of ${m.name}.`); }}>Take 1 dose</button>
+                  <button className="btn small" disabled={m.stock <= 0} onClick={() => { takeMed(pid, m.id); setMsg(`Logged 1 dose of ${m.name}.`); }}>Log 1 dose</button>
                 </td>
               </tr>
             );
           })}
         </tbody>
-      </table>
+      </table></div>
       <p className="small muted">*Estimated from the whole crew's use over the last 14 days.</p>
       {msg && <p className="muted">{msg}</p>}
 

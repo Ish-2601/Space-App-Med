@@ -1,28 +1,67 @@
 import React from "react";
-import { useStore, CHECKLISTS, toggleChecklistItem, resetChecklist } from "../backend/api.js";
-
-export default function Checklists({ person }) {
-  const state = useStore();
-  const pid = person.id;
+import {
+  useStore,
+  CHECKLISTS,
+  toggleChecklistItem,
+  resetChecklist,
+} from "../backend/api.js";
+import { PageTitle, Panel, Segments } from "../components/ConsoleUI.jsx";
+export default function Checklists({ person, params = {} }) {
+  const state = useStore(),
+    pid = person.id,
+    lists = [...CHECKLISTS].sort(
+      (a, b) => (b.id === params.list ? 1 : 0) - (a.id === params.list ? 1 : 0),
+    );
   return (
     <div>
-      <h2>Checklists</h2>
-      <p className="muted">Readiness checks for spacewalks and gravity transitions (landing on the Moon, Mars or Earth).</p>
-      <div className="grid3">
-        {CHECKLISTS.map((list) => {
-          const done = state.checklists[pid][list.id] || {};
-          const count = list.items.filter((_, i) => done[i]).length;
+      <PageTitle
+        eyebrow="Help · Readiness"
+        title="Ready for what comes next"
+        description="Checklists for spacewalks and gravity transitions."
+      />
+      <div className="checklist-grid">
+        {lists.map((list) => {
+          const done = state.checklists[pid][list.id] || {},
+            count = list.items.filter((_, i) => done[i]).length;
           return (
-            <div key={list.id} className="card">
-              <h3>{list.title}</h3>
-              <div className="muted small">{count}/{list.items.length} done{count === list.items.length ? " · ready ✅" : ""}</div>
+            <Panel
+              key={list.id}
+              title={count === list.items.length ? "Complete" : "Checklist"}
+              tone={count === list.items.length ? "green" : "neutral"}
+            >
+              <h2>{list.title}</h2>
+              <p className="muted small">
+                {count} of {list.items.length} complete
+              </p>
+              <Segments
+                value={count}
+                max={list.items.length}
+                count={list.items.length}
+                label={list.title + " progress"}
+                tone="green"
+              />
               {list.items.map((item, i) => (
-                <label key={item} className="radio block">
-                  <input type="checkbox" checked={!!done[i]} onChange={() => toggleChecklistItem(pid, list.id, i)} /> {item}
-                </label>
+                <div
+                  className={"protocol-step " + (done[i] ? "done" : "")}
+                  key={item}
+                >
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={!!done[i]}
+                      onChange={() => toggleChecklistItem(pid, list.id, i)}
+                    />
+                    <span>{item}</span>
+                  </label>
+                </div>
               ))}
-              <button className="btn small" onClick={() => resetChecklist(pid, list.id)}>Reset</button>
-            </div>
+              <button
+                className="btn"
+                onClick={() => resetChecklist(pid, list.id)}
+              >
+                Reset checklist
+              </button>
+            </Panel>
           );
         })}
       </div>

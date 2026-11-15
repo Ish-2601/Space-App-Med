@@ -27,6 +27,8 @@ export default function HeartRateCamera({ person, onSaved }) {
   async function begin() {
     setResult(null);
     setSaved(null);
+    setElapsed(0);
+    setLive(null);
     samples.current = [];
     const stream = await cam.start(mode === "face" ? "user" : "environment", { torch: mode === "finger" });
     if (!stream) return;
@@ -89,7 +91,7 @@ export default function HeartRateCamera({ person, onSaved }) {
       <div className="cam-box">
         <video ref={cam.videoRef} playsInline muted className={cam.active ? "" : "hidden"} />
         {cam.active && mode === "face" && <div className="roi" style={{ left: "38%", top: "12%", width: "24%", height: "18%" }} />}
-        {!cam.active && phase !== "done" && <div className="cam-placeholder">Camera off</div>}
+        {!cam.active && <div className="cam-placeholder"><div className="camera-outline" /><span>{phase === "done" ? "Measurement complete · camera off" : "Camera off · ready when you are"}</span></div>}
       </div>
       <canvas ref={canvas} width="80" height="60" className="hidden" />
       {cam.error && <p className="error">{cam.error}</p>}
@@ -97,7 +99,7 @@ export default function HeartRateCamera({ person, onSaved }) {
       {phase === "idle" && <button className="btn primary" onClick={begin}>Start 20-second measurement</button>}
       {phase === "measuring" && (
         <>
-          <div className="meter"><div style={{ width: `${(elapsed / DURATION_SEC) * 100}%`, background: "#2f5bd3" }} /></div>
+          <div className="meter"><div style={{ width: `${(elapsed / DURATION_SEC) * 100}%`, background: "#9cb9ce" }} /></div>
           <p>Measuring… {Math.ceil(DURATION_SEC - elapsed)} s left{live?.bpm ? ` · live estimate ${live.bpm} bpm (${live.label})` : ""}</p>
           <button className="btn small" onClick={() => { cancelAnimationFrame(raf.current); cam.stop(); setPhase("idle"); }}>Cancel</button>
         </>

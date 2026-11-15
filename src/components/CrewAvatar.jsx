@@ -3,15 +3,6 @@ import { useStore, saveProfilePhoto, deleteProfilePhoto } from "../backend/api.j
 import { getPhoto } from "../backend/photoStore.js";
 import { prepareProfilePhoto } from "../backend/profilePhoto.js";
 
-function DefaultPortrait() {
-  return (
-    <svg className="crew-default-portrait" viewBox="0 0 160 180" aria-hidden="true">
-      <circle cx="80" cy="52" r="34" fill="currentColor" />
-      <path d="M22 155a58 58 0 0 1 116 0v7H22Z" fill="currentColor" />
-    </svg>
-  );
-}
-
 export default function CrewAvatar({ person, onSelect, editable = false, compact = false }) {
   const state = useStore();
   const photoId = state.profilePhotos?.[person.id];
@@ -66,7 +57,7 @@ export default function CrewAvatar({ person, onSelect, editable = false, compact
 
   const portrait = photo?.id === photoId && photo
     ? <img src={photo.url} alt={`${person.name}'s profile`} />
-    : <DefaultPortrait />;
+    : <span className="avatar-initials" aria-hidden="true">{person.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}</span>;
 
   return (
     <div className={`crew-avatar-group${compact ? " crew-avatar-group--compact" : ""}`}>

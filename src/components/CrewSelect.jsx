@@ -1,5 +1,6 @@
 import React from "react";
 import CrewAvatar from "./CrewAvatar.jsx";
+import { Brand, Status } from "./ConsoleUI.jsx";
 import { useStore, crewOverview, activeEvent, ENVIRONMENTS, delayText } from "../backend/api.js";
 import "./CrewSelect.css";
 
@@ -13,7 +14,8 @@ export default function CrewSelect({ onSelect, onMedical }) {
     <main className="crew-select">
       <div className="crew-select-inner">
         <header className="crew-heading">
-          <h1>NASA Med</h1>
+          <p className="eyebrow lobby-eyebrow">Crew health · {state.mission.name}</p>
+          <h1><Brand /></h1>
           <svg className="crew-orbit" viewBox="0 0 280 18" aria-hidden="true">
             <path d="M2 15 Q132 -8 278 10 Q148 1 20 18Z" fill="currentColor" />
           </svg>
@@ -26,6 +28,7 @@ export default function CrewSelect({ onSelect, onMedical }) {
         <section className="crew-grid" aria-label="Crew profiles">
           {crewOverview(state).map(({ person, status, score, checkedIn, sheltered, checkupRequired }) => (
             <article key={person.id} className={`crew-card crew-card--${status}`} aria-labelledby={`crew-name-${person.id}`}>
+              <span className="lobby-role-tab">{person.role}</span>
               <CrewAvatar person={person} onSelect={() => onSelect(person.id)} editable />
               <dl className="crew-details">
                 <div className="crew-identity">
@@ -45,13 +48,14 @@ export default function CrewSelect({ onSelect, onMedical }) {
                   </dd>
                 </div>
                 <div className="crew-checkup">
-                  <dt>Checkup</dt>
+                  <dt>Today's checks</dt>
                   <dd className={`crew-checkup-status ${checkupRequired ? "is-necessary" : "is-clear"}`}>
                     <span className="crew-checkup-icon" aria-hidden="true">{checkupRequired ? "!" : "✓"}</span>
-                    {checkupRequired ? "Necessary" : "Not necessary"}
+                    {checkupRequired ? "To do" : "All done"}
                   </dd>
                 </div>
               </dl>
+              <Status status={status} />
               <p className="crew-checkin">{checkedIn ? "Checked in today" : "Daily check-in due"}</p>
               {sheltered != null && <p className={`crew-shelter ${sheltered ? "" : "danger-text"}`}>{sheltered ? "In storm shelter" : "Not yet sheltered"}</p>}
             </article>

@@ -3,7 +3,7 @@ import data from "./data/indicators.json";
 
 export const indicators = data.indicators;
 
-export const COLORS = { green: "#2ecc71", yellow: "#f1c40f", red: "#e74c3c", unknown: "#7f8c8d" };
+export const COLORS = { green: "#91b5a5", yellow: "#c3af82", red: "#ca9396", unknown: "#8ca2b8" };
 export const STATUS_LABEL = { green: "OK", yellow: "Needs attention", red: "Alert crew / flight surgeon", unknown: "No data" };
 const RANK = { unknown: 0, green: 1, yellow: 2, red: 3 };
 
