@@ -57,7 +57,8 @@ export default function ConsoleShell({
           </button>
           <span className="telemetry-chip delay-chip">
             <Icon name="clock" />
-            Earth delay {delayText(env)}
+            Earth delay{" "}
+            {state.link.judgesDemo40 ? "20 min · 60× demo" : delayText(env)}
           </span>
         </div>
         <div className="console-account">

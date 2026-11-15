@@ -1,0 +1,494 @@
+.specialized-tools {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+}
+.clinical-intro {
+  border-top: 1px solid var(--border, #34404b);
+  padding-top: 18px;
+}
+.clinical-intro p {
+  margin: 0 0 8px;
+}
+.clinical-tool {
+  min-width: 0;
+}
+.clinical-tool-content {
+  display: grid;
+  gap: 15px;
+}
+.clinical-tool-content h2 {
+  font-size: 1.3rem;
+}
+.clinical-tool-content h3 {
+  font-size: 1.08rem;
+  margin: 12px 0;
+}
+.clinical-tool-content p {
+  line-height: 1.55;
+}
+.clinical-tool-content form {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.clinical-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.clinical-field {
+  display: grid;
+  gap: 7px;
+  font-size: 0.86rem;
+  min-width: 0;
+  color: var(--muted, #aab6c1);
+}
+.clinical-field input,
+.clinical-field select,
+.clinical-field textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  background: #0b121a;
+  color: #dce6ef;
+  border: 1px solid #36434e;
+  border-radius: 8px;
+  font: inherit;
+  min-height: 44px;
+}
+.clinical-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.clinical-checklist {
+  display: grid;
+  gap: 12px;
+}
+.clinical-checklist label,
+.clinical-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.4;
+}
+.clinical-checklist input,
+.clinical-check input {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  accent-color: #94b9ca;
+}
+.clinical-result {
+  padding: 16px;
+  background: #101a22;
+  border: 1px solid #354551;
+  border-radius: 10px;
+}
+.clinical-result p:last-child {
+  margin-bottom: 0;
+}
+.clinical-model-note {
+  border-top: 1px solid #2d3945;
+  padding-top: 12px;
+}
+.clinical-source {
+  font-size: 0.8rem;
+  color: #a5c5db;
+  overflow-wrap: anywhere;
+}
+.clinical-history {
+  border-top: 1px solid #2d3945;
+  padding-top: 12px;
+  font-size: 0.86rem;
+}
+.clinical-history li {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+.clinical-history ol {
+  padding-left: 20px;
+}
+.clinical-tool summary {
+  cursor: pointer;
+  min-height: 36px;
+  padding: 8px 0;
+  font-weight: 600;
+}
+.clinical-tool details p {
+  font-size: 0.87rem;
+}
+.clinical-tool progress {
+  width: 100%;
+  height: 10px;
+  accent-color: #91b8ca;
+}
+.clinical-gauge {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  background: #101a22;
+  padding: 20px;
+  border-radius: 12px;
+}
+.clinical-gauge > strong {
+  font-size: 2.8rem;
+  font-weight: 600;
+}
+.clinical-gauge small {
+  font-size: 0.7rem;
+  display: block;
+  color: #aab6c1;
+}
+.clinical-gauge > div {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+.clinical-gauge meter {
+  width: 100%;
+  height: 15px;
+  accent-color: #adc0cc;
+}
+.clinical-attention {
+  border-left: 3px solid #d5b778;
+  padding: 12px;
+  background: #252017;
+}
+.clinical-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+.clinical-choice-grid .btn {
+  white-space: normal;
+  display: grid;
+  gap: 6px;
+  text-align: left;
+}
+.clinical-choice-grid [aria-pressed="true"] {
+  border-color: #a9c6dc;
+  background: #283a49;
+}
+.clinical-nutrients {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+}
+.clinical-nutrients > div {
+  border: 1px solid #33434f;
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+.clinical-nutrients small {
+  color: #aab6c1;
+}
+.clinical-clock {
+  font: 600 1.8rem monospace;
+  min-width: 90px;
+}
+.clinical-video {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 10px;
+  background: #050709;
+}
+.clinical-video[hidden] {
+  display: none;
+}
+.nature-scene {
+  width: 100%;
+  height: auto;
+  max-height: 260px;
+  border: 1px solid #394f5b;
+  border-radius: 16px;
+  --nature-sky: #172b36;
+  --nature-light: #a6c9ce;
+  --nature-far: #294451;
+  --nature-near: #385963;
+}
+.nature-scene.scene-Ocean {
+  --nature-sky: #142535;
+  --nature-far: #293b50;
+  --nature-near: #31505c;
+}
+.nature-scene.scene-Mountains {
+  --nature-sky: #1d2631;
+  --nature-far: #3b4c5e;
+  --nature-near: #435764;
+}
+.nature-scene.immersive {
+  max-height: 500px;
+}
+.breathing-pacer {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-height: 220px;
+}
+.breathing-pacer svg {
+  width: 200px;
+  max-width: 48%;
+  overflow: visible;
+  flex-shrink: 0;
+}
+.pacer-guide {
+  fill: none;
+  stroke: #344e60;
+  stroke-dasharray: 3 8;
+}
+.pacer-orb {
+  fill: #214257;
+  stroke: #8bb8cb;
+  stroke-width: 2;
+}
+.breathing-pacer text {
+  fill: currentColor;
+  font-size: 21px;
+}
+.clinical-hotspot-map {
+  width: 100%;
+  height: auto;
+  min-height: 180px;
+}
+.map-outline {
+  fill: #1b2c38;
+  stroke: #88a5b9;
+  stroke-width: 2;
+}
+.hotspot {
+  cursor: pointer;
+  color: #bed4df;
+}
+.hotspot circle {
+  fill: #284758;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.hotspot.selected circle {
+  stroke-width: 4;
+  fill: #4b7182;
+}
+.hotspot text {
+  fill: currentColor;
+  font-size: 17px;
+  font-weight: bold;
+}
+.hotspot:focus {
+  outline: none;
+}
+.hotspot:focus circle {
+  stroke: #fff;
+  stroke-width: 5;
+}
+.muscle-heatmap {
+  display: flex;
+  gap: 20px;
+  color: #c7ac7c;
+  align-items: center;
+}
+.muscle-heatmap svg {
+  width: 140px;
+  max-width: 40%;
+  flex-shrink: 0;
+}
+.muscle-heatmap > div {
+  display: grid;
+  gap: 18px;
+  flex: 1;
+}
+.muscle-heatmap > div > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px;
+}
+.muscle-heatmap span {
+  text-transform: capitalize;
+}
+.muscle-heatmap meter {
+  grid-column: 1/-1;
+  grid-row: 2;
+  width: 100%;
+  accent-color: #c7ac7c;
+}
+.stretch-demo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.stretch-demo svg {
+  width: 180px;
+  max-width: 40%;
+  color: #a8c1cb;
+  fill: #1c3544;
+}
+.shelter-layout {
+  width: 100%;
+  max-height: 280px;
+}
+.shield-material {
+  fill: #365a6a;
+  stroke: #b7ced9;
+  stroke-width: 2;
+}
+.shelter-layout text {
+  font-size: 12px;
+  fill: currentColor;
+}
+.clinical-table-wrap {
+  overflow: auto;
+  max-width: 100%;
+}
+.clinical-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.clinical-table-wrap th,
+.clinical-table-wrap td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #34424d;
+}
+.clinical-tool-content .row {
+  flex-wrap: wrap;
+}
+.clinical-tool-content button {
+  max-width: 100%;
+  white-space: normal;
+}
+.clinical-tool-content output {
+  font-variant-numeric: tabular-nums;
+}
+.circadian-redshift .clinical-field input,
+.circadian-redshift .clinical-field select,
+.circadian-redshift .clinical-field textarea,
+.circadian-redshift .clinical-result,
+.circadian-redshift .clinical-gauge {
+  background: #100807;
+  color: #ff9a69;
+  border-color: #713728;
+}
+.circadian-redshift .clinical-source,
+.circadian-redshift .clinical-field,
+.circadian-redshift .clinical-gauge small,
+.circadian-redshift .clinical-nutrients small {
+  color: #ff9a69;
+}
+.circadian-redshift .clinical-attention {
+  background: #23100a;
+  border-color: #ff3b30;
+}
+.circadian-redshift .nature-scene {
+  --nature-sky: #100604;
+  --nature-light: #ff9a69;
+  --nature-far: #3c150d;
+  --nature-near: #6c2917;
+  border-color: #8a3c25;
+}
+.circadian-redshift .map-outline {
+  fill: #30130d;
+  stroke: #ff6b42;
+}
+.circadian-redshift .pacer-orb,
+.circadian-redshift .shield-material,
+.circadian-redshift .hotspot circle {
+  fill: #542014;
+  stroke: #ff3b30;
+}
+.circadian-redshift .pacer-guide {
+  stroke: #a04027;
+}
+.circadian-redshift .clinical-choice-grid [aria-pressed="true"],
+.circadian-redshift .hotspot.selected circle {
+  background: #542014;
+  border-color: #ff3b30;
+  fill: #7b2b16;
+}
+.circadian-redshift .muscle-heatmap,
+.circadian-redshift .stretch-demo svg,
+.circadian-redshift .hotspot {
+  color: #ff9a69;
+}
+.circadian-redshift .clinical-history,
+.circadian-redshift .clinical-nutrients > div,
+.circadian-redshift .clinical-model-note,
+.circadian-redshift .clinical-table-wrap th,
+.circadian-redshift .clinical-table-wrap td {
+  border-color: #713728;
+}
+.circadian-redshift .clinical-intro {
+  border-color: #713728;
+}
+.circadian-redshift .clinical-tool progress,
+.circadian-redshift .clinical-gauge meter,
+.circadian-redshift .muscle-heatmap meter,
+.circadian-redshift .clinical-checklist input,
+.circadian-redshift .clinical-check input {
+  accent-color: #ff3b30;
+}
+.circadian-redshift .clinical-tool progress::-webkit-progress-value,
+.circadian-redshift .clinical-tool meter::-webkit-meter-optimum-value {
+  background: #ff3b30;
+}
+.circadian-redshift .clinical-tool progress::-moz-progress-bar,
+.circadian-redshift .clinical-tool meter::-moz-meter-bar {
+  background: #ff3b30;
+}
+.circadian-redshift .stretch-demo svg {
+  fill: #30130d;
+}
+.circadian-redshift .hotspot:focus circle {
+  stroke: #ff9a69;
+}
+@media (max-width: 600px) {
+  .clinical-fields {
+    grid-template-columns: 1fr;
+  }
+  .clinical-tool-content {
+    gap: 12px;
+  }
+  .clinical-gauge {
+    padding: 14px;
+    gap: 14px;
+  }
+  .clinical-gauge > strong {
+    font-size: 2.2rem;
+  }
+  .breathing-pacer {
+    gap: 12px;
+  }
+  .breathing-pacer svg {
+    width: 140px;
+  }
+  .muscle-heatmap {
+    gap: 10px;
+  }
+  .clinical-tool-content .btn {
+    font-size: 0.85rem;
+  }
+  .specialized-tools {
+    gap: 24px;
+  }
+  .clinical-nutrients {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .clinical-table-wrap th,
+  .clinical-table-wrap td {
+    padding: 8px;
+  }
+  .clinical-choice-grid {
+    grid-template-columns: 1fr;
+  }
+  .clinical-hotspot-map {
+    min-height: 120px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pacer-orb {
+    transition: none;
+  }
+}

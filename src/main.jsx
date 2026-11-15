@@ -7,6 +7,10 @@ import "./clean.css";
 import "./health-screens.css";
 import "./home-upgrades.css";
 import "./body-upgrades.css";
+import "./specialty-tools.css";
+import "./clinical-tools.css";
+import "./emergency-tools.css";
+import "./ar-crew-tools.css";
 import "./mission-utility.css";
 import { applyDisplay } from "./display.js";
 

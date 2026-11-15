@@ -710,6 +710,7 @@ export function crewOverview(state) {
 }
 
 export function earthDelayMs(state) {
+  if (state.link?.judgesDemo40) return 20000;
   return (envOf(state).delayMin * 60000) / state.demoSpeed;
 }
 

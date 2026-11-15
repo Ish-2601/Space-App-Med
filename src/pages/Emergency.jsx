@@ -14,13 +14,28 @@ import useNow from "../components/useNow.js";
 import Triage from "../components/Triage.jsx";
 import { sandboxEnabled } from "../backend/sandbox.js";
 import {
+  EMERGENCY_SOURCES,
+  protocolStepGuide,
+} from "../backend/emergencySpecialized.js";
+import CPRMetronome, {
+  PackBadge,
+  PackLegend,
+  StepTimer,
+} from "../components/emergency/EmergencyTools.jsx";
+import {
+  beginPrivateRehearsal,
+  privateRehearsals,
+  savePrivateRehearsal,
+  validateEmergencyVitals,
+} from "../components/emergency/rehearsal.js";
+import {
   PageTitle,
   Panel,
   Icon,
   Status,
   Segments,
 } from "../components/ConsoleUI.jsx";
-function Vitals({ em }) {
+function Vitals({ em, onPrivateSave }) {
   const [v, setV] = useState(
       em.vitals || { heartRate: "", systolic: "", diastolic: "", spo2: "" },
     ),
@@ -32,7 +47,9 @@ function Vitals({ em }) {
       onSubmit={(e) => {
         e.preventDefault();
         try {
-          saveEmergencyVitals(em.id, v);
+          if (onPrivateSave) {
+            onPrivateSave(validateEmergencyVitals(v));
+          } else saveEmergencyVitals(em.id, v);
           setMsg(
             sandboxEnabled()
               ? "Vitals saved in Private Sandbox. No shared patient record or Earth report changed."
@@ -89,11 +106,41 @@ export default function Emergency({ person, go, params = {} }) {
   const [pid, setPid] = useState(selected?.pid || person.id),
     [type, setType] = useState(params.type || "faint"),
     [msg, setMsg] = useState(""),
-    [note, setNote] = useState("");
-  const active = activeEmergencies(state, pid),
-    em = active.find((e) => e.id === params.emergencyId) || active[0],
+    [note, setNote] = useState(""),
+    [localId, setLocalId] = useState(params.emergencyId || null);
+  const privateMode = sandboxEnabled(state);
+  const rehearsals = privateRehearsals(state, pid);
+  const active = privateMode
+      ? rehearsals.filter((item) => !item.resolvedAt)
+      : activeEmergencies(state, pid),
+    em =
+      active.find((e) => e.id === localId) ||
+      active.find((e) => e.id === params.emergencyId) ||
+      active[0],
     def = EMERGENCIES.find((d) => d.id === (em?.type || type));
-  const past = state.emergencies.filter((e) => e.pid === pid && e.resolvedAt);
+  const past = privateMode
+    ? rehearsals.filter((e) => e.resolvedAt)
+    : state.emergencies.filter((e) => e.pid === pid && e.resolvedAt);
+  const savePrivateProtocol = (next) => savePrivateRehearsal(pid, next);
+  const beginProtocol = (id) => {
+    setType(id);
+    if (privateMode) {
+      const rehearsal = beginPrivateRehearsal(pid, id);
+      setLocalId(rehearsal.id);
+    } else {
+      startEmergency(pid, id);
+      setLocalId(
+        activeEmergencies(state, pid).find((item) => item.type === id)?.id,
+      );
+    }
+    setMsg("");
+  };
+  const finishProtocol = (endedEarly = false) => {
+    if (privateMode)
+      savePrivateProtocol({ ...em, endedEarly, resolvedAt: Date.now() });
+    else resolveEmergency(em.id, { endedEarly });
+    setEnding(false);
+  };
   const [ending, setEnding] = useState(false);
   const seconds = em ? Math.max(0, Math.floor((now - em.startedAt) / 1000)) : 0,
     done = em ? Object.values(em.stepsDone).filter(Boolean).length : 0;
@@ -107,6 +154,13 @@ export default function Emergency({ person, go, params = {} }) {
             description="Tap the symptoms. The most likely causes and what to do appear instantly."
           />
           <Triage person={person} pid={pid} setPid={setPid} go={go} />
+          {privateMode && (
+            <p className="alert info">
+              Private Sandbox rehearsal. Steps, vitals and notes stay private.
+              The shared emergency banner and Earth queue are unchanged unless
+              you confirm a critical-finding escalation.
+            </p>
+          )}
           <h2 className="section-title">
             All emergency protocols{" "}
             <span className="muted small">
@@ -121,11 +175,11 @@ export default function Emergency({ person, go, params = {} }) {
                 <button
                   className="btn danger"
                   onClick={() => {
-                    setType(e.id);
-                    startEmergency(pid, e.id);
+                    beginProtocol(e.id);
                   }}
                 >
-                  Start protocol <Icon name="arrow" />
+                  {privateMode ? "Start private rehearsal" : "Start protocol"}{" "}
+                  <Icon name="arrow" />
                 </button>
               </Panel>
             ))}
@@ -134,7 +188,11 @@ export default function Emergency({ person, go, params = {} }) {
       ) : (
         <>
           <Panel
-            title="Emergency · In progress"
+            title={
+              privateMode
+                ? "Private emergency rehearsal · In progress"
+                : "Emergency · In progress"
+            }
             tone="red"
             className="emergency-header"
           >
@@ -167,15 +225,33 @@ export default function Emergency({ person, go, params = {} }) {
               <div>
                 <Icon name="check" />
                 <span>
-                  <b>Medical officer notified.</b> Recorded in the onboard
-                  notification list.
+                  {privateMode ? (
+                    <>
+                      <b>Private rehearsal.</b> No medical-officer notification
+                      was sent.
+                    </>
+                  ) : (
+                    <>
+                      <b>Medical officer notified.</b> Recorded in the onboard
+                      notification list.
+                    </>
+                  )}
                 </span>
               </div>
               <div>
                 <Icon name="send" />
                 <span>
-                  <b>Priority report queued.</b> Track delivery in the simulated
-                  Earth link.
+                  {privateMode ? (
+                    <>
+                      <b>Private records only.</b> No Earth report is queued
+                      without a confirmed critical escalation.
+                    </>
+                  ) : (
+                    <>
+                      <b>Priority report queued.</b> Track delivery in the
+                      simulated Earth link.
+                    </>
+                  )}
                 </span>
               </div>
             </div>
@@ -190,35 +266,93 @@ export default function Emergency({ person, go, params = {} }) {
                 tone="green"
               />
               <div className="protocol-steps">
-                {def.steps.map((s, i) => (
-                  <div
-                    className={
-                      "protocol-step " + (em.stepsDone[i] ? "done" : "")
-                    }
-                    key={s}
-                  >
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={!!em.stepsDone[i]}
-                        onChange={() => toggleEmergencyStep(em.id, i)}
-                      />
-                      <span>
-                        <b>
-                          {i + 1}. {s}
-                        </b>
-                        {i === 2 && em.type === "faint" && (
-                          <small>
-                            Record the readings from your medical equipment
-                            below.
-                          </small>
+                {def.steps.map((s, i) => {
+                  const guide = protocolStepGuide(def, i);
+                  return (
+                    <div
+                      className={
+                        "protocol-step " + (em.stepsDone[i] ? "done" : "")
+                      }
+                      key={s}
+                    >
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={!!em.stepsDone[i]}
+                          onChange={() =>
+                            privateMode
+                              ? savePrivateProtocol({
+                                  ...em,
+                                  stepsDone: {
+                                    ...em.stepsDone,
+                                    [i]: !em.stepsDone[i],
+                                  },
+                                })
+                              : toggleEmergencyStep(em.id, i)
+                          }
+                        />
+                        <span>
+                          <b>
+                            {i + 1}. {s}
+                          </b>
+                          {i === 2 && em.type === "faint" && (
+                            <small>
+                              Record the readings from your medical equipment
+                              below.
+                            </small>
+                          )}
+                        </span>
+                      </label>
+                      <div className="protocol-step-detail">
+                        <PackBadge pack={guide.pack} />
+                        <p className="small muted">{guide.note}</p>
+                        {guide.timerSeconds > 0 && (
+                          <StepTimer
+                            pid={pid}
+                            emergencyId={em.id}
+                            index={i}
+                            seconds={guide.timerSeconds}
+                            label={guide.timerLabel}
+                          />
                         )}
-                      </span>
-                    </label>
-                  </div>
-                ))}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
-              <Vitals key={em.id} em={em} />
+              {def.sources && (
+                <p className="small">
+                  Reference guidance:{" "}
+                  {def.sources.map((source, index) => (
+                    <React.Fragment key={source}>
+                      {index > 0 && " · "}
+                      <a
+                        href={EMERGENCY_SOURCES[source]}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {source === "eye"
+                          ? "Eye trauma"
+                          : source === "dental"
+                            ? "ADA dental emergencies"
+                            : source.startsWith("renal")
+                              ? "Urinary health"
+                              : "NASA contamination guidance"}
+                      </a>
+                    </React.Fragment>
+                  ))}
+                </p>
+              )}
+              <Vitals
+                key={em.id}
+                em={em}
+                onPrivateSave={
+                  privateMode
+                    ? (values) =>
+                        savePrivateProtocol({ ...em, vitals: values, values })
+                    : undefined
+                }
+              />
               <div className="row spread protocol-actions">
                 <button className="btn danger" onClick={() => setEnding(true)}>
                   End protocol
@@ -227,12 +361,13 @@ export default function Emergency({ person, go, params = {} }) {
                   className="btn"
                   onClick={() => go("earth", { pid: em.pid })}
                 >
-                  Track priority report <Icon name="send" />
+                  {privateMode ? "View Earth link" : "Track priority report"}{" "}
+                  <Icon name="send" />
                 </button>
                 <button
                   className="btn primary"
                   disabled={done !== def.steps.length}
-                  onClick={() => resolveEmergency(em.id)}
+                  onClick={() => finishProtocol()}
                 >
                   <Icon name="check" />
                   Mark resolved
@@ -248,8 +383,7 @@ export default function Emergency({ person, go, params = {} }) {
                     <button
                       className="btn danger"
                       onClick={() => {
-                        resolveEmergency(em.id, { endedEarly: true });
-                        setEnding(false);
+                        finishProtocol(true);
                       }}
                     >
                       End and record
@@ -276,7 +410,9 @@ export default function Emergency({ person, go, params = {} }) {
                       "red",
                     );
                     setMsg(
-                      "Urgent notification added for the medical officer.",
+                      privateMode
+                        ? "Assistance request saved privately. No shared notification was sent."
+                        : "Urgent notification added for the medical officer.",
                     );
                   }}
                 >
@@ -310,7 +446,11 @@ export default function Emergency({ person, go, params = {} }) {
                       em.title + ": " + note.trim(),
                     );
                     setNote("");
-                    setMsg("Priority note queued.");
+                    setMsg(
+                      privateMode
+                        ? "Priority note saved privately; no report queued."
+                        : "Priority note queued.",
+                    );
                   }}
                 >
                   <Icon name="send" />
@@ -323,13 +463,7 @@ export default function Emergency({ person, go, params = {} }) {
                     className="resource-link"
                     key={e.id}
                     onClick={() => {
-                      startEmergency(pid, e.id);
-                      go("emergency", {
-                        emergencyId: activeEmergencies(state, pid).find(
-                          (item) => item.type === e.id,
-                        )?.id,
-                      });
-                      setMsg("");
+                      beginProtocol(e.id);
                     }}
                   >
                     <Icon name={e.id === "spe" ? "sun" : "emergency"} />
@@ -347,7 +481,7 @@ export default function Emergency({ person, go, params = {} }) {
                   <button
                     key={e.id}
                     className="btn"
-                    onClick={() => go("emergency", { emergencyId: e.id })}
+                    onClick={() => setLocalId(e.id)}
                   >
                     {e.title}
                   </button>
@@ -357,6 +491,11 @@ export default function Emergency({ person, go, params = {} }) {
           )}
         </>
       )}
+      <PackLegend />
+      <CPRMetronome
+        key={pid + (privateMode ? "-private" : "-public")}
+        pid={pid}
+      />
       {!!past.length && (
         <Panel title="Protocol history">
           {past.map((e) => (

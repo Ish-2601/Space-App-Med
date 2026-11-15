@@ -26,6 +26,7 @@ import {
 import { indicators } from "../lib.js";
 import { HEALTH_AREAS, SLEEP_QUALITY } from "../data/healthAreas.js";
 import { sandboxEnabled, saveSandboxRecord } from "./sandbox.js";
+import { prepareReportPackets, advanceDeltaQueue } from "./earthQueue.js";
 
 export * from "./rules.js";
 export * from "./content.js";
@@ -474,12 +475,16 @@ function queueReport(s, pid, kind, text, photoIds = []) {
     replyAt: null,
     reply: null,
   });
+  prepareReportPackets(s, s.reports[0]);
 }
 
 function replyFor(r) {
   const tag = "(simulated reply)";
+  const media = r.packets?.find((p) => p.tier === 3);
   const photos = r.photoIds?.length
-    ? ` We reviewed the ${r.photoIds.length} photo(s) you attached.`
+    ? !media || ["delivered", "acknowledged"].includes(media.state)
+      ? ` We reviewed the ${r.photoIds.length} photo(s) you attached.`
+      : " The clinical report arrived; photo attachments are still pending and have not been reviewed."
     : "";
   if (r.kind === "emergency")
     return `Flight surgeon ${tag}: Emergency report received. Continue the protocol; the CMO leads on site. Send vitals every 15 minutes.`;
@@ -765,27 +770,8 @@ export function exportCsv(pid) {
 // ---------- Clock: Earth-link delivery and event timers ----------
 
 export function tick(s, now) {
-  let changed = false;
   const delay = earthDelayMs(s);
-  for (const r of s.reports) {
-    if (r.status === "queued" && s.link.online) {
-      Object.assign(r, {
-        status: "sending",
-        sentAt: now,
-        deliverAt: now + delay,
-      });
-      changed = true;
-    } else if (r.status === "sending" && now >= r.deliverAt) {
-      Object.assign(r, {
-        status: "delivered",
-        replyAt: r.deliverAt + 5000 + delay,
-      });
-      changed = true;
-    } else if (r.status === "delivered" && now >= r.replyAt && s.link.online) {
-      Object.assign(r, { status: "replied", reply: replyFor(r) });
-      changed = true;
-    }
-  }
+  let changed = advanceDeltaQueue(s, now, delay, replyFor);
   const ev = activeEvent(s);
   if (ev && now >= ev.endsAt) {
     finishSolarEvent(s);

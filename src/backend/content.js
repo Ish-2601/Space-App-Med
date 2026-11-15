@@ -1,4 +1,5 @@
 // Static content used by the backend. Sources for numbers are listed in docs/RESEARCH.md.
+import { SPECIALIZED_EMERGENCIES } from "./emergencySpecialized.js";
 
 // Dose rates (mSv/day): ISS ~0.5 (0.2–0.7 depending on solar cycle; Chang'e-4 comparison measured 0.73),
 // Mars cruise 1.84 and Mars surface 0.64 (Curiosity RAD), Moon surface 1.37 (Chang'e-4 LND).
@@ -266,6 +267,7 @@ export const EMERGENCIES = [
     when: "Pressure in the chest, palpitations, shortness of breath.",
     steps: ["Stop activity and rest", "Measure HR, BP, SpO₂; record ECG if available", "Give oxygen if SpO₂ under 94%", "CMO follows the cardiac protocol in the medical kit", "Send priority report to flight surgeon"],
   },
+  ...SPECIALIZED_EMERGENCIES,
 ];
 
 export const CHECKLISTS = [
