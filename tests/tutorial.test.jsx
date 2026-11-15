@@ -78,6 +78,8 @@ describe("tutorial screen", () => {
     expect(report).toContain("[BUG]  Move around with the bottom bar — Back button");
   });
   it("docs/TUTORIAL.md is up to date (run npm run docs:tutorial)", () => {
-    expect(readFileSync("docs/TUTORIAL.md", "utf8").trim()).toBe(tutorialMarkdown().trim());
+    // Git on Windows may check the file out with CRLF line endings; compare the text, not the line endings.
+    const norm = (t) => t.replace(/\r\n/g, "\n").trim();
+    expect(norm(readFileSync("docs/TUTORIAL.md", "utf8"))).toBe(norm(tutorialMarkdown()));
   });
 });
