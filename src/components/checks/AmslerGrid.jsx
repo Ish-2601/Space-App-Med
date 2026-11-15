@@ -2,6 +2,25 @@ import React, { useRef, useState } from "react";
 import { saveTest } from "../../backend/api.js";
 import { Icon, Status } from "../ConsoleUI.jsx";
 const N = 20;
+
+// Every grid square on a straight line from square a to square b (Bresenham), including both ends.
+export function lineBetween(a, b, n = N) {
+  let [r0, c0] = [Math.floor(a / n), a % n];
+  const [r1, c1] = [Math.floor(b / n), b % n];
+  const dr = Math.abs(r1 - r0);
+  const dc = Math.abs(c1 - c0);
+  const sr = r0 < r1 ? 1 : -1;
+  const sc = c0 < c1 ? 1 : -1;
+  let err = dc - dr;
+  const out = [];
+  for (;;) {
+    out.push(r0 * n + c0);
+    if (r0 === r1 && c0 === c1) return out;
+    const e2 = 2 * err;
+    if (e2 > -dr) (err -= dr, (c0 += sc));
+    if (e2 < dc) (err += dc, (r0 += sr));
+  }
+}
 export default function AmslerGrid({ person, onSaved }) {
   const [eye, setEye] = useState("left"),
     [marks, setMarks] = useState({ left: [], right: [] }),
@@ -15,6 +34,45 @@ export default function AmslerGrid({ person, onSaved }) {
         ? m[eye].filter((x) => x !== i)
         : [...m[eye], i],
     }));
+
+  // Click-and-drag marking (mouse, pen or finger). The first square decides the mode:
+  // pressing on an empty square paints marks, pressing on a marked square erases them.
+  const drag = useRef(null); // { on: boolean, last: index } while the pointer is held down
+  const setCells = (list, on) =>
+    setMarks((m) => {
+      const cur = new Set(m[eye]);
+      let changed = false;
+      for (const i of list) {
+        if (on && !cur.has(i)) (cur.add(i), (changed = true));
+        if (!on && cur.has(i)) (cur.delete(i), (changed = true));
+      }
+      return changed ? { ...m, [eye]: [...cur] } : m;
+    });
+  const cellAt = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    const i = el?.dataset?.cell;
+    return i == null ? null : Number(i);
+  };
+  function onPointerDown(e) {
+    if (e.button != null && e.button !== 0) return; // left button / touch / pen only
+    const i = cellAt(e.clientX, e.clientY);
+    if (i == null) return;
+    e.preventDefault(); // no text selection or page scroll while drawing
+    const on = !marks[eye].includes(i);
+    drag.current = { on, last: i };
+    setFocus(i);
+    setCells([i], on);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+  }
+  function onPointerMove(e) {
+    const d = drag.current;
+    if (!d) return;
+    const i = cellAt(e.clientX, e.clientY);
+    if (i == null || i === d.last) return;
+    setCells(lineBetween(d.last, i), d.on); // fill squares a fast movement skipped over
+    d.last = i;
+  }
+  const endDrag = () => (drag.current = null);
   function finish() {
     if (eye === "left") setEye("right");
     else {
@@ -73,10 +131,16 @@ export default function AmslerGrid({ person, onSaved }) {
         className="amsler"
         role="group"
         aria-label={"Amsler grid, " + eye + " eye"}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onLostPointerCapture={endDrag}
       >
         {Array.from({ length: N * N }, (_, i) => (
           <button
             key={i}
+            data-cell={i}
             ref={(el) => {
               cells.current[i] = el;
             }}
@@ -86,7 +150,9 @@ export default function AmslerGrid({ person, onSaved }) {
             tabIndex={focus === i ? 0 : -1}
             onFocus={() => setFocus(i)}
             onKeyDown={(e) => move(e, i)}
-            onClick={() => toggle(i)}
+            // Mouse and touch are handled by the pointer events above;
+            // a click with detail 0 comes from the keyboard (Space / Enter).
+            onClick={(e) => e.detail === 0 && toggle(i)}
             aria-label={
               "Row " + (Math.floor(i / N) + 1) + ", column " + ((i % N) + 1)
             }

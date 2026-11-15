@@ -3,6 +3,7 @@ import { estimateBpm, regionMean } from "../src/backend/rppg.js";
 import { scorePvt, LAPSE_MS, ISI_MIN_MS, ISI_MAX_MS, PVT_DURATION_SEC, randomIsi } from "../src/backend/pvt.js";
 import { optotypeMm, snellen, smallestDrawableLine } from "../src/backend/vision.js";
 import { statusOf, personalBaseline, greenBand } from "../src/lib.js";
+import { lineBetween } from "../src/components/checks/AmslerGrid.jsx";
 
 // Fake camera signal: a pulse at `bpm` plus slow drift and random noise, sampled at ~30 fps with jitter
 function fakeSignal(bpm, seconds = 20, noise = 0.3, seed = 1) {
@@ -93,6 +94,18 @@ describe("near vision chart maths", () => {
   it("limits the chart to letters at least 5 pixels tall", () => {
     expect(smallestDrawableLine(96 / 25.4)).toBeGreaterThan(0.2);
     expect(smallestDrawableLine(20)).toBeLessThan(smallestDrawableLine(96 / 25.4));
+  });
+});
+
+describe("Amsler grid drag marking", () => {
+  it("fills every square on the line between two points so fast drags leave no gaps", () => {
+    expect(lineBetween(0, 4)).toEqual([0, 1, 2, 3, 4]); // along a row
+    expect(lineBetween(0, 60)).toEqual([0, 20, 40, 60]); // down a column
+    expect(lineBetween(0, 63)).toEqual([0, 21, 42, 63]); // diagonal
+    expect(lineBetween(45, 45)).toEqual([45]);
+    const path = lineBetween(399, 0);
+    expect(path[0]).toBe(399);
+    expect(path.at(-1)).toBe(0);
   });
 });
 

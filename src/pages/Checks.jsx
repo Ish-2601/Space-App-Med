@@ -93,7 +93,8 @@ export default function Checks({ person, go, params = {} }) {
                 <li>Look only at the white dot in the middle.</li>
                 <li>
                   Mark any square where lines look wavy, blurry, bent or
-                  missing.
+                  missing. Click a square, or hold the button and drag across
+                  several. Start a drag on a marked square to erase.
                 </li>
               </ol>
             ) : (
@@ -111,8 +112,8 @@ export default function Checks({ person, go, params = {} }) {
             )}
             {open === "amsler" && (
               <p className="muted small">
-                Use the arrow keys to move around the grid, and Space to mark a
-                square.
+                On a touch screen, drag with your finger. With a keyboard, use
+                the arrow keys to move and Space to mark a square.
               </p>
             )}
           </Panel>
