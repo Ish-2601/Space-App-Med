@@ -62,7 +62,7 @@ export const CHECKS = [
   },
   {
     id: "amsler", title: "Amsler grid (vision distortion)", every: 7, part: "eyes",
-    what: "Cover one eye, stare at the centre dot, mark any wavy, blurry or missing lines.",
+    what: "Hold the screen about 30–35 cm away (normal reading distance) with your reading glasses on if you use them. Cover one eye, stare at the centre dot, mark any wavy, blurry or missing lines.",
     why: "SANS can fold the retina and choroid at the back of the eye. Folds near the centre of vision can make straight lines look wavy. The grid is a quick self-screen between eye exams.",
     action: { yellow: "Distortion marked. Report to the CMO for an eye exam / ultrasound (SANS).", red: "Distortion marked. Report to the CMO and flight surgeon now." },
   },

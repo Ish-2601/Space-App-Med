@@ -66,12 +66,12 @@
       "green": [36.1, 37.4], "yellow": [35.5, 37.9],
       "hazards": ["hostile", "radiation"], "risk": "Altered Immune System Responses",
       "how": "Use the forehead or ear thermometer, at rest.",
-      "why": "Spaceflight stress can weaken immunity and reactivate dormant viruses (cold sores, shingles), and microbes can be more virulent in space.",
+      "why": "Spaceflight stress can weaken immunity and reactivate dormant viruses (cold sores, shingles), and microbes can be more virulent in space. Note: on long missions resting core temperature rises about 1 °C over the first 2.5 months (Stahn et al. 2017), so compare with your own in-flight trend. A new rise above your usual, especially with symptoms, matters most.",
       "action": {
         "yellow": "Rest, hydrate, recheck in 2 hours, and log any rash, cold sore or sore throat.",
         "red": "Limit close contact with crewmates and notify the crew medical officer and flight surgeon."
       },
-      "sources": ["https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/", "https://www.cdc.gov/quarantine/maritime/definitions-signs-symptoms-conditions-ill-travelers.html"]
+      "sources": ["https://www.nasa.gov/reference/risk-of-altered-immune-system-responses/", "https://www.cdc.gov/quarantine/maritime/definitions-signs-symptoms-conditions-ill-travelers.html", "https://pmc.ncbi.nlm.nih.gov/articles/PMC5701078"]
     },
     {
       "id": "sleep", "label": "Sleep", "unit": "hours", "bodyPart": "brain",
