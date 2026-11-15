@@ -9,6 +9,7 @@ import {
   sendReport,
 } from "../backend/api.js";
 import CrewAvatar from "../components/CrewAvatar.jsx";
+import { EvaBadge, CrewWorkloadHeatmap } from "../components/CrewReadiness.jsx";
 import { PageTitle, Panel, Status, Icon } from "../components/ConsoleUI.jsx";
 export default function CrewView({ onOpenPerson, go }) {
   const state = useStore(),
@@ -78,6 +79,7 @@ export default function CrewView({ onOpenPerson, go }) {
           </Panel>
         ))}
       </div>
+      <CrewWorkloadHeatmap onOpenPerson={onOpenPerson} />
       <div className="main-with-aside">
         <div className="crew-medical-grid">
           {rows.map((r) => (
@@ -101,6 +103,7 @@ export default function CrewView({ onOpenPerson, go }) {
                 </div>
               </div>
               <Status status={r.status} />
+              <EvaBadge person={r.person} />
               <ul className="quiet-list">
                 {r.alerts.length ? (
                   r.alerts.slice(0, 4).map((a) => (

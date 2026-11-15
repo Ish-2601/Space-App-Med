@@ -17,6 +17,7 @@ import HearingTest from "../components/checks/HearingTest.jsx";
 import StandTest from "../components/checks/StandTest.jsx";
 import WorkloadCheck from "../components/checks/WorkloadCheck.jsx";
 import UrineCheck from "../components/checks/UrineCheck.jsx";
+import ARCameraGuides from "../components/ARCameraGuides.jsx";
 import {
   Back,
   PageTitle,
@@ -190,6 +191,18 @@ export default function Checks({ person, go, params = {} }) {
         eyebrow="Personal health"
         title="Medical checks"
         description="Small checks to notice changes early. Choose a test to begin."
+      />
+      <ARCameraGuides
+        person={person}
+        initialGuide={
+          {
+            "ar-ocular": "onsd",
+            "ar-bladder": "bladder",
+            "ar-pupil": "iris",
+            "ar-rppg": "pulse",
+          }[open]
+        }
+        onPulse={() => setOpen("hr")}
       />
       <div className="checks-directory">
         {due.map(({ check: c, last, daysSince, applicable, due: isDue }) => (

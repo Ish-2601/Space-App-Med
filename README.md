@@ -52,6 +52,37 @@ All reports, notifications, and replies are simulated locally. Camera and motion
 
 Run `npm test` and `npm run build` after changes. Regression coverage includes public/private isolation, critical boundary values and confirmation, draft persistence, wearable sync idempotence, recovery points/streaks, day-aligned correlations, forecast controls, voice actions, and legacy display preferences.
 
+## Specialized clinical and emergency modules
+
+All ten Body screens now include specialized tools without replacing their existing readings, diagnostics, charts or care links. Structured records and drafts persist locally in `clinicalRecords`, or in `privateSandboxRecords` while Sandbox is on. Switching modes never publishes private entries.
+
+| Body screen | Tools |
+|---|---|
+| Head and mental wellbeing | Six-step offline CBT thought record; forest/ocean/mountain previews; approved scent-cartridge prompts; sleeping-bag ventilation checklist and session timer |
+| Eyes | Baseline/left/right ONSD and hyperopic-shift log, globe-flattening/choroidal-fold observations, CMO countermeasure notes and AR link |
+| Hearing and balance | Motion-provocation log and energy-averaged acoustic exposure log with >60 dBA fan-noise review flags |
+| Heart | Six-breath/minute visual box pacer and simulated coherence; calculator for an entered, CMO-approved fluid-loading/LBNP plan |
+| Respiratory | Regolith exposure and FeNO log, Suitlock/HEPA checklist |
+| Immunity and skin | Disclosed viral-reactivation scenario index; nailbed/foot-loop hotspot map linked to local photo records |
+| Nutrition | Camera barcode, manual-code and reader input; sample food manifest with micronutrient totals and configurable iron-review ceiling |
+| Kidneys | Interactive renal-risk scenario gauge, hydration/urine/sodium inputs, clinician-led citrate/ultrasound notes and bladder AR link |
+| Bones and muscles | ARED/T2/CEVIS load heatmap, perceived exertion and persistent fetal-tuck stretch timer |
+| Radiation | Entered organ absorbed doses × quality factor, shielding comparisons, AstroRad/water-wall layout diagrams |
+
+Medical self-checks include four camera or manual SVG alignment guides: ocular ultrasound, bladder ultrasound, pupil/nystagmus rings and pulse ROIs. Green confirms only geometric alignment with a training target. The camera cannot perform ultrasound, measure ONSD, or certify a safe clinical scan. Camera access is opt-in; streams stop on exit.
+
+Emergency now preserves its original six protocols and adds ocular injury, renal colic, toxic atmosphere and dental emergencies. Each step includes equipment provenance, a **simulated drawer assignment**, persistent reminder timers where appropriate, vitals and priority-report support. Private rehearsals are separate from public active emergencies. The 110 BPM visual/audible CPR aid includes three zero-G positioning diagrams, a persistent code timer and timestamped observations. It does not select ACLS drugs or assess compression quality.
+
+NASA's released kit list identifies red EMTP, white CMP, blue MDP, yellow PEP, pink MTP and **green MSP**. The requested Green CCPK association is explicitly a prototype grouping, not an official color claim. Medicines, Morgan Lens, dental interventions, LBNP and acoustic stone propulsion are presented as clinician-directed or research options, never automatic prescriptions.
+
+The medical kit includes a four-drug storage/potency **scenario** calculator and pharmacokinetic review notes. Assumed radiation acceleration is off by default: the [2025 NASA-supported stability study](https://pmc.ncbi.nlm.nih.gov/articles/PMC12085706/) did not establish accelerated degradation in the solid formulations tested. Model percentages do not replace assays, expiration guidance or a pharmacist's review.
+
+The simulated Earth link transmits P1 512-byte emergency vital deltas, P2 clinical JSON and P3 media chunks in priority order. Deltas reference the last returned acknowledgement; media yields to urgent packets, and offline time does not accumulate bandwidth. The judge mode models a 40-minute roundtrip in 40 seconds (20 seconds each way after upload). No network transmission occurs. Photo delivery is tracked separately from clinical replies.
+
+Users and CMO screens include a public Raw NASA-TLX/sleep-debt heatmap and a local **Fit-for-EVA proof demonstration**. Six Pedersen commitments and Schnorr opening proofs establish that all six committed prototype readiness bits equal one, bound to the public snapshot, profile and mission day. The verifier rejects stale or tampered transcripts and never reads sandbox logs. This is an educational, non-constant-time implementation with no trusted issuer; it cannot establish clinical truth or authorize an EVA. Missing workload/check-in evidence prevents proof generation.
+
+Validation: **302 tests passing**, preserving the preceding 241 tests; production build passes. Browser checks cover private CBT/SANS records, AR alignment, emergency vitals/timer restoration, queue priority, pharmacy scenario restoration and local proof generation. Hardware ultrasound, scent cartridges, clinical wearables and a VR headset are not controlled by this prototype.
+
 ## Features
 
 **Daily**
@@ -71,7 +102,7 @@ Run `npm test` and `npm run build` after changes. Regression coverage includes p
 
 **My health:** body map with personal per-part status, trends against your own baseline, radiation dose vs the 600 mSv limit with solar storm sheltering, mind and journal.
 
-**Help:** med guide (12 symptoms), shared med kit with stock and low-supply warnings, EVA/landing checklists, 6 emergency protocols.
+**Help:** med guide (12 symptoms), shared med kit with stock and low-supply warnings, EVA/landing checklists, 10 emergency protocols.
 
 **Crew and mission:** Earth link with realistic delay and offline queue, habitat CO₂/O₂/pressure monitor, CMO view, Learn page (NASA's 5 hazards, 17 risks, the challenge's 5 questions answered), mission control (ISS / Mars transit / Moon / Mars, demo triggers, CSV export).
 

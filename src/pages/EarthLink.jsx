@@ -8,6 +8,7 @@ import {
 } from "../backend/api.js";
 import useNow from "../components/useNow.js";
 import PhotoThumb from "../components/PhotoThumb.jsx";
+import EarthPriorityQueue from "../components/EarthPriorityQueue.jsx";
 import { PageTitle, Icon, Status } from "../components/ConsoleUI.jsx";
 
 const STAGES = ["Queued", "Travelling to Earth", "Delivered", "Reply received"];
@@ -81,15 +82,17 @@ export default function EarthLink({ person, embedded = false, params = {} }) {
         </button>
       </div>
       <p className="muted small">
-        One-way delay {delayText(env)} · Demo delivery takes{" "}
-        {Math.ceil(earthDelayMs(state) / 1000)} seconds. This is a simulated
-        Earth link.
+        One-way delay{" "}
+        {state.link.judgesDemo40 ? "20 min · judge demo" : delayText(env)} ·
+        Demo delivery takes {Math.ceil(earthDelayMs(state) / 1000)} seconds.
+        This is a simulated Earth link.
       </p>
       {error && (
         <p className="error" role="alert">
           {error}
         </p>
       )}
+      <EarthPriorityQueue pid={pid} />
       <h4 className="eyebrow section-label">Your reports and messages</h4>
       {!reports.length && (
         <div className="empty-state">
@@ -161,6 +164,16 @@ export default function EarthLink({ person, embedded = false, params = {} }) {
               )}
               {r.photoIds?.length > 0 && (
                 <div className="gallery">
+                  {r.packets?.some(
+                    (p) =>
+                      p.tier === 3 &&
+                      !["delivered", "acknowledged"].includes(p.state),
+                  ) && (
+                    <p className="small muted">
+                      Onboard attachment preview · media is still pending.
+                      Report delivery refers to clinical JSON.
+                    </p>
+                  )}
                   {r.photoIds.map((id) => (
                     <PhotoThumb key={id} id={id} size={72} />
                   ))}

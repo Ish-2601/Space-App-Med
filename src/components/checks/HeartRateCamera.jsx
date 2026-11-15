@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import useCamera from "../useCamera.js";
 import { estimateBpm, regionMean } from "../../backend/rppg.js";
 import { saveTest } from "../../backend/api.js";
+import { PulseROIOverlay } from "../ARCameraGuides.jsx";
 
 const DURATION_SEC = 20;
 // Where to read colour from: forehead box for face mode, whole frame for fingertip mode
@@ -18,6 +19,7 @@ export default function HeartRateCamera({ person, onSaved }) {
   const [live, setLive] = useState(null);
   const [result, setResult] = useState(null);
   const [saved, setSaved] = useState(null);
+  const [showAlignment, setShowAlignment] = useState(true);
   const samples = useRef([]);
   const raf = useRef(0);
   const canvas = useRef(null);
@@ -30,7 +32,9 @@ export default function HeartRateCamera({ person, onSaved }) {
     setElapsed(0);
     setLive(null);
     samples.current = [];
-    const stream = await cam.start(mode === "face" ? "user" : "environment", { torch: mode === "finger" });
+    const stream = await cam.start(mode === "face" ? "user" : "environment", {
+      torch: mode === "finger",
+    });
     if (!stream) return;
     setPhase("measuring");
     const t0 = performance.now();
@@ -72,7 +76,12 @@ export default function HeartRateCamera({ person, onSaved }) {
   }
 
   function save() {
-    const res = saveTest(person.id, "hr", { bpm: result.bpm, quality: Math.round(result.quality * 100) / 100, label: result.label, mode });
+    const res = saveTest(person.id, "hr", {
+      bpm: result.bpm,
+      quality: Math.round(result.quality * 100) / 100,
+      label: result.label,
+      mode,
+    });
     setSaved(res);
     onSaved?.();
   }
@@ -80,8 +89,24 @@ export default function HeartRateCamera({ person, onSaved }) {
   return (
     <div>
       <div className="row">
-        <label className="radio"><input type="radio" checked={mode === "face"} onChange={() => setMode("face")} disabled={phase === "measuring"} /> Face (front camera)</label>
-        <label className="radio"><input type="radio" checked={mode === "finger"} onChange={() => setMode("finger")} disabled={phase === "measuring"} /> Fingertip (back camera + flash)</label>
+        <label className="radio">
+          <input
+            type="radio"
+            checked={mode === "face"}
+            onChange={() => setMode("face")}
+            disabled={phase === "measuring"}
+          />{" "}
+          Face (front camera)
+        </label>
+        <label className="radio">
+          <input
+            type="radio"
+            checked={mode === "finger"}
+            onChange={() => setMode("finger")}
+            disabled={phase === "measuring"}
+          />{" "}
+          Fingertip (back camera + flash)
+        </label>
       </div>
       <p className="small muted">
         {mode === "face"
@@ -89,34 +114,110 @@ export default function HeartRateCamera({ person, onSaved }) {
           : "Cover the back camera (and flash) completely with your fingertip. Press lightly and keep still for 20 seconds."}
       </p>
       <div className="cam-box">
-        <video ref={cam.videoRef} playsInline muted className={cam.active ? "" : "hidden"} />
-        {cam.active && mode === "face" && <div className="roi" style={{ left: "38%", top: "12%", width: "24%", height: "18%" }} />}
-        {!cam.active && <div className="cam-placeholder"><div className="camera-outline" /><span>{phase === "done" ? "Measurement complete · camera off" : "Camera off · ready when you are"}</span></div>}
+        <video
+          ref={cam.videoRef}
+          playsInline
+          muted
+          className={cam.active ? "" : "hidden"}
+        />
+        {cam.active && mode === "face" && (
+          <PulseROIOverlay visible={showAlignment} />
+        )}
+        {!cam.active && (
+          <div className="cam-placeholder">
+            <div className="camera-outline" />
+            <span>
+              {phase === "done"
+                ? "Measurement complete · camera off"
+                : "Camera off · ready when you are"}
+            </span>
+          </div>
+        )}
       </div>
+      {mode === "face" && (
+        <label className="radio">
+          <input
+            type="checkbox"
+            checked={showAlignment}
+            onChange={(event) => setShowAlignment(event.target.checked)}
+          />
+          Show AR forehead / cheek positioning guide
+        </label>
+      )}
       <canvas ref={canvas} width="80" height="60" className="hidden" />
       {cam.error && <p className="error">{cam.error}</p>}
 
-      {phase === "idle" && <button className="btn primary" onClick={begin}>Start 20-second measurement</button>}
+      {phase === "idle" && (
+        <button className="btn primary" onClick={begin}>
+          Start 20-second measurement
+        </button>
+      )}
       {phase === "measuring" && (
         <>
-          <div className="meter"><div style={{ width: `${(elapsed / DURATION_SEC) * 100}%`, background: "#9cb9ce" }} /></div>
-          <p>Measuring… {Math.ceil(DURATION_SEC - elapsed)} s left{live?.bpm ? ` · live estimate ${live.bpm} bpm (${live.label})` : ""}</p>
-          <button className="btn small" onClick={() => { cancelAnimationFrame(raf.current); cam.stop(); setPhase("idle"); }}>Cancel</button>
+          <div className="meter">
+            <div
+              style={{
+                width: `${(elapsed / DURATION_SEC) * 100}%`,
+                background: "#9cb9ce",
+              }}
+            />
+          </div>
+          <p>
+            Measuring… {Math.ceil(DURATION_SEC - elapsed)} s left
+            {live?.bpm
+              ? ` · live estimate ${live.bpm} bpm (${live.label})`
+              : ""}
+          </p>
+          <button
+            className="btn small"
+            onClick={() => {
+              cancelAnimationFrame(raf.current);
+              cam.stop();
+              setPhase("idle");
+            }}
+          >
+            Cancel
+          </button>
         </>
       )}
       {phase === "done" && result && (
-        <div className={"alert " + (result.label === "poor" ? "yellow" : "info")}>
-          <b>{result.bpm ? `${result.bpm} bpm` : "No pulse found"}</b> · signal quality {result.label} ({Math.round(result.quality * 100)}%)
-          {result.label === "poor" && <div>{result.reason || "The signal was too noisy to trust. Hold still, improve the light, and try again."}</div>}
+        <div
+          className={"alert " + (result.label === "poor" ? "yellow" : "info")}
+        >
+          <b>{result.bpm ? `${result.bpm} bpm` : "No pulse found"}</b> · signal
+          quality {result.label} ({Math.round(result.quality * 100)}%)
+          {result.label === "poor" && (
+            <div>
+              {result.reason ||
+                "The signal was too noisy to trust. Hold still, improve the light, and try again."}
+            </div>
+          )}
           <div className="row">
-            {result.label !== "poor" && !saved && <button className="btn primary" onClick={save}>Save to my heart-rate record</button>}
-            <button className="btn" onClick={() => setPhase("idle")}>Measure again</button>
+            {result.label !== "poor" && !saved && (
+              <button className="btn primary" onClick={save}>
+                Save to my heart-rate record
+              </button>
+            )}
+            <button className="btn" onClick={() => setPhase("idle")}>
+              Measure again
+            </button>
           </div>
-          {saved && <div>Saved. Status: {saved.status} ({saved.summary}).</div>}
+          {saved && (
+            <div>
+              Saved. Status: {saved.status} ({saved.summary}).
+            </div>
+          )}
         </div>
       )}
-      {phase === "done" && !result && <p className="error">Not enough video frames were captured. Try again.</p>}
-      <p className="muted small">Camera pulse readings are less accurate than a medical monitor. Use them for trends and spot checks.</p>
+      {phase === "done" && !result && (
+        <p className="error">
+          Not enough video frames were captured. Try again.
+        </p>
+      )}
+      <p className="muted small">
+        Camera pulse readings are less accurate than a medical monitor. Use them
+        for trends and spot checks.
+      </p>
     </div>
   );
 }

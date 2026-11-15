@@ -1,0 +1,278 @@
+.ar-guides {
+  margin-bottom: 30px;
+}
+.ar-guide-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 20px 0;
+}
+.ar-guide-tabs .btn {
+  font-size: 13px;
+  text-align: left;
+  justify-content: start;
+}
+.ar-guide-tabs [aria-pressed="true"] {
+  border-color: #9bb9cc;
+  background: #233746;
+}
+.ar-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 28px;
+}
+.ar-camera {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  background: #050a10;
+  border: 1px solid #4c6375;
+  border-radius: 14px;
+  color: #c5a76d;
+}
+.ar-camera video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.ar-camera svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: manipulation;
+}
+.ar-demo-anatomy {
+  stroke: #527084;
+  stroke-width: 2;
+  fill: #13232f;
+}
+.ar-demo-anatomy text {
+  fill: #829cac;
+  stroke: none;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+.ar-reticle {
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+.ar-target {
+  stroke: #8199ad;
+  stroke-dasharray: 3 5;
+  opacity: 0.6;
+}
+.ar-aligned {
+  color: #94cdb4;
+  border-color: #94cdb4;
+}
+.ar-feed-label {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background: #081018e0;
+  border: 1px solid #344858;
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 20px;
+  color: #c9dce6;
+  pointer-events: none;
+}
+.ar-camera-actions {
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.ar-controls {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+}
+.ar-controls h3,
+.ar-controls p {
+  margin: 0;
+}
+.ar-controls label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+.ar-controls input {
+  grid-column: 1/-1;
+  width: 100%;
+}
+.ar-pulse-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  fill: none;
+  stroke: #a5d2bd;
+  stroke-width: 0.5;
+}
+.ar-pulse-overlay .ar-cheek {
+  stroke-dasharray: 2 1;
+  opacity: 0.7;
+}
+.ar-pulse-overlay text {
+  fill: #c7e6d7;
+  stroke: none;
+  font-size: 2.4px;
+}
+.eva-badge {
+  padding: 14px 0;
+  display: grid;
+  gap: 8px;
+  border-bottom: 1px solid #33434f;
+  min-width: 0;
+}
+.eva-badge .status {
+  font-size: 11px;
+  line-height: 1.45;
+  white-space: normal;
+}
+.eva-badge .text-button {
+  font-size: 12px;
+  text-align: left;
+  justify-content: flex-start;
+}
+.eva-badge details {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #a8bbc7;
+}
+.eva-badge summary {
+  cursor: pointer;
+}
+.eva-badge details p {
+  margin: 8px 0;
+}
+.eva-badge a,
+.crew-workload a,
+.ar-guides a {
+  color: #a8c8df;
+}
+.crew-workload {
+  margin: 26px 0;
+  min-width: 0;
+  text-align: left;
+}
+.workload-table-wrap {
+  overflow-x: auto;
+  max-width: 100%;
+  border-radius: 10px;
+}
+.workload-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
+  min-width: 880px;
+  font-size: 12px;
+}
+.workload-table th {
+  text-align: left;
+  font-weight: 500;
+  color: #b0c0cb;
+  padding: 10px 8px;
+}
+.workload-table td {
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: 5px;
+  border: 1px solid #344451;
+}
+.workload-table th .text-button {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.heat-unknown {
+  color: #80919e;
+  background: #101820;
+}
+.heat-low {
+  background: #182e2b;
+  color: #b5cfbf;
+}
+.heat-medium {
+  background: #333025;
+  color: #d5c08d;
+}
+.heat-high {
+  background: #3b252a;
+  color: #dfabae;
+}
+.workload-insight {
+  border-left: 2px solid #7898af;
+  padding: 10px 14px;
+  background: #0b151d;
+}
+.crew-workload details {
+  font-size: 12px;
+  line-height: 1.6;
+}
+.crew-workload summary {
+  cursor: pointer;
+}
+html.circadian-redshift
+  :is(
+    .ar-camera,
+    .heat-unknown,
+    .heat-low,
+    .heat-medium,
+    .heat-high,
+    .workload-insight,
+    .ar-guide-tabs [aria-pressed="true"]
+  ) {
+  background: #100705;
+  border-color: #723923;
+  color: #ff8d52;
+}
+html.circadian-redshift
+  :is(
+    .eva-badge details,
+    .eva-badge a,
+    .crew-workload a,
+    .ar-guides a,
+    .workload-table th
+  ) {
+  color: #ff985f;
+}
+html.circadian-redshift .ar-demo-anatomy {
+  stroke: #8b472d;
+  fill: #1b0c08;
+}
+html.circadian-redshift :is(.ar-demo-anatomy text, .ar-pulse-overlay text) {
+  fill: #ff8d52;
+}
+html.circadian-redshift .ar-target {
+  stroke: #bd5c39;
+}
+html.circadian-redshift .ar-aligned {
+  color: #ffae68;
+  border-color: #ffae68;
+}
+html.circadian-redshift .ar-feed-label {
+  color: #ff985f;
+  background: #130805;
+  border-color: #703523;
+}
+html.circadian-redshift .ar-pulse-overlay {
+  stroke: #ff8d52;
+}
+@media (max-width: 850px) {
+  .ar-guide-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ar-workspace {
+    grid-template-columns: 1fr;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ar-camera * {
+    transition: none;
+  }
+}
