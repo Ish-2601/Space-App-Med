@@ -527,3 +527,49 @@ body { font-size: 16px; }
   .triage { padding-bottom: 90px; }
 }
 @media (max-width: 760px) { .triage-peek { bottom: 84px; } }
+
+/* ---------- Glowing outline body map with status badges (v3) ---------- */
+.bodymap.bodymap-v3 { display: block; }
+.bodymap-v3 .bm-caption { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-height: 40px; margin-bottom: var(--space-3); font-size: 15px; }
+.bodymap-v3 .bm-caption svg { color: var(--brand); }
+.bm-stage {
+  border-radius: var(--radius-sm); border: 1px solid var(--line); padding: var(--space-4) var(--space-2) var(--space-2);
+  background: radial-gradient(ellipse at 50% 45%, #18205a 0%, #0c1238 55%, #080b24 100%);
+}
+.bm-neon { display: block; width: 100%; max-width: 320px; max-height: 620px; margin: 0 auto; overflow: visible; }
+.bm-body { cursor: pointer; outline: none; }
+.bm-outline { fill: none; stroke: #eef1ff; stroke-width: 3.2; stroke-linejoin: round; }
+.bm-outline-glow { fill: none; stroke: #a9b4ff; stroke-width: 7; stroke-opacity: 0.75; }
+.bm-detail path { fill: none; stroke: #c8d0ff; stroke-opacity: 0.32; stroke-width: 1.6; stroke-linecap: round; }
+.bm-body.hover .bm-outline-glow, .bm-body:focus-visible .bm-outline-glow { stroke-opacity: 1; stroke-width: 10; }
+.bm-body.selected .bm-outline { stroke: #ffffff; stroke-width: 4; }
+.bm-body.selected .bm-outline-glow { stroke: #f2c879; stroke-opacity: 0.9; stroke-width: 12; }
+
+.bm-badge { cursor: pointer; outline: none; --c: #6f86c6; --bg: #121b3d; }
+.bm-badge.bm-green { --c: #3ddc97; --bg: #0f2f2c; }
+.bm-badge.bm-yellow { --c: #f2b84b; --bg: #3a2a0c; }
+.bm-badge.bm-red { --c: #ff6b6b; --bg: #3d1218; }
+.bm-badge.bm-unknown { --c: #8ea2e0; --bg: #141c44; }
+.badge-glow { fill: var(--c); opacity: 0.28; }
+.badge-disc { fill: var(--bg); stroke: var(--c); stroke-width: 2.5; }
+.badge-mark { fill: none; stroke: var(--c); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.badge-text { fill: var(--c); font-family: var(--font); font-weight: 800; }
+.badge-halo { fill: none; stroke: #ffffff; stroke-opacity: 0.85; stroke-width: 2.5; }
+.bm-badge.selected .badge-glow { opacity: 0.55; }
+.bm-badge.hover .badge-glow, .bm-badge:focus-visible .badge-glow { opacity: 0.6; }
+.bm-badge:focus-visible .badge-disc { stroke: #fff; }
+
+.bodymap-v3 .bm-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 0; margin: var(--space-3) 0 var(--space-4); font-size: 14px; color: var(--muted); }
+.bodymap-v3 .bm-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.bm-key {
+  display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-style: normal;
+  font-size: 13px; font-weight: 800; color: var(--c); background: var(--bg); border: 2px solid var(--c);
+}
+.bm-key.bm-green { --c: #3ddc97; --bg: #0f2f2c; }
+.bm-key.bm-yellow { --c: #f2b84b; --bg: #3a2a0c; }
+.bm-key.bm-red { --c: #ff6b6b; --bg: #3d1218; }
+.bm-key.bm-unknown { --c: #8ea2e0; --bg: #141c44; }
+.bm-key.bm-body-key { border-radius: 8px; width: 16px; height: 24px; --c: #eef1ff; --bg: #3b3f96; box-shadow: 0 0 8px #a9b4ff; }
+.bodymap-v3 .part-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.bodymap-v3 .part-list .body-map-hint { grid-column: 1 / -1; }
+@media (max-width: 760px) { .bodymap-v3 .part-list { grid-template-columns: 1fr; } .bm-neon { max-width: 260px; } }
