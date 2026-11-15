@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { setHash } from "../router.js";
 import ErrorBoundary from "./ErrorBoundary.jsx";
 import Today from "../pages/Today.jsx";
 import CheckIn from "../pages/CheckIn.jsx";
@@ -57,10 +58,18 @@ export const NAV = [
 export const PAGES = [...NAV.flatMap((g) => g.pages), { id: "more", C: More }, { id: "crewHub", C: CrewHub }];
 
 // One astronaut's personal app: mission bar, sidebar navigation, current page
-export default function Dashboard({ person, onSwitch, onOpenPerson, initialPage = "today" }) {
-  const [nav, setNav] = useState({ page: initialPage, params: {}, n: 0 });
+export default function Dashboard({ person, routeId = person.id, onSwitch, onOpenPerson, initialPage = "today" }) {
+  const known = (p) => (PAGES.some((x) => x.id === p) ? p : "today");
+  const [nav, setNav] = useState({ page: known(initialPage), params: {}, n: 0 });
+  useEffect(() => setHash(routeId, nav.page, true), []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Back/forward buttons: follow the address bar
+  useEffect(() => {
+    const p = known(initialPage);
+    setNav((prev) => (prev.page === p ? prev : { page: p, params: {}, n: prev.n + 1 }));
+  }, [initialPage]);
   const go = (page, params = {}) => {
     setNav((prev) => ({ page, params, n: prev.n + 1 })); // n forces a fresh page even if it's the same one
+    setHash(routeId, page);
     window.scrollTo?.(0, 0);
   };
   const Page = (PAGES.find((p) => p.id === nav.page) || PAGES[0]).C;

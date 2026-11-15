@@ -91,6 +91,7 @@ export default function Emergency({ person, go, params = {} }) {
     def = EMERGENCIES.find((d) => d.id === (em?.type || type));
   const past = state.emergencies.filter((e) => e.pid === pid && e.resolvedAt);
   const [ending, setEnding] = useState(false);
+  const [alerted, setAlerted] = useState("");
   const seconds = em ? Math.max(0, Math.floor((now - em.startedAt) / 1000)) : 0,
     done = em ? Object.values(em.stepsDone).filter(Boolean).length : 0;
   return (
@@ -98,11 +99,30 @@ export default function Emergency({ person, go, params = {} }) {
       {!em ? (
         <>
           <PageTitle
-            eyebrow="Emergency · Prototype protocol"
-            title="When the crew needs you"
-            description="Choose the patient and protocol. Starting notifies the onboard medical officer and queues a simulated priority report."
+            eyebrow="Emergency"
+            title="Get help, then follow the steps"
+            description="1. Alert the crew. 2. Choose who needs help. 3. Pick what is happening and follow the checklist."
           />
-          <Panel title="Patient">
+          <Panel title="Get help first" tone="red" className="alert-crew-panel">
+            <div className="alert-crew">
+              <button
+                className="btn danger alert-crew-button"
+                onClick={() => {
+                  const who = state.crew.find((p) => p.id === pid);
+                  notifyCMO(pid, `URGENT: ${who?.name || "A crew member"} needs help now (raised by ${person.name})`, "red");
+                  setAlerted(`Crew alerted at ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}. The medical officer has been notified.`);
+                }}
+              >
+                <Icon name="emergency" size={24} /> Alert the crew now
+              </button>
+              <p className="muted small">
+                Sends an urgent alert to the onboard medical officer. Earth is{" "}
+                too far away to help in real time, so the crew acts first.
+              </p>
+            </div>
+            {alerted && <p role="status" className="alert-crew-status"><Icon name="check" size={16} /> {alerted}</p>}
+          </Panel>
+          <Panel title="Who needs help">
             <label className="patient-select">
               Crew member
               <select value={pid} onChange={(e) => setPid(e.target.value)}>
@@ -116,7 +136,7 @@ export default function Emergency({ person, go, params = {} }) {
           </Panel>
           <div className="emergency-options">
             {EMERGENCIES.map((e) => (
-              <Panel key={e.id} tone={type === e.id ? "red" : "neutral"}>
+              <Panel key={e.id} tone="neutral">
                 <h2>{e.title}</h2>
                 <p className="muted">{e.when}</p>
                 <button

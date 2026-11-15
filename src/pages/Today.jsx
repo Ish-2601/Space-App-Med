@@ -67,6 +67,38 @@ const TASKS = {
   ],
 };
 
+// Turn an alert into a plain instruction ("Recheck your blood pressure"),
+// keeping the raw reading as the reason underneath.
+const IND_STEP = {
+  heartRate: "Recheck your resting heart rate",
+  systolic: "Recheck your blood pressure",
+  diastolic: "Recheck your blood pressure",
+  spo2: "Recheck your blood oxygen",
+  glucose: "Recheck your blood glucose",
+  temp: "Recheck your temperature",
+  sleep: "Protect your sleep tonight",
+  mood: "Take a break and talk to someone",
+  exercise: "Fit in your workout today",
+  water: "Drink some water now",
+  radiation: "Review your radiation dose",
+  mass: "Review your meals and body mass",
+};
+const CHECK_STEP = {
+  amsler: "Report your vision change to the CMO",
+  acuity: "Report your vision change to the CMO",
+  pvt: "Rest, then repeat the reaction test",
+  hr: "Repeat your heart-rate check",
+  balance: "Take it slow and repeat the balance test",
+};
+export function nextStepTitle(a) {
+  if (!a) return null;
+  if (a.indicator && IND_STEP[a.indicator]) return IND_STEP[a.indicator];
+  if (a.id.startsWith("check-")) return CHECK_STEP[a.id.slice(6)] || "Repeat this check";
+  if (a.id.startsWith("sym-")) return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
+  if (a.id === "co2") return a.level === "red" ? "Move to fresh air and follow the CO₂ steps" : "Check cabin ventilation";
+  return a.title;
+}
+
 export default function Today({ person, go }) {
   const state = useStore();
   const pid = person.id;
@@ -151,11 +183,16 @@ export default function Today({ person, go }) {
             <div>
               <p className="eyebrow">YOUR NEXT STEP</p>
               <h2>
-                {priority?.title ||
+                {nextStepTitle(priority) ||
                   (state.checkins[pid][state.mission.day]
                     ? "Keep your routine going"
                     : "Take a moment to check in")}
               </h2>
+              {priority && priority.title !== nextStepTitle(priority) && (
+                <p className="priority-reason">
+                  <Status status={priority.level}>Why</Status> {priority.title}
+                </p>
+              )}
               <p>
                 {priority?.action ||
                   "Review today's readings and complete any scheduled checks. Your record stays with you, even offline."}
@@ -286,7 +323,7 @@ export default function Today({ person, go }) {
                   }
                 >
                   <Icon name="medical" size={17} />
-                  {check.title}
+                  <span className="due-check-title">{check.title}</span>
                   <Icon name="arrow" size={15} />
                 </button>
               ))}

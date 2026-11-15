@@ -54,9 +54,9 @@ export default function CrewHub({ person, go, onOpenPerson }) {
               .slice(0, 4)
               .map((a) => (
                 <div key={a.id} className="signal-row">
-                  <Icon name="info" />
+                  <Icon name={a.level === "red" ? "alert" : "info"} />
                   <div>
-                    <b>{a.title}</b>
+                    <b className="signal-title">{a.title}</b>
                     <button
                       className="text-button"
                       onClick={() =>

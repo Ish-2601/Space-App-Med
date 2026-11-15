@@ -3,6 +3,7 @@ import CrewAvatar from "./CrewAvatar.jsx";
 import { useStore, envOf, activeEvent, delayText } from "../backend/api.js";
 import { Brand, Icon } from "./ConsoleUI.jsx";
 import { GROUPS, activeGroup } from "./navigation.js";
+import { getDisplay, setDisplay } from "../display.js";
 
 export default function ConsoleShell({
   person,
@@ -14,6 +15,7 @@ export default function ConsoleShell({
 }) {
   const state = useStore();
   const [menu, setMenu] = useState(false);
+  const [display, setDisp] = useState(getDisplay);
   const env = envOf(state);
   const ev = activeEvent(state);
   const unread = state.notifications.filter((n) => !n.read).length;
@@ -84,6 +86,16 @@ export default function ConsoleShell({
                     <small>{p.role}</small>
                   </button>
                 ))}
+                <div className="display-toggles" role="group" aria-label="Display">
+                  <label>
+                    <input type="checkbox" checked={display.night} onChange={(e) => setDisp(setDisplay({ night: e.target.checked }))} />
+                    Night mode <small>Dim red light for sleep periods</small>
+                  </label>
+                  <label>
+                    <input type="checkbox" checked={display.large} onChange={(e) => setDisp(setDisplay({ large: e.target.checked }))} />
+                    Larger text <small>Easier to read with vibration or tired eyes</small>
+                  </label>
+                </div>
                 <button onClick={onSwitch}>
                   Back to crew lobby <Icon name="arrow" size={16} />
                 </button>

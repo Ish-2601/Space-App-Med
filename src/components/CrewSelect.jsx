@@ -48,10 +48,10 @@ export default function CrewSelect({ onSelect, onMedical }) {
                   </dd>
                 </div>
                 <div className="crew-checkup">
-                  <dt>Checkup</dt>
+                  <dt>Today's checks</dt>
                   <dd className={`crew-checkup-status ${checkupRequired ? "is-necessary" : "is-clear"}`}>
                     <span className="crew-checkup-icon" aria-hidden="true">{checkupRequired ? "!" : "✓"}</span>
-                    {checkupRequired ? "Necessary" : "Not necessary"}
+                    {checkupRequired ? "To do" : "All done"}
                   </dd>
                 </div>
               </dl>
