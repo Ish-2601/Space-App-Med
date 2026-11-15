@@ -17,8 +17,8 @@ export function lineBetween(a, b, n = N) {
     out.push(r0 * n + c0);
     if (r0 === r1 && c0 === c1) return out;
     const e2 = 2 * err;
-    if (e2 > -dr) (err -= dr, (c0 += sc));
-    if (e2 < dc) (err += dc, (r0 += sr));
+    if (e2 > -dr) ((err -= dr), (c0 += sc));
+    if (e2 < dc) ((err += dc), (r0 += sr));
   }
 }
 export default function AmslerGrid({ person, onSaved }) {
@@ -98,7 +98,12 @@ export default function AmslerGrid({ person, onSaved }) {
         <h2>Amsler grid saved</h2>
         <Status status={saved.status} />
         <p>{saved.summary}</p>
-        {saved.status !== "green" && (
+        {saved.private && (
+          <p>
+            Saved in Private Sandbox. No medical officer notification was sent.
+          </p>
+        )}
+        {!saved.private && saved.status !== "green" && (
           <p className="muted">
             The medical officer has been notified. Review your eye status on the
             body map.

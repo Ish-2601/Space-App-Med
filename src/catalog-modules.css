@@ -1,0 +1,288 @@
+.catalog-module-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(1, 4, 9, 0.86);
+  backdrop-filter: blur(12px);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+.catalog-module-modal {
+  width: min(900px, 100%);
+  max-height: 92dvh;
+  overflow: auto;
+  background: linear-gradient(145deg, #17202a, #090e15 60%);
+  border: 1px solid #465766;
+  border-radius: 20px;
+  padding: 28px;
+  color: #e8edf3;
+  box-shadow: 0 24px 100px #0009;
+}
+.catalog-module-modal.is-private {
+  outline: 2px dashed #8188c0;
+  outline-offset: 5px;
+}
+.catalog-module-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  justify-content: space-between;
+}
+.catalog-module-header h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.25;
+  margin: 8px 0;
+}
+.catalog-module-header .eyebrow {
+  letter-spacing: 0.15em;
+  font-size: 11px;
+  color: #9aaab8;
+}
+.catalog-module-note {
+  border-left: 2px solid #7890a8;
+  padding: 10px 14px;
+  background: #1b2b3b55;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #b9c6d3;
+}
+.catalog-module-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 24px 0;
+}
+.catalog-module-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #cad4dd;
+}
+.catalog-module-fields input,
+.catalog-module-fields select,
+.catalog-module-fields textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  background: #080d14;
+  color: #edf0f4;
+  border: 1px solid #405263;
+  border-radius: 8px;
+  font: inherit;
+}
+.catalog-module-fields textarea {
+  resize: vertical;
+}
+.catalog-module-modal :focus-visible {
+  outline: 2px solid #c5e0ef;
+  outline-offset: 3px;
+}
+.catalog-module-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 20px 0;
+}
+.catalog-module-result {
+  margin-top: 24px;
+  padding: 22px;
+  border: 1px solid #3b5261;
+  border-radius: 12px;
+  background: #12232c55;
+}
+.catalog-module-result dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px;
+}
+.catalog-module-result dt {
+  color: #9eafbd;
+  font-size: 12px;
+}
+.catalog-module-result dd {
+  margin: 8px 0 0;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.catalog-module-result p {
+  white-space: pre-line;
+  line-height: 1.75;
+  color: #c0cbd5;
+}
+.catalog-module-error {
+  color: #ffb2a9;
+}
+.catalog-module-history {
+  margin-top: 20px;
+}
+.catalog-module-history article {
+  border-top: 1px solid #33414c;
+  padding: 14px 0;
+}
+.catalog-nav-preview {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 24px;
+  border: 1px dashed #59707e;
+  border-radius: 12px;
+  min-height: 130px;
+}
+.catalog-nav-preview.left {
+  justify-content: flex-start;
+  flex-direction: row-reverse;
+}
+.catalog-nav-preview button {
+  min-width: 80px;
+  min-height: 64px;
+}
+.catalog-nav-preview button:nth-child(2) {
+  transform: translateY(calc(var(--reach) / -9));
+}
+.catalog-nav-preview button:nth-child(3) {
+  transform: translateY(calc(var(--reach) / -4.5));
+}
+.catalog-tutorial {
+  border: 1px solid #3a5062;
+  padding: 18px;
+  border-radius: 12px;
+}
+.catalog-tutorial-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.catalog-tutorial-steps > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  font-size: 12px;
+  opacity: 0.55;
+}
+.catalog-tutorial-steps > div.active {
+  opacity: 1;
+}
+.catalog-tutorial svg {
+  width: 70px;
+  height: 70px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+.catalog-haptic {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.catalog-haptic-lamp {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #7d91a5;
+  border-radius: 50%;
+  background: #111923;
+}
+.catalog-haptic-lamp.on {
+  background: #dceef9;
+  box-shadow: 0 0 30px #b7dbef;
+}
+.catalog-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 0;
+}
+.catalog-palette span {
+  padding: 16px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background: #080d14;
+}
+.catalog-palette [data-status="ok"] {
+  color: #8bceff;
+}
+.catalog-palette [data-status="review"] {
+  color: #f2c471;
+}
+.catalog-palette [data-status="urgent"] {
+  color: #ecb8ee;
+}
+.catalog-palette.protan [data-status="urgent"] {
+  color: #fff;
+}
+.catalog-palette.mono span {
+  color: #fff;
+}
+.catalog-palette.mono [data-status="review"] {
+  border-style: dashed;
+}
+.catalog-palette.mono [data-status="urgent"] {
+  border-width: 4px;
+}
+@media (max-width: 600px) {
+  .catalog-module-backdrop {
+    padding: 10px;
+  }
+  .catalog-module-modal {
+    padding: 18px;
+    max-height: 96dvh;
+    border-radius: 12px;
+  }
+  .catalog-module-fields {
+    grid-template-columns: 1fr;
+  }
+  .catalog-module-header {
+    gap: 12px;
+  }
+  .catalog-module-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .catalog-tutorial-steps {
+    grid-template-columns: 1fr;
+  }
+  .catalog-nav-preview {
+    padding: 12px;
+    gap: 6px;
+  }
+  .catalog-nav-preview button {
+    min-width: 70px;
+  }
+}
+.circadian-redshift .catalog-module-modal,
+.circadian-redshift .catalog-module-fields input,
+.circadian-redshift .catalog-module-fields select,
+.circadian-redshift .catalog-module-fields textarea,
+.circadian-redshift .catalog-module-result,
+.circadian-redshift .catalog-module-note,
+.circadian-redshift .catalog-palette span {
+  background: #050505;
+  color: #ff3b30;
+  border-color: #9b2921;
+}
+.circadian-redshift
+  .catalog-module-modal
+  :is(p, label, dt, dd, h2, h3, span, b, summary, .eyebrow) {
+  color: #ff3b30;
+}
+.circadian-redshift .catalog-module-modal {
+  box-shadow: 0 24px 100px #000;
+}
+.circadian-redshift .catalog-haptic-lamp.on {
+  background: #ff3b30;
+  box-shadow: 0 0 24px #ff3b30;
+}
+.circadian-redshift .catalog-module-modal :focus-visible {
+  outline-color: #ff3b30;
+}
+.circadian-redshift .catalog-module-modal.is-private {
+  outline-color: #ff3b30;
+}
+.circadian-redshift .catalog-palette span {
+  border-color: #ff3b30;
+}

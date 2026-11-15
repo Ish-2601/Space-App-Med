@@ -1,8 +1,31 @@
 // Rules engine: pure functions that turn stored data into statuses, alerts, scores, quests and badges.
-import { indicators, statusOf, worstStatus, statusRank, personalBaseline } from "../lib.js";
-import { ENVIRONMENTS, QUESTS, BADGES, SYMPTOMS, CHECKS, MEDKIT } from "./content.js";
+import {
+  indicators,
+  statusOf,
+  worstStatus,
+  statusRank,
+  personalBaseline,
+} from "../lib.js";
+import {
+  ENVIRONMENTS,
+  QUESTS,
+  BADGES,
+  SYMPTOMS,
+  CHECKS,
+  MEDKIT,
+} from "./content.js";
 import { snellen } from "./vision.js";
-import { evaluateHearing, evaluateStand, evaluateTlx, rawTlx, evaluateUrine, mealSummary, compareGroups } from "./assess.js";
+import { HEALTH_AREAS } from "../data/healthAreas.js";
+import {
+  evaluateHearing,
+  evaluateStand,
+  evaluateTlx,
+  rawTlx,
+  evaluateUrine,
+  mealSummary,
+  compareGroups,
+} from "./assess.js";
+import { recoveryStatus } from "./homeUpgrades.js";
 
 export const CAREER_LIMIT_MSV = 600; // NASA-STD-3001 Vol 1 Rev B
 export const CO2_LIMIT_MMHG = 3.0; // NASA-STD-3001 Vol 2 Rev D, 1-hour average
@@ -31,18 +54,53 @@ export function baselineOf(state, pid, ind) {
   return personalBaseline(ind, historyOf(state, pid));
 }
 
-export function indicatorStatus(state, pid, ind, value = rowFor(state, pid)[ind.id]) {
+export function indicatorStatus(
+  state,
+  pid,
+  ind,
+  value = rowFor(state, pid)[ind.id],
+) {
   return statusOf(ind, value, baselineOf(state, pid, ind));
 }
 
 export function indicatorStatuses(state, pid) {
-  return Object.fromEntries(indicators.map((i) => [i.id, indicatorStatus(state, pid, i)]));
+  return Object.fromEntries(
+    indicators.map((i) => [i.id, indicatorStatus(state, pid, i)]),
+  );
 }
 
 // Symptoms reported today (check-in + symptom log)
 export function symptomsToday(state, pid, day = state.mission.day) {
-  const ids = new Set(state.checkins[pid][day]?.symptoms || []);
-  state.symptomLog[pid].filter((s) => s.day === day).forEach((s) => ids.add(s.symptom));
+  const ci = state.checkins[pid][day];
+  const ids = new Set(ci?.symptoms || []);
+  const events =
+    ci && !ci.auto
+      ? [
+          {
+            ts: ci.ts || 0,
+            answers: Object.fromEntries(
+              SYMPTOMS.map((s) => [s.id, ci.symptoms?.includes(s.id) || false]),
+            ),
+          },
+        ]
+      : [];
+  events.push(
+    ...state.symptomLog[pid]
+      .filter((s) => s.day === day)
+      .slice()
+      .reverse()
+      .map((s) => ({ ts: s.ts || 0, answers: { [s.symptom]: true } })),
+  );
+  for (const record of (state.bodyDiagnostics?.[pid] || []).slice().reverse()) {
+    if (record.day === day)
+      events.push({ ts: record.ts, answers: record.answers });
+  }
+  events
+    .sort((a, b) => a.ts - b.ts)
+    .forEach((event) => {
+      for (const [id, present] of Object.entries(event.answers))
+        present ? ids.add(id) : ids.delete(id);
+    });
   return SYMPTOMS.filter((s) => ids.has(s.id));
 }
 
@@ -51,7 +109,9 @@ export function activeEvent(state) {
 }
 
 export function activeEmergencies(state, pid) {
-  return state.emergencies.filter((e) => !e.resolvedAt && (!pid || e.pid === pid));
+  return state.emergencies.filter(
+    (e) => !e.resolvedAt && (!pid || e.pid === pid),
+  );
 }
 
 // ---------- Medical checks (tests) ----------
@@ -74,45 +134,81 @@ export function evaluateTest(state, pid, test) {
   const all = testsOf(state, pid, test.type);
   if (test.type === "hr") {
     const ind = indicators.find((i) => i.id === "heartRate");
-    return { status: indicatorStatus(state, pid, ind, r.bpm), summary: `${r.bpm} bpm (${r.mode}, signal ${r.label})` };
+    return {
+      status: indicatorStatus(state, pid, ind, r.bpm),
+      summary: `${r.bpm} bpm (${r.mode}, signal ${r.label})`,
+    };
   }
   if (test.type === "amsler") {
     const marks = r.left.length + r.right.length;
-    const eyes = [r.left.length && "left", r.right.length && "right"].filter(Boolean).join(" and ");
-    return marks ? { status: "yellow", summary: `distortion marked in ${eyes} eye (${marks} areas)` } : { status: "green", summary: "no distortion" };
+    const eyes = [r.left.length && "left", r.right.length && "right"]
+      .filter(Boolean)
+      .join(" and ");
+    return marks
+      ? {
+          status: "yellow",
+          summary: `distortion marked in ${eyes} eye (${marks} areas)`,
+        }
+      : { status: "green", summary: "no distortion" };
   }
   if (test.type === "acuity") {
     const base = all[all.length - 1];
     const summary = `left ${snellen(r.left)}, right ${snellen(r.right)}`;
-    if (!base || base.id === test.id) return { status: Math.max(r.left, r.right) > 0.3 ? "yellow" : "green", summary: `${summary} (first test = your baseline)` };
+    if (!base || base.id === test.id)
+      return {
+        status: Math.max(r.left, r.right) > 0.3 ? "yellow" : "green",
+        summary: `${summary} (first test = your baseline)`,
+      };
     // If this screen couldn't draw lines as small as the baseline, compare against the screen's limit instead
     const lim = r.limit ?? -Infinity;
-    const worse = Math.max(r.left - Math.max(base.result.left, lim), r.right - Math.max(base.result.right, lim));
+    const worse = Math.max(
+      r.left - Math.max(base.result.left, lim),
+      r.right - Math.max(base.result.right, lim),
+    );
     const lines = Math.round(worse * 10);
     const status = worse >= 0.39 ? "red" : worse >= 0.19 ? "yellow" : "green";
-    return { status, summary: `${summary}; ${lines > 0 ? `${lines} line(s) worse than` : "same as or better than"} your baseline` };
+    return {
+      status,
+      summary: `${summary}; ${lines > 0 ? `${lines} line(s) worse than` : "same as or better than"} your baseline`,
+    };
   }
   if (test.type === "pvt") {
-    const oldest = all.slice(-3).map((t) => t.result.speed).filter(Boolean);
+    const oldest = all
+      .slice(-3)
+      .map((t) => t.result.speed)
+      .filter(Boolean);
     const baseSpeed = oldest.length ? avg(oldest) : r.speed;
     const ratio = r.speed / baseSpeed;
     let status = "green";
     if (r.lapses >= 8 || ratio <= 0.8) status = "red";
     else if (r.lapses >= 3 || ratio <= 0.9) status = "yellow";
     const pct = Math.round((1 - ratio) * 100);
-    return { status, summary: `mean ${r.meanRt} ms, ${r.lapses} lapses${pct > 0 ? `, ${pct}% slower than your baseline` : ""}` };
+    return {
+      status,
+      summary: `mean ${r.meanRt} ms, ${r.lapses} lapses${pct > 0 ? `, ${pct}% slower than your baseline` : ""}`,
+    };
   }
   if (test.type === "balance") {
-    const status = r.seconds >= 20 ? "green" : r.seconds >= 10 ? "yellow" : "red";
-    return { status, summary: `${r.seconds} s on one leg${r.sway != null ? `, sway ${r.sway}` : ""}` };
+    const status =
+      r.seconds >= 20 ? "green" : r.seconds >= 10 ? "yellow" : "red";
+    return {
+      status,
+      summary: `${r.seconds} s on one leg${r.sway != null ? `, sway ${r.sway}` : ""}`,
+    };
   }
   if (test.type === "hearing") {
     const base = all[all.length - 1];
-    return evaluateHearing(!base || base.id === test.id ? null : base.result, r);
+    return evaluateHearing(
+      !base || base.id === test.id ? null : base.result,
+      r,
+    );
   }
   if (test.type === "stand") return evaluateStand(r);
   if (test.type === "tlx") {
-    const earlier = all.filter((t) => t.id !== test.id && t.day <= test.day).slice(0, 4).map((t) => rawTlx(t.result));
+    const earlier = all
+      .filter((t) => t.id !== test.id && t.day <= test.day)
+      .slice(0, 4)
+      .map((t) => rawTlx(t.result));
     return evaluateTlx(r, earlier.length >= 2 ? avg(earlier) : null);
   }
   if (test.type === "urine") return evaluateUrine(r.shade);
@@ -136,7 +232,9 @@ export function dueChecks(state, pid) {
   const day = state.mission.day;
   const env = envOf(state);
   return CHECKS.map((c) => {
-    const last = c.photo ? state.photos[pid].find((p) => p.category === "face") : latestTest(state, pid, c.id);
+    const last = c.photo
+      ? state.photos[pid].find((p) => p.category === "face")
+      : latestTest(state, pid, c.id);
     const applicable = !(c.gravityOnly && env.microgravity);
     const daysSince = last ? day - last.day : null;
     const due = applicable && (daysSince == null || daysSince >= c.every);
@@ -171,7 +269,10 @@ export function medsDue(state, pid, day = state.mission.day) {
   const person = personOf(state, pid);
   return (person.medSchedule || []).map((m) => {
     const taken = state.medLog[pid].filter((l) => l.med === m.med);
-    const done = m.freq === "daily" ? taken.some((l) => l.day === day) : taken.some((l) => l.day > day - 7 && l.day <= day);
+    const done =
+      m.freq === "daily"
+        ? taken.some((l) => l.day === day)
+        : taken.some((l) => l.day > day - 7 && l.day <= day);
     return { ...m, name: medName(m.med), done };
   });
 }
@@ -183,7 +284,9 @@ export function lowStock(state) {
 // Estimated days of supply left, from the last 14 days of use
 export function daysOfSupply(state, medId) {
   const day = state.mission.day;
-  const used = Object.values(state.medLog).flat().filter((l) => l.med === medId && l.day > day - 14).length;
+  const used = Object.values(state.medLog)
+    .flat()
+    .filter((l) => l.med === medId && l.day > day - 14).length;
   const stock = state.medkit.find((m) => m.id === medId).stock;
   return used ? Math.floor(stock / (used / 14)) : null;
 }
@@ -192,8 +295,15 @@ export function daysOfSupply(state, medId) {
 
 export function partStatus(state, pid, part) {
   const statuses = indicatorStatuses(state, pid);
-  const list = indicators.filter((i) => i.bodyPart === part).map((i) => statuses[i.id]);
-  if (symptomsToday(state, pid).some((s) => s.part === part)) list.push("yellow");
+  const list = indicators
+    .filter((i) => i.bodyPart === part)
+    .map((i) => statuses[i.id]);
+  if (
+    symptomsToday(state, pid).some(
+      (s) => HEALTH_AREAS[part]?.symptoms.includes(s.id) || s.part === part,
+    )
+  )
+    list.push("yellow");
   for (const res of recentCheckResults(state, pid)) {
     if (res.check.part === part && res.check.id !== "hr") list.push(res.status);
   }
@@ -211,67 +321,171 @@ export function alertsFor(state, pid) {
 
   const ev = activeEvent(state);
   if (ev && !ev.sheltered[pid]) {
-    alerts.push({ id: "spe", level: "red", title: "Solar storm: go to the storm shelter now", action: "Open Radiation and confirm you are sheltered.", page: "radiation" });
+    alerts.push({
+      id: "spe",
+      level: "red",
+      title: "Solar storm: go to the storm shelter now",
+      action: "Open Radiation and confirm you are sheltered.",
+      page: "radiation",
+    });
   }
   for (const em of activeEmergencies(state, pid)) {
-    alerts.push({ id: `em-${em.id}`, level: "red", title: `Emergency in progress: ${em.title}`, action: "Follow the emergency steps.", page: "emergency" });
+    alerts.push({
+      id: `em-${em.id}`,
+      level: "red",
+      title: `Emergency in progress: ${em.title}`,
+      action: "Follow the emergency steps.",
+      page: "emergency",
+    });
   }
   const hab = habitatToday(state);
   const co2 = co2Status(hab.co2);
   if (co2 !== "green") {
     alerts.push({
-      id: "co2", level: co2, title: `Cabin CO₂ ${hab.co2} mmHg`,
-      action: co2 === "red" ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol." : "Above the 2.5 mmHg level a NASA study recommends. Headache risk is rising; check ventilation.",
+      id: "co2",
+      level: co2,
+      title: `Cabin CO₂ ${hab.co2} mmHg`,
+      action:
+        co2 === "red"
+          ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol."
+          : "Above the 2.5 mmHg level a NASA study recommends. Headache risk is rising; check ventilation.",
       page: "habitat",
     });
   }
   for (const ind of indicators) {
     const s = indicatorStatus(state, pid, ind);
     if (s === "yellow" || s === "red") {
-      alerts.push({ id: `ind-${ind.id}`, level: s, title: `${ind.label}: ${row[ind.id]} ${ind.unit}`, action: ind.action[s], part: ind.bodyPart, indicator: ind.id, escalate: s === "red" });
+      alerts.push({
+        id: `ind-${ind.id}`,
+        level: s,
+        title: `${ind.label}: ${row[ind.id]} ${ind.unit}`,
+        action: ind.action[s],
+        part: ind.bodyPart,
+        indicator: ind.id,
+        escalate: s === "red",
+      });
     }
   }
   const last3 = hist.slice(-3);
   if (last3.length === 3 && last3.every((r) => r.sleep < 6)) {
-    alerts.push({ id: "trend-sleep", level: "yellow", title: "Under 6 hours of sleep 3 nights in a row", action: "Protect your sleep window tonight and tell the commander if you are fatigued.", part: "brain" });
+    alerts.push({
+      id: "trend-sleep",
+      level: "yellow",
+      title: "Under 6 hours of sleep 3 nights in a row",
+      action:
+        "Protect your sleep window tonight and tell the commander if you are fatigued.",
+      part: "brain",
+    });
   }
   if (last3.length === 3 && last3.every((r) => r.exercise < 90)) {
-    alerts.push({ id: "trend-exercise", level: "yellow", title: "Below the 90-minute exercise target 3 days running", action: "Bone and muscle loss speeds up without exercise. Log a workout today.", part: "bones", page: "log" });
+    alerts.push({
+      id: "trend-exercise",
+      level: "yellow",
+      title: "Below the 90-minute exercise target 3 days running",
+      action:
+        "Bone and muscle loss speeds up without exercise. Log a workout today.",
+      part: "bones",
+      page: "log",
+    });
   }
   const meals = mealSummary(state.mealLog?.[pid] || [], day);
   if (meals?.eatingLess) {
-    alerts.push({ id: "trend-meals", level: "yellow", title: `Ate half or less at ${meals.lowIntake} meals this week`, action: "Eating less for weeks leads to body-mass loss. Try other menu items, and tell the CMO if your appetite stays low.", part: "gut", page: "log" });
+    alerts.push({
+      id: "trend-meals",
+      level: "yellow",
+      title: `Ate half or less at ${meals.lowIntake} meals this week`,
+      action:
+        "Eating less for weeks leads to body-mass loss. Try other menu items, and tell the CMO if your appetite stays low.",
+      part: "gut",
+      page: "log",
+    });
   }
   for (const res of recentCheckResults(state, pid)) {
     if (res.status === "yellow" || res.status === "red") {
       alerts.push({
-        id: `check-${res.check.id}`, level: res.status, title: `${res.check.title}: ${res.summary}`,
-        action: res.check.action[res.status], part: res.check.part, page: "checks",
-        escalate: res.check.id === "amsler" || res.check.id === "acuity" || res.status === "red",
+        id: `check-${res.check.id}`,
+        level: res.status,
+        title: `${res.check.title}: ${res.summary}`,
+        action: res.check.action[res.status],
+        part: res.check.part,
+        page: "checks",
+        escalate:
+          res.check.id === "amsler" ||
+          res.check.id === "acuity" ||
+          res.status === "red",
       });
     }
   }
   for (const s of symptomsToday(state, pid)) {
-    alerts.push({ id: `sym-${s.id}`, level: "yellow", title: `Symptom reported: ${s.label}`, action: "Open the Med guide for what to do and when to escalate.", part: s.part, page: "medguide", guide: s.id });
+    alerts.push({
+      id: `sym-${s.id}`,
+      level: "yellow",
+      title: `Symptom reported: ${s.label}`,
+      action: "Open the Med guide for what to do and when to escalate.",
+      part: s.part,
+      page: "medguide",
+      guide: s.id,
+    });
   }
   const ci = state.checkins[pid][day];
   if (ci?.motion >= 6) {
-    alerts.push({ id: "motion", level: "yellow", title: `Motion sickness ${ci.motion}/10`, action: "Slow head movements, fix eyes on a stable reference, anti-nausea medication from the med kit.", part: "vestibular" });
+    alerts.push({
+      id: "motion",
+      level: "yellow",
+      title: `Motion sickness ${ci.motion}/10`,
+      action:
+        "Slow head movements, fix eyes on a stable reference, anti-nausea medication from the med kit.",
+      part: "vestibular",
+    });
   }
-  if (!ci) alerts.push({ id: "checkin-due", level: "info", title: "Daily check-in due", action: "Takes about 3 minutes.", page: "checkin" });
+  if (!ci)
+    alerts.push({
+      id: "checkin-due",
+      level: "info",
+      title: "Daily check-in due",
+      action: "Takes about 3 minutes.",
+      page: "checkin",
+    });
   const due = dueChecks(state, pid).filter((d) => d.due);
-  if (due.length) alerts.push({ id: "checks-due", level: "info", title: `Checks due: ${due.map((d) => d.check.title).join(", ")}`, action: "Open Checks to do them.", page: "checks" });
+  if (due.length)
+    alerts.push({
+      id: "checks-due",
+      level: "info",
+      title: `Checks due: ${due.map((d) => d.check.title).join(", ")}`,
+      action: "Open Checks to do them.",
+      page: "checks",
+    });
   const meds = medsDue(state, pid).filter((m) => !m.done);
-  if (meds.length) alerts.push({ id: "meds-due", level: "info", title: `Supplements due: ${meds.map((m) => m.name).join(", ")}`, action: "Mark them taken in Log activity.", page: "log" });
-  if (personOf(state, pid).role === "Medical officer" && lowStock(state).length) {
-    alerts.push({ id: "low-stock", level: "info", title: `Med kit low: ${lowStock(state).map((m) => m.name).join(", ")}`, action: "No resupply in deep space: plan usage with the flight surgeon.", page: "medkit" });
+  if (meds.length)
+    alerts.push({
+      id: "meds-due",
+      level: "info",
+      title: `Supplements due: ${meds.map((m) => m.name).join(", ")}`,
+      action: "Mark them taken in Log activity.",
+      page: "log",
+    });
+  if (
+    personOf(state, pid).role === "Medical officer" &&
+    lowStock(state).length
+  ) {
+    alerts.push({
+      id: "low-stock",
+      level: "info",
+      title: `Med kit low: ${lowStock(state)
+        .map((m) => m.name)
+        .join(", ")}`,
+      action: "No resupply in deep space: plan usage with the flight surgeon.",
+      page: "medkit",
+    });
   }
   const rank = { red: 3, yellow: 2, info: 1 };
   return alerts.sort((a, b) => rank[b.level] - rank[a.level]);
 }
 
 export function overallStatus(state, pid) {
-  const levels = alertsFor(state, pid).map((a) => (a.level === "info" ? "green" : a.level));
+  const levels = alertsFor(state, pid).map((a) =>
+    a.level === "info" ? "green" : a.level,
+  );
   return worstStatus(["green", ...levels]);
 }
 
@@ -281,8 +495,13 @@ export function healthScore(state, pid) {
   const red = st.filter((s) => s === "red").length;
   const sym = symptomsToday(state, pid).length;
   const checks = recentCheckResults(state, pid);
-  const checkPenalty = checks.filter((c) => c.status === "yellow").length * 4 + checks.filter((c) => c.status === "red").length * 10;
-  return Math.max(0, Math.min(100, 100 - yellow * 6 - red * 18 - sym * 4 - checkPenalty));
+  const checkPenalty =
+    checks.filter((c) => c.status === "yellow").length * 4 +
+    checks.filter((c) => c.status === "red").length * 10;
+  return Math.max(
+    0,
+    Math.min(100, 100 - yellow * 6 - red * 18 - sym * 4 - checkPenalty),
+  );
 }
 
 // ---------- Patterns in your own data ----------
@@ -294,35 +513,84 @@ export function insightsFor(state, pid) {
   const pct = (a, b) => Math.round(((a - b) / b) * 100);
 
   const pvtRows = testsOf(state, pid, "pvt")
-    .map((t) => ({ sleep: hist.find((h) => h.day === t.day)?.sleep, speed: t.result.speed }))
+    .map((t) => ({
+      sleep: hist.find((h) => h.day === t.day)?.sleep,
+      speed: t.result.speed,
+    }))
     .filter((x) => x.sleep != null && x.speed);
-  const sleepPvt = compareGroups(pvtRows, (r) => r.sleep < 7, (r) => r.speed);
+  const sleepPvt = compareGroups(
+    pvtRows,
+    (r) => r.sleep < 7,
+    (r) => r.speed,
+  );
   if (sleepPvt) {
     const d = pct(sleepPvt.b, sleepPvt.a);
-    if (Math.abs(d) >= 5) out.push({ id: "sleep-pvt", part: "brain", strength: Math.abs(d), title: `Reactions ${Math.abs(d)}% ${d > 0 ? "faster" : "slower"} after 7+ hours of sleep`, detail: `Compared ${sleepPvt.nb} reaction tests after 7+ h of sleep with ${sleepPvt.na} after less.` });
+    if (Math.abs(d) >= 5)
+      out.push({
+        id: "sleep-pvt",
+        part: "brain",
+        strength: Math.abs(d),
+        title: `Reactions ${Math.abs(d)}% ${d > 0 ? "faster" : "slower"} after 7+ hours of sleep`,
+        detail: `Compared ${sleepPvt.nb} reaction tests after 7+ h of sleep with ${sleepPvt.na} after less.`,
+      });
   }
 
-  const exMood = compareGroups(hist, (r) => r.exercise >= 90, (r) => r.mood);
+  const exMood = compareGroups(
+    hist,
+    (r) => r.exercise >= 90,
+    (r) => r.mood,
+  );
   if (exMood && Math.abs(exMood.a - exMood.b) >= 0.5) {
     const diff = Math.round((exMood.a - exMood.b) * 10) / 10;
-    out.push({ id: "exercise-mood", part: "brain", strength: Math.abs(diff) * 10, title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} on full-workout days`, detail: `${exMood.na} days with 90+ minutes of exercise vs ${exMood.nb} days with less.` });
+    out.push({
+      id: "exercise-mood",
+      part: "brain",
+      strength: Math.abs(diff) * 10,
+      title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} on full-workout days`,
+      detail: `${exMood.na} days with 90+ minutes of exercise vs ${exMood.nb} days with less.`,
+    });
   }
 
-  const sleepMood = compareGroups(hist, (r) => r.sleep >= 7, (r) => r.mood);
+  const sleepMood = compareGroups(
+    hist,
+    (r) => r.sleep >= 7,
+    (r) => r.mood,
+  );
   if (sleepMood && Math.abs(sleepMood.a - sleepMood.b) >= 0.5) {
     const diff = Math.round((sleepMood.a - sleepMood.b) * 10) / 10;
-    out.push({ id: "sleep-mood", part: "brain", strength: Math.abs(diff) * 10, title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} after 7+ hours of sleep`, detail: `${sleepMood.na} nights of 7+ h vs ${sleepMood.nb} shorter nights.` });
+    out.push({
+      id: "sleep-mood",
+      part: "brain",
+      strength: Math.abs(diff) * 10,
+      title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} after 7+ hours of sleep`,
+      detail: `${sleepMood.na} nights of 7+ h vs ${sleepMood.nb} shorter nights.`,
+    });
   }
 
   const dayRows = hist.map((h) => {
     const ci = state.checkins[pid][h.day];
-    const logged = state.symptomLog[pid].some((s) => s.day === h.day && s.symptom === "headache");
-    return { co2: state.habitat.history.find((x) => x.day === h.day)?.co2, headache: logged || !!ci?.symptoms?.includes("headache") };
+    const logged = state.symptomLog[pid].some(
+      (s) => s.day === h.day && s.symptom === "headache",
+    );
+    return {
+      co2: state.habitat.history.find((x) => x.day === h.day)?.co2,
+      headache: logged || !!ci?.symptoms?.includes("headache"),
+    };
   });
   if (dayRows.some((r) => r.headache)) {
-    const co2Head = compareGroups(dayRows.filter((r) => r.co2 != null), (r) => r.co2 > CO2_TARGET_MMHG, (r) => (r.headache ? 1 : 0));
+    const co2Head = compareGroups(
+      dayRows.filter((r) => r.co2 != null),
+      (r) => r.co2 > CO2_TARGET_MMHG,
+      (r) => (r.headache ? 1 : 0),
+    );
     if (co2Head && co2Head.a - co2Head.b >= 0.1) {
-      out.push({ id: "co2-headache", part: "brain", strength: Math.round((co2Head.a - co2Head.b) * 100), title: `Headaches on ${Math.round(co2Head.a * 100)}% of high-CO₂ days vs ${Math.round(co2Head.b * 100)}% of other days`, detail: `${co2Head.na} days above ${CO2_TARGET_MMHG} mmHg vs ${co2Head.nb} days below. A NASA study found each +1 mmHg CO₂ doubled the odds of headache on the ISS.` });
+      out.push({
+        id: "co2-headache",
+        part: "brain",
+        strength: Math.round((co2Head.a - co2Head.b) * 100),
+        title: `Headaches on ${Math.round(co2Head.a * 100)}% of high-CO₂ days vs ${Math.round(co2Head.b * 100)}% of other days`,
+        detail: `${co2Head.na} days above ${CO2_TARGET_MMHG} mmHg vs ${co2Head.nb} days below. A NASA study found each +1 mmHg CO₂ doubled the odds of headache on the ISS.`,
+      });
     }
   }
   return out.sort((a, b) => b.strength - a.strength);
@@ -333,7 +601,7 @@ export function insightsFor(state, pid) {
 export function streak(state, pid) {
   let n = 0;
   for (let d = state.mission.day; d >= state.mission.startDay; d--) {
-    if (state.checkins[pid][d]) n++;
+    if (state.checkins[pid][d] || state.recovery?.[pid]?.[d]?.completedAt) n++;
     else if (d !== state.mission.day) break; // today not done yet doesn't break the streak
   }
   return n;
@@ -341,26 +609,44 @@ export function streak(state, pid) {
 
 function questContext(state, pid, day) {
   const person = personOf(state, pid);
-  const dailyMeds = (person.medSchedule || []).filter((m) => m.freq === "daily");
+  const dailyMeds = (person.medSchedule || []).filter(
+    (m) => m.freq === "daily",
+  );
   return {
     row: rowFor(state, pid, day) || {},
     checkedIn: !!state.checkins[pid][day],
     journaledToday: state.journal[pid].some((j) => j.day === day),
-    medsDone: dailyMeds.length > 0 && dailyMeds.every((m) => state.medLog[pid].some((l) => l.med === m.med && l.day === day)),
-    checkDone: state.tests[pid].some((t) => t.day === day) || state.photos[pid].some((p) => p.day === day && p.category === "face"),
+    medsDone:
+      dailyMeds.length > 0 &&
+      dailyMeds.every((m) =>
+        state.medLog[pid].some((l) => l.med === m.med && l.day === day),
+      ),
+    checkDone:
+      state.tests[pid].some((t) => t.day === day) ||
+      state.photos[pid].some((p) => p.day === day && p.category === "face"),
   };
 }
 
 export function tasksFor(state, pid, day = state.mission.day) {
   const ctx = questContext(state, pid, day);
-  return QUESTS.map((q) => ({ id: q.id, label: q.label, points: q.points, done: q.check(ctx) }));
+  const recovery = recoveryStatus(state, pid, day);
+  return QUESTS.map((q) => ({
+    id: q.id,
+    label:
+      q.id === "exercise" && recovery.active
+        ? "Active Recovery (Streak Preserved)"
+        : q.label,
+    points: q.points,
+    done: q.check(ctx) || (q.id === "exercise" && recovery.completed),
+    ...(q.id === "exercise" && recovery.active ? { recovery: true } : {}),
+  }));
 }
 
 export function points(state, pid) {
   let total = 0;
   for (const row of historyOf(state, pid)) {
-    const ctx = questContext(state, pid, row.day);
-    for (const q of QUESTS) if (q.check(ctx)) total += q.points;
+    for (const q of tasksFor(state, pid, row.day))
+      if (q.done) total += q.points;
   }
   return total;
 }
@@ -372,7 +658,9 @@ export function badgesFor(state, pid) {
     exerciseDays: last7.filter((r) => r.exercise >= 90).length,
     waterDays: last7.filter((r) => r.water >= 2).length,
     pvtCount: testsOf(state, pid, "pvt").length,
-    visionChecks: testsOf(state, pid, "amsler").length + testsOf(state, pid, "acuity").length,
+    visionChecks:
+      testsOf(state, pid, "amsler").length +
+      testsOf(state, pid, "acuity").length,
     journalCount: state.journal[pid].length,
     sheltered: state.shelteredEver[pid],
   };
@@ -386,9 +674,13 @@ export function doseSummary(state, pid) {
   const env = envOf(state);
   const dose = row.radiation;
   const pct = (dose / CAREER_LIMIT_MSV) * 100;
-  const daysTo = (target) => (dose >= target ? 0 : Math.ceil((target - dose) / env.doseRate));
+  const daysTo = (target) =>
+    dose >= target ? 0 : Math.ceil((target - dose) / env.doseRate);
   return {
-    dose, pct, limit: CAREER_LIMIT_MSV, rate: env.doseRate,
+    dose,
+    pct,
+    limit: CAREER_LIMIT_MSV,
+    rate: env.doseRate,
     daysTo50: daysTo(CAREER_LIMIT_MSV * 0.5),
     daysTo80: daysTo(CAREER_LIMIT_MSV * 0.8),
     daysTo100: daysTo(CAREER_LIMIT_MSV),
@@ -406,7 +698,10 @@ export function crewOverview(state) {
       status: overallStatus(state, p.id),
       score: healthScore(state, p.id),
       // Alerts, a missing daily check-in or scheduled checks require attention.
-      checkupRequired: alerts.length > 0 || !state.checkins[p.id][state.mission.day] || dueChecks(state, p.id).some((d) => d.due),
+      checkupRequired:
+        alerts.length > 0 ||
+        !state.checkins[p.id][state.mission.day] ||
+        dueChecks(state, p.id).some((d) => d.due),
       alerts,
       checkedIn: !!state.checkins[p.id][state.mission.day],
       sheltered: ev ? !!ev.sheltered[p.id] : null,
@@ -415,6 +710,7 @@ export function crewOverview(state) {
 }
 
 export function earthDelayMs(state) {
+  if (state.link?.judgesDemo40) return 20000;
   return (envOf(state).delayMin * 60000) / state.demoSpeed;
 }
 

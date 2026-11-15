@@ -4,21 +4,29 @@ import {
   addJournal,
   deleteJournal,
   sendReport,
-  historyOf,
   COPING,
 } from "../backend/api.js";
-import { PageTitle, Sparkline, Icon } from "../components/ConsoleUI.jsx";
+import { PageTitle, Icon } from "../components/ConsoleUI.jsx";
+import HealthTrend from "../components/HealthTrend.jsx";
+import {
+  sandboxEnabled,
+  privateRecordsFor,
+  deletePrivateRecord,
+} from "../backend/sandbox.js";
 export default function Mind({ person, go, embedded = false }) {
   const state = useStore(),
     pid = person.id;
   const [text, setText] = useState(""),
     [mood, setMood] = useState(7),
     [error, setError] = useState(""),
-    [sent, setSent] = useState(false);
-  const entries = state.journal[pid],
-    last7 = historyOf(state, pid)
-      .slice(-7)
-      .map((r) => r.mood);
+    [sent, setSent] = useState(""),
+    [saved, setSaved] = useState("");
+  const privateMode = sandboxEnabled(state);
+  const entries = privateMode
+    ? privateRecordsFor(state, pid)
+        .filter((r) => r.kind === "journal" && !r.draft)
+        .map((r) => ({ ...r, ...r.payload }))
+    : state.journal[pid];
   function save() {
     if (!text.trim()) {
       setError("Write something first.");
@@ -27,6 +35,11 @@ export default function Mind({ person, go, embedded = false }) {
     addJournal(pid, text.trim(), mood);
     setText("");
     setError("");
+    setSaved(
+      privateMode
+        ? "Saved in Private Sandbox. Your public health record is unchanged."
+        : "Journal entry saved on this device.",
+    );
   }
   return (
     <div className="mind-content">
@@ -38,11 +51,7 @@ export default function Mind({ person, go, embedded = false }) {
         />
       )}
       <p className="eyebrow">Your mood this week</p>
-      <Sparkline
-        bars
-        values={last7}
-        label={"Mood over seven days: " + last7.join(", ")}
-      />
+      <HealthTrend compact pid={pid} indicatorId="mood" days={7} />
       <div className="row spread small muted">
         <span>7 days ago</span>
         <button
@@ -55,8 +64,9 @@ export default function Mind({ person, go, embedded = false }) {
       <div className="section-divider" />
       <h3>Personal journal</h3>
       <p className="small muted">
-        Saved on this device. Anyone using this crew profile can see these
-        entries.
+        {privateMode
+          ? "Private Sandbox journal. Entries stay separate from your public crew record; this is local separation, not encrypted access control."
+          : "Saved on this device. Anyone using this crew profile can see these entries."}
       </p>
       <label className="sr-only" htmlFor="journal-entry">
         Journal entry
@@ -90,6 +100,11 @@ export default function Mind({ person, go, embedded = false }) {
           {error}
         </p>
       )}
+      {saved && (
+        <p className="small" role="status">
+          {saved}
+        </p>
+      )}
       {entries.length > 0 && (
         <details className="journal-history">
           <summary>
@@ -104,7 +119,11 @@ export default function Mind({ person, go, embedded = false }) {
               <p>{j.text}</p>
               <button
                 className="text-button"
-                onClick={() => deleteJournal(pid, j.id)}
+                onClick={() =>
+                  privateMode
+                    ? deletePrivateRecord(pid, j.id)
+                    : deleteJournal(pid, j.id)
+                }
               >
                 Delete entry
               </button>
@@ -130,7 +149,11 @@ export default function Mind({ person, go, embedded = false }) {
             "psych",
             "Requesting a private conference with ground support.",
           );
-          setSent(true);
+          setSent(
+            privateMode
+              ? "Saved in Private Sandbox. No ground-support request queued."
+              : "Request queued in the simulated Earth link.",
+          );
         }}
       >
         <Icon name="message" />
@@ -138,7 +161,7 @@ export default function Mind({ person, go, embedded = false }) {
       </button>
       {sent && (
         <p className="small" role="status">
-          Request queued in the simulated Earth link.
+          {sent}
         </p>
       )}
     </div>

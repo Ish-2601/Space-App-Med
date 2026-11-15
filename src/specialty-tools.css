@@ -1,0 +1,147 @@
+.specialty-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0;
+}
+.specialty-fields label,
+.pharmacy-stability form > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.specialty-fields input,
+.specialty-fields select {
+  width: 100%;
+  min-width: 0;
+}
+.specialty-fields .check-label {
+  flex-direction: row;
+  align-items: center;
+  line-height: 1.5;
+}
+.specialty-fields .check-label input {
+  width: auto;
+}
+.priority-queue {
+  margin: 28px 0;
+}
+.sync-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+.sync-tier {
+  padding: 18px;
+  border: 1px solid var(--border, #35404d);
+  border-radius: 12px;
+  background: rgba(8, 14, 20, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.sync-tier h3 {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.sync-tier .btn {
+  margin-top: auto;
+}
+.priority-queue table {
+  min-width: 580px;
+}
+.priority-queue td small {
+  display: block;
+  max-width: 250px;
+}
+.priority-queue td progress {
+  display: block;
+  width: 100px;
+  margin: 4px 0;
+}
+.priority-queue details,
+.pharmacy-stability details {
+  margin-top: 20px;
+  line-height: 1.6;
+}
+.priority-queue summary,
+.pharmacy-stability summary {
+  cursor: pointer;
+}
+.pharmacy-stability {
+  margin-top: 40px;
+}
+.pharmacy-stability .row {
+  flex-wrap: wrap;
+}
+.pharmacy-stability textarea {
+  margin-bottom: 18px;
+}
+.pharmacy-results {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  align-items: center;
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--border, #35404d);
+  border-radius: 12px;
+}
+.pharmacy-results strong {
+  font-size: 3rem;
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.pharmacy-results span,
+.pharmacy-results small {
+  display: block;
+  margin-top: 8px;
+}
+.pharmacy-results svg {
+  width: 100%;
+  max-height: 200px;
+  color: #92b5cd;
+}
+.pharmacy-results text {
+  fill: currentColor;
+  font-size: 12px;
+}
+.plot-axis {
+  stroke: currentColor;
+  fill: none;
+  opacity: 0.3;
+}
+.pharmacy-stability form .alert {
+  margin: 20px 0;
+}
+html.circadian-redshift .sync-tier {
+  background: #100906;
+  border-color: #793528;
+}
+html.circadian-redshift .pharmacy-results svg {
+  color: #ff713d;
+}
+html.circadian-alertness .sync-tier {
+  border-color: #4b8e9d;
+}
+@media (max-width: 800px) {
+  .sync-tier-grid {
+    grid-template-columns: 1fr;
+  }
+  .pharmacy-results {
+    grid-template-columns: 1fr;
+  }
+  .specialty-fields {
+    grid-template-columns: 1fr;
+  }
+  .priority-queue,
+  .pharmacy-stability {
+    min-width: 0;
+  }
+  .pharmacy-results svg {
+    max-width: 100%;
+  }
+}

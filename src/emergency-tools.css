@@ -1,0 +1,311 @@
+.medical-pack-location {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.medical-pack-location small {
+  color: var(--muted, #9caebc);
+}
+.medical-pack-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 7px;
+  padding: 0.28rem 0.55rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.pack-red {
+  color: #f2a3a3;
+  background: #56232755;
+}
+.pack-white {
+  color: #e7e9ed;
+  background: #d5d7dc18;
+}
+.pack-blue {
+  color: #abc9ea;
+  background: #283a5055;
+}
+.pack-yellow {
+  color: #e4cf92;
+  background: #554b2455;
+}
+.pack-pink {
+  color: #dfb2cf;
+  background: #50334855;
+}
+.pack-green {
+  color: #a4d5b9;
+  background: #244d3a55;
+}
+.protocol-step-detail {
+  margin: 0.6rem 0 0 3.4rem;
+  min-width: 0;
+}
+.protocol-step-detail p {
+  line-height: 1.6;
+}
+.protocol-step-timer {
+  padding: 0.8rem;
+  background: #080e14;
+  border: 1px solid #41505c;
+  border-radius: 10px;
+  margin-top: 0.7rem;
+}
+.protocol-step-timer > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.protocol-step-timer output {
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.protocol-step-timer .row {
+  margin-top: 0.7rem;
+  flex-wrap: wrap;
+}
+.pack-legend {
+  border: 1px solid #354550;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1.25rem 0;
+  background: #111a22;
+}
+.pack-legend summary {
+  cursor: pointer;
+  font-weight: 650;
+  min-height: 32px;
+}
+.pack-legend p {
+  font-size: 0.87rem;
+  line-height: 1.65;
+  color: #abbac6;
+}
+.pack-legend-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.pack-legend-grid .medical-pack-location {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.cpr-panel {
+  margin-top: 1.5rem;
+}
+.cpr-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(260px, 1fr);
+  gap: 1.5rem;
+}
+.cpr-layout > div {
+  min-width: 0;
+}
+.cpr-layout .row {
+  flex-wrap: wrap;
+}
+.cpr-layout label {
+  display: grid;
+  gap: 0.5rem;
+}
+.cpr-layout select {
+  width: 100%;
+  min-height: 44px;
+}
+.cpr-pacer {
+  width: 175px;
+  height: 175px;
+  margin: 1.2rem auto;
+  border: 3px solid #db8f92;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  background: radial-gradient(circle at 35% 20%, #653f4a, #101920 70%);
+  color: #f0c9cb;
+  box-shadow: inset 0 1px 14px #ffffff16;
+}
+.cpr-pacer strong {
+  font-size: 2.2rem;
+  line-height: 1;
+}
+.cpr-pacer span {
+  font-size: 0.8rem;
+}
+.cpr-pacer.running {
+  animation: cpr-beat 0.32s ease-out;
+}
+.cpr-elapsed {
+  text-align: center;
+  font-size: 1rem;
+}
+.cpr-elapsed output {
+  display: block;
+  font-size: 2.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.cpr-diagram {
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  margin: 0.8rem 0;
+  stroke: #b8cbd9;
+  stroke-width: 3;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.cpr-diagram text {
+  stroke: none;
+  fill: #becdd8;
+  text-anchor: middle;
+  font-size: 11px;
+}
+.cpr-diagram .cpr-cabin {
+  fill: #070d13;
+  stroke: #344452;
+  stroke-width: 1;
+}
+.cpr-diagram .cpr-rescuer {
+  stroke: #e3b48d;
+}
+.cpr-diagram .cpr-restraint {
+  stroke: #7eaab5;
+  stroke-width: 5;
+}
+.cpr-diagram .cpr-compression {
+  stroke: #e3989c;
+  stroke-width: 4;
+}
+.cpr-event-log {
+  border-top: 1px solid #344452;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+.cpr-event-log .row {
+  flex-wrap: wrap;
+}
+.cpr-event-log ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+}
+.cpr-event-log b {
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.5rem;
+}
+.cpr-event-log button {
+  min-height: 44px;
+}
+.cpr-event-log .text-button {
+  margin-top: 0.6rem;
+}
+.cpr-panel a,
+.pack-legend a {
+  color: #bdd4e9;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cpr-panel a:focus-visible,
+.pack-legend summary:focus-visible {
+  outline: 2px solid #b6cadb;
+  outline-offset: 4px;
+}
+@keyframes cpr-beat {
+  0% {
+    transform: scale(1.045);
+    border-color: #ffd6d8;
+    box-shadow: 0 0 20px #c8757b66;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+@media (max-width: 700px) {
+  .cpr-layout,
+  .pack-legend-grid,
+  .cpr-event-log ol {
+    grid-template-columns: 1fr;
+  }
+  .protocol-step-detail {
+    margin-left: 0;
+  }
+  .cpr-layout {
+    gap: 0.5rem;
+  }
+  .medical-pack-location {
+    align-items: flex-start;
+  }
+  .protocol-step-timer .btn {
+    padding: 0.55rem 0.7rem;
+  }
+  .cpr-pacer {
+    width: 150px;
+    height: 150px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cpr-pacer.running {
+    animation: cpr-beat-reduced 0.32s ease-out;
+  }
+  @keyframes cpr-beat-reduced {
+    from {
+      background: #633d42;
+    }
+    to {
+      background: #101920;
+    }
+  }
+}
+html.circadian-redshift .medical-pack-badge,
+html.circadian-redshift .pack-legend,
+html.circadian-redshift .protocol-step-timer,
+html.circadian-redshift .cpr-pacer {
+  color: #ff8a58;
+  background: #050505;
+  border-color: #ff3b30;
+  box-shadow: none;
+}
+html.circadian-redshift .pack-legend p,
+html.circadian-redshift .medical-pack-location small,
+html.circadian-redshift .cpr-panel a,
+html.circadian-redshift .pack-legend a {
+  color: #e9875a;
+}
+html.circadian-redshift .cpr-diagram,
+html.circadian-redshift .cpr-diagram path,
+html.circadian-redshift .cpr-diagram circle {
+  stroke: #ff6c3b;
+}
+html.circadian-redshift .cpr-diagram .cpr-cabin {
+  fill: #050505;
+  stroke: #a73420;
+}
+html.circadian-redshift .cpr-diagram text {
+  fill: #ff8a58;
+}
+html.circadian-redshift .cpr-pacer.running {
+  animation: cpr-beat-red 0.32s ease-out;
+}
+@keyframes cpr-beat-red {
+  from {
+    border-color: #ff3b30;
+    background: #3c0905;
+  }
+  to {
+    background: #050505;
+  }
+}

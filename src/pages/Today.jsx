@@ -12,9 +12,21 @@ import {
   addWater,
   notifyCMO,
   sendReport,
+  envOf,
+  delayText,
 } from "../backend/api.js";
 import { Panel, Icon, Status, Segments } from "../components/ConsoleUI.jsx";
 import { Patterns } from "./Trends.jsx";
+import EmergencySimulator from "../components/EmergencySimulator.jsx";
+import {
+  WearablesBar,
+  QuickPulse,
+  ReadinessBadge,
+  RecoveryNotice,
+  CrewBioDome,
+} from "../components/HomeUpgrades.jsx";
+import { recoveryStatus, completeRecovery } from "../backend/homeUpgrades.js";
+import { sandboxEnabled } from "../backend/sandbox.js";
 
 const TASKS = {
   checkin: [
@@ -94,14 +106,20 @@ const CHECK_STEP = {
 export function nextStepTitle(a) {
   if (!a) return null;
   if (a.indicator && IND_STEP[a.indicator]) return IND_STEP[a.indicator];
-  if (a.id.startsWith("check-")) return CHECK_STEP[a.id.slice(6)] || "Repeat this check";
-  if (a.id.startsWith("sym-")) return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
-  if (a.id === "co2") return a.level === "red" ? "Move to fresh air and follow the CO₂ steps" : "Check cabin ventilation";
+  if (a.id.startsWith("check-"))
+    return CHECK_STEP[a.id.slice(6)] || "Repeat this check";
+  if (a.id.startsWith("sym-"))
+    return `See what to do: ${a.title.replace("Symptom reported: ", "").toLowerCase()}`;
+  if (a.id === "co2")
+    return a.level === "red"
+      ? "Move to fresh air and follow the CO₂ steps"
+      : "Check cabin ventilation";
   return a.title;
 }
 
 export default function Today({ person, go }) {
   const state = useStore();
+  const env = envOf(state);
   const pid = person.id;
   const row = rowFor(state, pid);
   const status = overallStatus(state, pid);
@@ -109,6 +127,7 @@ export default function Today({ person, go }) {
   const alerts = alertsFor(state, pid).filter((a) => a.level !== "info");
   const due = dueChecks(state, pid).filter((d) => d.due);
   const tasks = tasksFor(state, pid);
+  const recovery = recoveryStatus(state, pid);
   const done = tasks.filter((t) => t.done).length;
   const priority = alerts[0];
   const [notice, setNotice] = useState("");
@@ -119,15 +138,59 @@ export default function Today({ person, go }) {
     );
   return (
     <div className="today-screen">
+      <div className="home-heading">
+        <div>
+          <p className="eyebrow">Home · Day {state.mission.day}</p>
+          <h1>Your mission, your health</h1>
+        </div>
+        <button className="btn" onClick={() => go("more")}>
+          <Icon name="more" />
+          All tools
+        </button>
+      </div>
+      <WearablesBar person={person} />
+      <Panel title="Current mission" className="home-mission">
+        <div className="mission-identity">
+          <span className="icon-tile">
+            <Icon name="orbit" size={32} />
+          </span>
+          <div>
+            <h2>{state.mission.name}</h2>
+            <p className="muted">
+              {person.name} · {person.role}
+            </p>
+          </div>
+        </div>
+        <div className="mission-facts">
+          <span>
+            <small>Mission day</small>
+            <b>{state.mission.day}</b>
+          </span>
+          <span>
+            <small>Environment</small>
+            <b>{env.gravity}</b>
+          </span>
+          <span>
+            <small>Earth delay</small>
+            <b>{delayText(env)}</b>
+          </span>
+        </div>
+      </Panel>
       <button className="fast-help" onClick={() => go("emergency")}>
         <span>
           Feeling unwell or something's wrong?
-          <small>Tap the symptoms to get the most likely cause and what to do</small>
+          <small>
+            Tap the symptoms to get the most likely cause and what to do
+          </small>
         </span>
         <Icon name="arrow" size={28} />
       </button>
       <div className="today-hero">
-        <Panel className="status-window" aria-label="Your status">
+        <Panel
+          className="status-window"
+          aria-label="Your status"
+          id="health-summary"
+        >
           <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>
           <div className="health-overview">
             <div className={`health-ring tone-${status}`}>
@@ -143,7 +206,10 @@ export default function Today({ person, go }) {
                 />
               </svg>
               <div>
-                <strong>{score}</strong>
+                <strong>
+                  {score}
+                  <span className="score-denominator"> / 100</span>
+                </strong>
                 <small>Health score</small>
               </div>
             </div>
@@ -155,7 +221,8 @@ export default function Today({ person, go }) {
                   : "Your readings are in range. Keep your daily routine on track."}
               </p>
               <p className="small muted score-note">
-                The score starts at 100 and drops for each reading, symptom or check outside its range.
+                The score starts at 100 and drops for each reading, symptom or
+                check outside its range.
               </p>
             </div>
           </div>
@@ -171,6 +238,7 @@ export default function Today({ person, go }) {
               </div>
             ))}
           </div>
+          <ReadinessBadge person={person} />
         </Panel>
         <Panel
           title="Do this next"
@@ -225,7 +293,11 @@ export default function Today({ person, go }) {
                     `${person.name}: ${priority.title}`,
                     priority.level,
                   );
-                  setNotice("The medical officer has been notified.");
+                  setNotice(
+                    sandboxEnabled(state)
+                      ? "Request saved only to Private Sandbox; the medical officer was not notified."
+                      : "The medical officer has been notified.",
+                  );
                 }}
               >
                 <Icon name="medical" size={18} />
@@ -246,6 +318,8 @@ export default function Today({ person, go }) {
       </div>
       <div className="main-with-aside">
         <Panel title="Today's routine">
+          <QuickPulse person={person} />
+          <RecoveryNotice person={person} />
           <div className="row spread">
             <div>
               <h2>
@@ -284,9 +358,17 @@ export default function Today({ person, go }) {
                     <Icon name={t.done ? "check" : icon} size={19} />
                   </span>
                   <div className="routine-copy">
-                    <b>{label}</b>
-                    <small>{sub}</small>
-                    {t.id === "exercise" && (
+                    <b>
+                      {t.id === "exercise" && recovery.active
+                        ? "Active Recovery (Streak Preserved)"
+                        : label}
+                    </b>
+                    <small>
+                      {t.id === "exercise" && recovery.active
+                        ? "Gentle mobility and rest replace today's high-strain workout"
+                        : sub}
+                    </small>
+                    {t.id === "exercise" && !recovery.active && (
                       <Segments
                         value={Math.min(row.exercise, 90)}
                         max={90}
@@ -308,19 +390,25 @@ export default function Today({ person, go }) {
                     <button
                       className="btn"
                       onClick={() =>
-                        t.id === "water" ? addWater(pid, 0.25) : go(page)
+                        t.id === "water"
+                          ? addWater(pid, 0.25)
+                          : t.id === "exercise" && recovery.active
+                            ? completeRecovery(pid)
+                            : go(page)
                       }
                     >
-                      {action}
+                      {t.id === "exercise" && recovery.active
+                        ? "Complete recovery"
+                        : action}
                     </button>
                   )}
                 </div>
               );
             })}
           </div>
-          {due.length > 0 && (
+          {due.length > 0 ? (
             <div className="due-checks">
-              <h3>Scheduled checks</h3>
+              <h3>Daily diagnostics · {due.length} due</h3>
               {due.map(({ check }) => (
                 <button
                   className="text-button"
@@ -337,9 +425,20 @@ export default function Today({ person, go }) {
                 </button>
               ))}
             </div>
+          ) : (
+            <div className="due-checks">
+              <h3>Daily diagnostics</h3>
+              <p className="small muted">
+                All scheduled checks are up to date.
+              </p>
+            </div>
           )}
+          <button className="text-button" onClick={() => go("checks")}>
+            View all diagnostics <Icon name="arrow" size={16} />
+          </button>
         </Panel>
         <div className="panel-stack">
+          <EmergencySimulator person={person} go={go} />
           <Panel title="Other signals">
             {alerts.slice(1).map((a) => (
               <div className="signal-row" key={a.id}>
@@ -369,6 +468,7 @@ export default function Today({ person, go }) {
             )}
           </Panel>
           <Patterns person={person} limit={1} />
+          <CrewBioDome />
           <Panel title="Consistency">
             <div className="row spread">
               <b>
@@ -385,11 +485,21 @@ export default function Today({ person, go }) {
               ).map((day) => (
                 <div
                   key={day}
-                  className={state.checkins[pid][day] ? "complete" : ""}
+                  className={
+                    state.checkins[pid][day] ||
+                    state.recovery?.[pid]?.[day]?.completedAt
+                      ? "complete"
+                      : ""
+                  }
                 >
                   <small>{day}</small>
                   <Icon
-                    name={state.checkins[pid][day] ? "check" : "clock"}
+                    name={
+                      state.checkins[pid][day] ||
+                      state.recovery?.[pid]?.[day]?.completedAt
+                        ? "check"
+                        : "clock"
+                    }
                     size={16}
                   />
                 </div>

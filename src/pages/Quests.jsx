@@ -1,4 +1,6 @@
 import React from "react";
+import { CrewBioDome, RecoveryNotice } from "../components/HomeUpgrades.jsx";
+import { recoveryStatus, completeRecovery } from "../backend/homeUpgrades.js";
 import {
   useStore,
   tasksFor,
@@ -54,6 +56,7 @@ export default function Quests({ person, go }) {
       </div>
       <div className="main-with-aside">
         <div className="panel-stack">
+          <RecoveryNotice person={person} />
           <Panel title="Today's routine">
             <Segments
               value={done}
@@ -75,14 +78,24 @@ export default function Quests({ person, go }) {
                   {t.done ? (
                     <Status status="green">Done</Status>
                   ) : (
-                    <button className="btn" onClick={() => go(PAGES[t.id])}>
-                      Open
+                    <button
+                      className="btn"
+                      onClick={() =>
+                        t.id === "exercise" && recoveryStatus(state, pid).active
+                          ? completeRecovery(pid)
+                          : go(PAGES[t.id])
+                      }
+                    >
+                      {t.id === "exercise" && recoveryStatus(state, pid).active
+                        ? "Complete recovery"
+                        : "Open"}
                     </button>
                   )}
                 </div>
               ))}
             </div>
           </Panel>
+          <CrewBioDome />
           <Panel title="Milestones">
             <div className="progress-badges">
               {badgesFor(state, pid).map((b) => (
