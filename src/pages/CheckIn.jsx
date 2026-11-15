@@ -10,6 +10,10 @@ import {
 } from "../backend/api.js";
 import { indicators, personalBaseline, rangeText } from "../lib.js";
 import { Panel, Back, Segments, Icon } from "../components/ConsoleUI.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
+import usePrivateDraft, {
+  privateDraft,
+} from "../components/usePrivateDraft.js";
 
 const QUESTIONS = [
   "How did you sleep?",
@@ -46,23 +50,33 @@ export default function CheckIn({ person, go }) {
     row = rowFor(state, pid),
     history = historyOf(state, pid);
   const existing = state.checkins[pid][state.mission.day];
-  const [step, setStep] = useState(0),
-    [values, setValues] = useState(() =>
-      Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])),
+  const privateMode = sandboxEnabled(state);
+  const draft = privateDraft(state, pid, "checkin-draft");
+  const [step, setStep] = useState(draft?.step || 0),
+    [values, setValues] = useState(
+      () =>
+        draft?.values ||
+        Object.fromEntries(indicators.map((i) => [i.id, row[i.id]])),
     );
-  const [motion, setMotion] = useState(existing?.motion || 0),
-    [symptoms, setSymptoms] = useState(() => symptomsToday(state, pid).map((s) => s.id));
-  const [answers, setAnswers] = useState({
-    headache:
-      existing && !existing.auto
-        ? symptoms.includes("headache")
-        : undefined,
-    vision:
-      existing && !existing.auto
-        ? symptoms.includes("vision")
-        : undefined,
-  });
+  const [motion, setMotion] = useState(draft?.motion ?? existing?.motion ?? 0),
+    [symptoms, setSymptoms] = useState(
+      () => draft?.symptoms || symptomsToday(state, pid).map((s) => s.id),
+    );
+  const [answers, setAnswers] = useState(
+    draft?.answers || {
+      headache:
+        existing && !existing.auto ? symptoms.includes("headache") : undefined,
+      vision:
+        existing && !existing.auto ? symptoms.includes("vision") : undefined,
+    },
+  );
   const [error, setError] = useState("");
+  usePrivateDraft(
+    pid,
+    "checkin-draft",
+    { values, motion, symptoms, answers, step },
+    privateMode,
+  );
   function toggleSym(id) {
     setSymptoms((s) =>
       s.includes(id) ? s.filter((x) => x !== id) : [...s, id],
@@ -138,6 +152,12 @@ export default function CheckIn({ person, go }) {
     (step === 2 || step === 3) && answers[symptomId] === undefined;
   return (
     <div className="checkin-screen">
+      {privateMode && (
+        <p role="status" className="small muted">
+          Private Sandbox: drafts and results stay separate from your public
+          daily check-in.
+        </p>
+      )}
       <div className="row spread checkin-top">
         <Back onClick={() => go("today")}>Today</Back>
         <span className="eyebrow">

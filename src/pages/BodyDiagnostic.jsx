@@ -10,28 +10,53 @@ import {
 import { indicators } from "../lib.js";
 import { HEALTH_AREAS, SLEEP_QUALITY, areaPage } from "../data/healthAreas.js";
 import { Back, PageTitle, Panel, Icon } from "../components/ConsoleUI.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
+import usePrivateDraft, {
+  privateDraft,
+} from "../components/usePrivateDraft.js";
 
 export default function BodyDiagnostic({ person, go, partKey = "brain" }) {
   const state = useStore(),
     area = HEALTH_AREAS[partKey],
     row = rowFor(state, person.id);
   const previous = latestBodyDiagnostic(state, person.id, partKey);
+  const privateMode = sandboxEnabled(state);
+  const draft = privateDraft(state, person.id, `diagnostic-draft-${partKey}`);
   const fields = indicators.filter((i) => i.bodyPart === partKey);
-  const [values, setValues] = useState(() =>
-    Object.fromEntries(fields.map((i) => [i.id, row[i.id] ?? ""])),
+  const [values, setValues] = useState(
+    () =>
+      draft?.values ||
+      Object.fromEntries(fields.map((i) => [i.id, row[i.id] ?? ""])),
   );
   const [answers, setAnswers] = useState(() => {
+    if (draft?.answers) return draft.answers;
     const current = symptomsToday(state, person.id).map((s) => s.id);
     const ci = state.checkins[person.id][state.mission.day];
-    const known = (id) => (ci && !ci.auto) || state.bodyDiagnostics?.[person.id]?.some((r) => r.day === state.mission.day && typeof r.answers[id] === "boolean");
-    return Object.fromEntries(area.symptoms.filter(known).map((id) => [id, current.includes(id)]));
+    const known = (id) =>
+      (ci && !ci.auto) ||
+      state.bodyDiagnostics?.[person.id]?.some(
+        (r) =>
+          r.day === state.mission.day && typeof r.answers[id] === "boolean",
+      );
+    return Object.fromEntries(
+      area.symptoms.filter(known).map((id) => [id, current.includes(id)]),
+    );
   });
   const [sleepQuality, setSleepQuality] = useState(
-    previous?.sleepQuality || "",
+    draft?.sleepQuality || previous?.sleepQuality || "",
   );
-  const [stress, setStress] = useState(previous?.stress ?? "");
+  const [stress, setStress] = useState(draft?.stress ?? previous?.stress ?? "");
+  const [acuteRadiation, setAcuteRadiation] = useState(
+    draft?.acuteRadiation ?? "",
+  );
   const [error, setError] = useState(""),
     [saved, setSaved] = useState(false);
+  usePrivateDraft(
+    person.id,
+    `diagnostic-draft-${partKey}`,
+    { values, answers, sleepQuality, stress, acuteRadiation },
+    privateMode && !saved,
+  );
   return (
     <div className="area-check-screen">
       <Back onClick={() => go(areaPage(partKey))}>{area.title}</Back>
@@ -46,8 +71,9 @@ export default function BodyDiagnostic({ person, go, partKey = "brain" }) {
             <Icon name="check" size={42} />
             <h2>Diagnostic check saved</h2>
             <p>
-              Your {area.short.toLowerCase()} information and health summary
-              have been updated.
+              {saved.private
+                ? "Saved in your Private Sandbox. Public health scores and crew records are unchanged."
+                : `Your ${area.short.toLowerCase()} information and health summary have been updated.`}
             </p>
             <button
               className="btn primary"
@@ -62,13 +88,14 @@ export default function BodyDiagnostic({ person, go, partKey = "brain" }) {
           onSubmit={(event) => {
             event.preventDefault();
             try {
-              saveBodyDiagnostic(person.id, partKey, {
+              const result = saveBodyDiagnostic(person.id, partKey, {
                 values,
                 answers,
                 sleepQuality,
                 stress,
+                acuteRadiation,
               });
-              setSaved(true);
+              setSaved(result);
               setError("");
             } catch (err) {
               setError(err.message);
@@ -76,6 +103,28 @@ export default function BodyDiagnostic({ person, go, partKey = "brain" }) {
           }}
         >
           <Panel title="Your readings">
+            {privateMode && (
+              <p className="small muted">
+                Private Sandbox: this check is saved separately from your crew
+                record.
+              </p>
+            )}
+            {partKey === "wholeBody" && (
+              <label className="acute-dose-field">
+                Acute event dose (mSv, optional)
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={acuteRadiation}
+                  onChange={(e) => setAcuteRadiation(e.target.value)}
+                />
+                <small className="muted">
+                  Dose from this single event, separate from your lifetime
+                  cumulative reading.
+                </small>
+              </label>
+            )}
             {fields.length ? (
               <div className="focused-readings">
                 {fields.map((i) => (

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { bodyParts } from "../lib.js";
+import HealthTrend from "../components/HealthTrend.jsx";
 import {
   useStore,
   dueChecks,
   testsOf,
   evaluateTest,
   CHECKS,
-  historyOf,
 } from "../backend/api.js";
 import HeartRateCamera from "../components/checks/HeartRateCamera.jsx";
 import AmslerGrid from "../components/checks/AmslerGrid.jsx";
@@ -23,7 +23,6 @@ import {
   Panel,
   Icon,
   Status,
-  Sparkline,
 } from "../components/ConsoleUI.jsx";
 const RUNNERS = {
   hr: HeartRateCamera,
@@ -56,7 +55,13 @@ const DURATION = {
   tlx: "1 minute",
   urine: "10 seconds",
 };
-const ICON = { eyes: "eyes", heart: "heart", brain: "brain", kidneys: "water", vestibular: "medical" };
+const ICON = {
+  eyes: "eyes",
+  heart: "heart",
+  brain: "brain",
+  kidneys: "water",
+  vestibular: "medical",
+};
 export default function Checks({ person, go, params = {} }) {
   const state = useStore(),
     pid = person.id,
@@ -68,7 +73,13 @@ export default function Checks({ person, go, params = {} }) {
     const past = testsOf(state, pid, check.id).slice(0, 8);
     return (
       <div>
-        <Back onClick={() => params.returnTo ? go(params.returnTo) : setOpen(null)}>{params.returnTo ? "Back to body health" : "All medical checks"}</Back>
+        <Back
+          onClick={() =>
+            params.returnTo ? go(params.returnTo) : setOpen(null)
+          }
+        >
+          {params.returnTo ? "Back to body health" : "All medical checks"}
+        </Back>
         <PageTitle
           eyebrow={"Medical check · " + bodyParts[check.part].name}
           title={TITLES[open]}
@@ -127,12 +138,11 @@ export default function Checks({ person, go, params = {} }) {
             {open === "hr" && (
               <>
                 <p className="eyebrow">Recent resting heart rate</p>
-                <Sparkline
-                  bars
-                  values={historyOf(state, pid)
-                    .slice(-7)
-                    .map((r) => r.heartRate)}
-                  label="Resting heart rate over the last seven days"
+                <HealthTrend
+                  compact
+                  pid={pid}
+                  indicatorId="heartRate"
+                  days={7}
                 />
                 <p className="small muted">Last seven mission days · bpm</p>
               </>

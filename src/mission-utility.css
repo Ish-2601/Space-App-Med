@@ -1,0 +1,454 @@
+.mission-root {
+  min-height: 100vh;
+}
+.mission-root.sandbox-active {
+  outline: 2px dashed #8183c4;
+  outline-offset: -5px;
+}
+.mission-root.sandbox-active::after {
+  content: "";
+  position: fixed;
+  inset: 3px;
+  border: 1px dashed #8183c488;
+  pointer-events: none;
+  z-index: 70;
+  border-radius: 5px;
+}
+.mission-utility-bar {
+  position: relative;
+  z-index: 51;
+  background: #0b1118;
+  border-bottom: 1px solid var(--line, #293544);
+  padding: 10px clamp(12px, 2vw, 32px);
+}
+.mission-utility-bar.is-private {
+  background: #121422;
+  border-bottom: 1px dashed #7476b1;
+}
+.mission-utility-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 1480px;
+  margin: auto;
+}
+.utility-toggle {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--line-strong, #33445a);
+  background: var(--surface, #141c28);
+  color: var(--text, #e9eef3);
+  border-radius: 9px;
+  padding: 9px 13px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.utility-toggle[aria-pressed="true"] {
+  border-color: #8e93cf;
+  background: #282b47;
+  color: #d5d7fa;
+}
+.circadian-selector {
+  margin-left: auto;
+  min-width: 0;
+}
+.circadian-selector select {
+  font-size: 13px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 30px 8px 12px;
+  background: var(--surface);
+}
+.display-toggles .profile-display-mode {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+.profile-display-mode select {
+  max-width: 100%;
+  width: 100%;
+  font-size: 12px;
+  min-width: 0;
+}
+.utility-privacy-note,
+.utility-mode-note,
+.utility-save-status {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 7px auto 0;
+  max-width: 1480px;
+  color: var(--muted);
+}
+.utility-save-status {
+  color: #c2c5f1;
+}
+.private-records-button {
+  font-size: 12px;
+}
+.hands-free-console {
+  max-width: 1480px;
+  margin: 12px auto 0;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.hands-free-console p {
+  margin: 8px 0 0;
+}
+.voice-command-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.voice-command-buttons .btn {
+  font-size: 13px;
+  padding: 7px 12px;
+}
+.voice-live-dot {
+  width: 7px;
+  height: 7px;
+  background: #9cc7b2;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #9cc7b222;
+}
+.mission-voice-timer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  font-variant-numeric: tabular-nums;
+  padding-top: 7px;
+}
+.mission-voice-timer > span {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+.private-records-drawer {
+  max-width: 1100px;
+  margin: 16px auto 4px;
+  padding: 20px;
+  border: 1px dashed #858ac0;
+  border-radius: 12px;
+  background: var(--surface);
+  max-height: 62vh;
+  overflow: auto;
+}
+.private-records-drawer h2 {
+  margin: 0;
+  font-size: 19px;
+}
+.private-record-row {
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+.private-record-row summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.private-record-row pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 8px;
+}
+.mission-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: 20px;
+  background: #000c;
+  backdrop-filter: blur(5px);
+}
+.mission-escalation-dialog {
+  width: min(650px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: #18181e;
+  border: 1px solid #d98c8c;
+  border-radius: 18px;
+  padding: clamp(20px, 4vw, 36px);
+  box-shadow: 0 25px 100px #0008;
+}
+.mission-escalation-dialog h2 {
+  font-size: clamp(23px, 3vw, 32px);
+}
+.mission-escalation-dialog li {
+  margin-bottom: 8px;
+  color: #f4aaa6;
+}
+html.circadian-alertness {
+  --bg: #05121a;
+  --surface: #09202b;
+  --surface-2: #102e3b;
+  --surface-3: #183c49;
+  --line: #244957;
+  --line-strong: #477082;
+  --text: #e5fbff;
+  --muted: #b1d5de;
+  --faint: #94bac7;
+  --brand: #82e7f7;
+  --brand-ink: #00121a;
+  --brand-soft: #82e7f720;
+}
+html.circadian-alertness .mission-utility-bar {
+  background: #061923;
+}
+html.circadian-redshift,
+html.circadian-redshift.night-mode {
+  filter: none;
+  background: #050505;
+  --bg: #050505;
+  --surface: #130806;
+  --surface-2: #1e0b07;
+  --surface-3: #2c1008;
+  --line: #632313;
+  --line-strong: #9a3820;
+  --text: #ff8e48;
+  --muted: #e46d39;
+  --faint: #ca5b30;
+  --brand: #ff3b30;
+  --brand-ink: #050505;
+  --brand-soft: #ff3b301b;
+  --green: #ffad4b;
+  --yellow: #ff6f38;
+  --red: #ff3b30;
+  --light: #ff743b;
+}
+html.circadian-redshift body,
+html.circadian-redshift .mission-utility-bar,
+html.circadian-redshift .console-app,
+html.circadian-redshift .crew-lobby,
+html.circadian-redshift .console-topbar,
+html.circadian-redshift .console-dock {
+  background: #050505;
+  color: var(--text);
+}
+html.circadian-redshift
+  :is(
+    .panel,
+    .card,
+    .status,
+    .telemetry-chip,
+    .profile-options,
+    .utility-toggle,
+    .answer-option,
+    .body-area-card,
+    .detail-chart,
+    .health-system-figure,
+    .mission-escalation-dialog,
+    .private-records-drawer,
+    .triage-results,
+    .cause,
+    .tile,
+    .crew-card
+  ) {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--line-strong);
+  box-shadow: none;
+}
+html.circadian-redshift
+  :is(
+    .muted,
+    .small,
+    .eyebrow,
+    .status,
+    .panel-tab,
+    .utility-save-status,
+    .mission-escalation-dialog li
+  ) {
+  color: var(--muted) !important;
+}
+html.circadian-redshift
+  :is(
+    button,
+    input,
+    select,
+    textarea,
+    a,
+    label,
+    h1,
+    h2,
+    h3,
+    p,
+    strong,
+    b,
+    small
+  ) {
+  color: inherit;
+}
+html.circadian-redshift
+  :is(.btn.primary, .utility-toggle[aria-pressed="true"], .dock-item.active) {
+  background: #492017;
+  color: #ff9d50;
+  border-color: #ff3b30;
+}
+html.circadian-redshift
+  :is(.console-banner, .btn.danger, .alert.red, .triage-flag, .fast-help) {
+  background: #350b06;
+  color: #ff6e3b;
+  border-color: #ff3b30;
+}
+html.circadian-redshift :is(img, video, canvas, svg, .crew-space-scene) {
+  filter: grayscale(1) sepia(1) saturate(5) hue-rotate(325deg);
+}
+html.circadian-redshift .crew-lobby::before,
+html.circadian-redshift .crew-lobby::after {
+  opacity: 0.15;
+  filter: grayscale(1) sepia(1) saturate(5) hue-rotate(325deg);
+}
+html.circadian-redshift .mission-root.sandbox-active::after {
+  border-color: #ca5b30;
+}
+html.circadian-redshift .voice-live-dot {
+  background: #ff9b42;
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .mission-utility-controls {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .circadian-selector {
+    grid-column: 1 / -1;
+    margin: 0;
+    width: 100%;
+  }
+  .circadian-selector select {
+    width: 100%;
+  }
+  .utility-toggle {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+  .private-records-button {
+    grid-column: 1 / -1;
+    min-height: 32px;
+  }
+  .mission-escalation-dialog .row {
+    display: grid;
+  }
+  .mission-modal-backdrop {
+    padding: 10px;
+  }
+}
+@media print {
+  .mission-utility-bar,
+  .mission-root.sandbox-active::after {
+    display: none;
+  }
+}
+html.circadian-redshift .crew-select {
+  background: #050505;
+}
+html.circadian-redshift
+  :is(
+    .crew-avatar,
+    .lobby-role-tab,
+    .crew-score-track,
+    .crew-checkup-status,
+    .crew-photo-button,
+    .crew-medical-button,
+    .crew-avatar-initials
+  ) {
+  background: #1c0d08;
+  color: #ff9348;
+  border-color: #92301d;
+}
+html.circadian-redshift .crew-card {
+  --crew-accent: #ff6f38;
+}
+html.circadian-redshift .crew-score-track span {
+  background: #ff6f38;
+}
+html.circadian-redshift
+  :is(
+    .crew-name,
+    .crew-score,
+    .health-score,
+    .score-ring,
+    .health-number,
+    .reading-number,
+    .crew-checkup-status,
+    .crew-role,
+    .dock-item
+  ) {
+  color: #ff8645 !important;
+}
+html.circadian-redshift {
+  --blue: #ff743b;
+}
+html.circadian-redshift .mission-root.sandbox-active {
+  outline-color: #ca5b30;
+}
+html.circadian-redshift .mission-utility-bar.is-private {
+  border-color: #b9502d;
+}
+html.circadian-redshift :is(.brand, .brand > span, .brand-orb > span) {
+  color: #ff954d;
+}
+html.circadian-redshift .brand-orb {
+  background: radial-gradient(circle at 30% 25%, #ff9b56, #8f321c 55%, #1e0805);
+  box-shadow: none;
+}
+html.circadian-redshift .notification-button > span {
+  background: #ff3b30;
+  color: #050505;
+  border-color: #ff743b;
+}
+html.circadian-redshift
+  :is(
+    .wearable-pill,
+    .readiness-badge,
+    .voice-biomarkers > span,
+    .recovery-notice,
+    .emoji-scale button
+  ) {
+  background: #130806;
+  border-color: #642514;
+  box-shadow: none;
+}
+html.circadian-redshift
+  :is(
+    .emoji-scale button[aria-checked="true"],
+    .crop-tabs [aria-pressed="true"]
+  ) {
+  background: #35130c;
+  border-color: #b54725;
+  box-shadow: inset 0 1px #7d2f1833;
+}
+html.circadian-redshift .emoji-scale button span {
+  filter: grayscale(1) sepia(1) saturate(5) hue-rotate(325deg);
+}
+html.circadian-redshift .wearable-status i {
+  background: #ff9148;
+  box-shadow: none;
+}
+html.circadian-redshift .biodome {
+  color: #ff8e48;
+}
+html.circadian-redshift .private-records-drawer {
+  border-color: #b9502d;
+}
+.private-record-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.private-record-filter select {
+  max-width: 100%;
+  min-height: 44px;
+}

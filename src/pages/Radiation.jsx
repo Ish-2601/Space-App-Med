@@ -14,6 +14,7 @@ import {
 import { round1 } from "../lib.js";
 import useNow from "../components/useNow.js";
 import CrewAvatar from "../components/CrewAvatar.jsx";
+import HealthTrend from "../components/HealthTrend.jsx";
 import {
   PageTitle,
   Panel,
@@ -21,7 +22,6 @@ import {
   Icon,
   Status,
   Segments,
-  Sparkline,
 } from "../components/ConsoleUI.jsx";
 export default function Radiation({ person, go }) {
   const state = useStore(),
@@ -252,13 +252,16 @@ export default function Radiation({ person, go }) {
           </section>
           <section>
             <p className="eyebrow">Daily dose · Last 14 days</p>
-            <Sparkline
-              bars
-              values={daily}
-              baseline={d.rate}
-              label="Daily radiation dose in millisieverts"
+            <HealthTrend
+              compact
+              pid={pid}
+              indicatorId="dailyDose"
+              rows={rows
+                .slice(1)
+                .map((r, i) => ({ day: r.day, value: daily[i] }))}
+              label="Daily radiation dose"
+              unit="mSv/day"
             />
-            <p className="small muted">Dashed line: {d.rate} mSv/day here</p>
           </section>
         </div>
         <div className="row spread dose-notes">

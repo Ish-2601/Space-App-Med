@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CrewAvatar from "./CrewAvatar.jsx";
 import {
   useStore,
@@ -10,6 +10,7 @@ import {
 import { Brand, Icon } from "./ConsoleUI.jsx";
 import { GROUPS, activeGroup } from "./navigation.js";
 import { getDisplay, setDisplay } from "../display.js";
+import { DISPLAY_MODES } from "../display.js";
 
 export default function ConsoleShell({
   person,
@@ -22,6 +23,11 @@ export default function ConsoleShell({
   const state = useStore();
   const [menu, setMenu] = useState(false);
   const [display, setDisp] = useState(getDisplay);
+  useEffect(() => {
+    const onDisplay = () => setDisp(getDisplay());
+    window.addEventListener("displaychange", onDisplay);
+    return () => window.removeEventListener("displaychange", onDisplay);
+  }, []);
   const env = envOf(state);
   const ev = activeEvent(state);
   const emergencies = activeEmergencies(state);
@@ -106,15 +112,20 @@ export default function ConsoleShell({
                   role="group"
                   aria-label="Display"
                 >
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={display.night}
+                  <label className="profile-display-mode">
+                    Display mode
+                    <select
+                      value={display.mode}
                       onChange={(e) =>
-                        setDisp(setDisplay({ night: e.target.checked }))
+                        setDisp(setDisplay({ mode: e.target.value }))
                       }
-                    />
-                    Night mode <small>Dim red light for sleep periods</small>
+                    >
+                      {DISPLAY_MODES.map((mode) => (
+                        <option key={mode.id} value={mode.id}>
+                          {mode.label}
+                        </option>
+                      ))}
+                    </select>
                   </label>
                   <label>
                     <input

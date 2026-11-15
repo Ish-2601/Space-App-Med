@@ -1,6 +1,7 @@
 import React from "react";
 import BodyMap from "../components/BodyMap.jsx";
 import BodyHealth from "./BodyHealth.jsx";
+import DigitalTwin from "../components/DigitalTwin.jsx";
 import {
   useStore,
   partStatus,
@@ -36,6 +37,8 @@ export default function Body({ person, go, params = {} }) {
         <Panel title="Body map" className="body-menu-figure">
           <BodyMap
             figureOnly
+            layers
+            environment={state.mission.environment}
             partStatus={(key) => partStatus(state, person.id, key)}
             onSelect={(key) => go(areaPage(key))}
           />
@@ -105,6 +108,7 @@ export default function Body({ person, go, params = {} }) {
           Health trends
         </button>
       </div>
+      <DigitalTwin pid={person.id} />
     </div>
   );
 }

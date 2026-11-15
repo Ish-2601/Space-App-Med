@@ -7,6 +7,7 @@ import {
   resolveEmergency,
 } from "../backend/api.js";
 import { Panel, Icon } from "./ConsoleUI.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
 
 export default function EmergencySimulator({ person, go }) {
   const state = useStore();
@@ -19,6 +20,13 @@ export default function EmergencySimulator({ person, go }) {
         Test the emergency banner and response steps with this profile. Reports
         stay inside the prototype.
       </p>
+      {sandboxEnabled(state) && (
+        <p className="small muted">
+          Private Sandbox records this scenario privately without starting a
+          shared crew alert. Switch sandbox off to rehearse the shared protocol
+          and banner.
+        </p>
+      )}
       {simulation ? (
         <>
           <p role="status">

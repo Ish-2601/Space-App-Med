@@ -12,6 +12,7 @@ import {
 } from "../backend/api.js";
 import useNow from "../components/useNow.js";
 import Triage from "../components/Triage.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
 import {
   PageTitle,
   Panel,
@@ -33,7 +34,9 @@ function Vitals({ em }) {
         try {
           saveEmergencyVitals(em.id, v);
           setMsg(
-            "Vitals saved to the patient record. A priority update is queued.",
+            sandboxEnabled()
+              ? "Vitals saved in Private Sandbox. No shared patient record or Earth report changed."
+              : "Vitals saved to the patient record. A priority update is queued.",
           );
           setError("");
         } catch (err) {

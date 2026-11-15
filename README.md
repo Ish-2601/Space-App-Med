@@ -38,6 +38,20 @@ The interface uses dark surfaces, muted glass controls, and the supplied galaxy 
 
 All reports, notifications, and replies are simulated locally. Camera and motion checks require device support and permission. Photo files stay in IndexedDB and are not included in JSON/CSV exports.
 
+## Mission utilities and adaptive health tools
+
+- **Private Sandbox:** available in the global bar, including the Users screen. Check-ins, focused diagnostic drafts/results, tests, symptoms, triage queries, mood/journal logs, wearable snapshots and activity logs go into `privateSandboxRecords`. They do not alter public readings, scores, task progress, CMO notifications or Earth reports. Switching modes remounts forms; private diagnostic drafts can be resumed only in sandbox mode. The Private records drawer is scoped to the selected crew member. This is local data separation, not encryption or an authenticated privacy boundary.
+- **Critical sandbox prompts:** explicitly entered SpO₂ below 85%, chest pain, or an acute event dose above 500 mSv opens a modal. Sharing creates one local CMO notification and simulated priority report containing only the critical finding. Keeping it private leaves public data unchanged. Lifetime cumulative radiation is never treated as an acute event dose. Private records are excluded from ordinary JSON/CSV exports and health reports.
+- **Hands-Free:** Web Speech recognition supports Next step, Record vitals, Start timer, Read aloud and Open Emergency. The same five buttons work without a microphone. Speech recognition requires browser support/permission and may use the browser vendor's speech service; synthesis reads visible instructions. A one-minute timer persists across screens and refreshes.
+- **Circadian display:** cool cyan Alertness, Standard Orbit Day, and amber/red Red-Shift. Legacy Night Mode preferences migrate automatically. The named 480 nm and 0% Blue Light modes describe screen palettes, not calibrated spectra or a guarantee of melatonin protection.
+- **Home:** six simulated BLE/ANT+ wearable feeds refresh every 15 seconds and can sync a snapshot to today's readings. Quick Pulse saves three five-choice ratings. The five-second voice-log simulation generates cadence, pitch variability and fatigue drift from demo baselines without recording audio. Cognitive Motor Readiness uses form interaction timing/correction counts only; it does not capture text or diagnose cognitive impairment.
+- **Cooperative Bio-Dome:** completed public crew tasks grow interactive dwarf tomatoes and mizuna. Short sleep (under six hours) or HRV below the prototype 30 ms trigger substitutes an Active Recovery task. Completing recovery earns the task's points and preserves a streak without inventing exercise minutes or completing the daily check-in.
+- **Layered anatomy:** Organ Systems, Microgravity Fluid Shift and EVA hotspots retain all ten body destinations. Fluid-shift intensity follows ISS/transit 0G, Moon 0.16G or Mars 0.38G; the overlay illustrates anatomy rather than measuring swelling.
+- **Health trends:** all biometric trend views offer a preceding 14-day personal baseline, the app's adapted screening range, or sourced Earth reference ranges where defined. Cabin CO₂, daily radiation dose, pressure or simulated acoustic noise can use a separate right axis. Correlation banners use aligned days and explicitly avoid causal claims. Raw chart readings are accessible in a table. Chart modes do not change alert thresholds.
+- **Digital Twin:** Body and Trends open a persistent four-slider scenario drawer for ARED, water, sleep and storm shielding. Thirty-day curves show relative bone-density, aerobic-capacity, renal-risk and vigilance indices. These deterministic demonstration equations are disclosed and are not clinically validated personal predictions.
+
+Run `npm test` and `npm run build` after changes. Regression coverage includes public/private isolation, critical boundary values and confirmation, draft persistence, wearable sync idempotence, recovery points/streaks, day-aligned correlations, forecast controls, voice actions, and legacy display preferences.
+
 ## Features
 
 **Daily**

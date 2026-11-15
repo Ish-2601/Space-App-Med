@@ -12,7 +12,9 @@ import {
   testsOf,
 } from "../backend/api.js";
 import { bodyParts, indicators, indicatorSummary, round1 } from "../lib.js";
-import { Icon, Status, Sparkline } from "./ConsoleUI.jsx";
+import { Icon, Status } from "./ConsoleUI.jsx";
+import HealthTrend from "./HealthTrend.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
 import { HEALTH_AREAS } from "../data/healthAreas.js";
 export default function BodyPartDetail({ partKey, person, go }) {
   const state = useStore(),
@@ -23,14 +25,19 @@ export default function BodyPartDetail({ partKey, person, go }) {
   const sums = indicators
     .filter((i) => i.bodyPart === partKey)
     .map((i) => ({ ind: i, ...indicatorSummary(i, history) }));
-  const syms = symptomsToday(state, pid).filter((s) => HEALTH_AREAS[partKey].symptoms.includes(s.id)),
+  const syms = symptomsToday(state, pid).filter((s) =>
+      HEALTH_AREAS[partKey].symptoms.includes(s.id),
+    ),
     checks = recentCheckResults(state, pid).filter(
       (r) => r.check.part === partKey,
     ),
     due = dueChecks(state, pid).filter(
       (d) => d.check.part === partKey && d.due,
     ),
-    guides = MED_GUIDE.filter((g) => g.part === partKey || HEALTH_AREAS[partKey].symptoms.includes(g.id)),
+    guides = MED_GUIDE.filter(
+      (g) =>
+        g.part === partKey || HEALTH_AREAS[partKey].symptoms.includes(g.id),
+    ),
     ci = state.checkins[pid][state.mission.day];
   const [msg, setMsg] = useState("");
   const primary = sums[0],
@@ -86,12 +93,7 @@ export default function BodyPartDetail({ partKey, person, go }) {
       {primary && (
         <div className="detail-chart">
           <p className="small muted">{primary.ind.label} · Last 14 days</p>
-          <Sparkline
-            values={history.slice(-14).map((r) => r[primary.ind.id])}
-            baseline={primary.baseline}
-            label={primary.ind.label + " compared with your baseline"}
-          />
-          <p className="small muted">Dashed line: your usual</p>
+          <HealthTrend compact pid={pid} indicatorId={primary.ind.id} />
         </div>
       )}
       {!primary && vision.length > 0 && (
@@ -99,10 +101,13 @@ export default function BodyPartDetail({ partKey, person, go }) {
           <p className="small muted">
             Left-eye acuity · logMAR (lower is better)
           </p>
-          <Sparkline
-            values={vision.map((t) => t.result.left)}
-            baseline={vision[0].result.left}
+          <HealthTrend
+            compact
+            pid={pid}
+            indicatorId="acuity"
+            rows={vision.map((t) => ({ day: t.day, value: t.result.left }))}
             label="Left eye near-vision results"
+            unit="logMAR"
           />
           <p className="small muted">Your recent near-vision checks</p>
         </div>
@@ -199,7 +204,11 @@ export default function BodyPartDetail({ partKey, person, go }) {
               person.name + ": please review " + part.name,
               status === "green" ? "info" : status,
             );
-            setMsg("Medical officer notified.");
+            setMsg(
+              sandboxEnabled()
+                ? "Saved in Private Sandbox. No medical officer notification sent."
+                : "Medical officer notified.",
+            );
           }}
         >
           <Icon name="medical" />
@@ -209,7 +218,11 @@ export default function BodyPartDetail({ partKey, person, go }) {
           className="btn"
           onClick={() => {
             sendReport(pid, "health");
-            setMsg("Health report queued in the simulated Earth link.");
+            setMsg(
+              sandboxEnabled()
+                ? "Saved in Private Sandbox. No report queued."
+                : "Health report queued in the simulated Earth link.",
+            );
           }}
         >
           <Icon name="send" />

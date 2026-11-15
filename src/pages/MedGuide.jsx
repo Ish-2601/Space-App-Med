@@ -10,6 +10,7 @@ import {
 } from "../backend/api.js";
 import { bodyParts } from "../lib.js";
 import { PageTitle, Panel, Icon, Status } from "../components/ConsoleUI.jsx";
+import { sandboxEnabled } from "../backend/sandbox.js";
 export default function MedGuide({ person, go, params = {} }) {
   const state = useStore(),
     [q, setQ] = useState(""),
@@ -34,12 +35,17 @@ export default function MedGuide({ person, go, params = {} }) {
       <button className="fast-help" onClick={() => go("emergency")}>
         <span>
           More than one symptom, or it's serious?
-          <small>Fast diagnosis: tap all symptoms and get the most likely causes using live data</small>
+          <small>
+            Fast diagnosis: tap all symptoms and get the most likely causes
+            using live data
+          </small>
         </span>
         <Icon name="arrow" size={28} />
       </button>
       <Panel title="Symptom guides">
-        <p className="muted small">The guide for one symptom: causes, self-care and when to escalate.</p>
+        <p className="muted small">
+          The guide for one symptom: causes, self-care and when to escalate.
+        </p>
         <label className="search-field">
           <Icon name="search" />
           <input
@@ -152,7 +158,11 @@ export default function MedGuide({ person, go, params = {} }) {
               className="btn primary"
               onClick={() => {
                 logSymptom(person.id, g.id);
-                setMsg("Symptom logged for today.");
+                setMsg(
+                  sandboxEnabled(state)
+                    ? "Symptom saved in Private Sandbox."
+                    : "Symptom logged for today.",
+                );
               }}
             >
               <Icon name="journal" />
@@ -166,7 +176,11 @@ export default function MedGuide({ person, go, params = {} }) {
                   person.name + " reports: " + g.title,
                   "yellow",
                 );
-                setMsg("Medical officer notified.");
+                setMsg(
+                  sandboxEnabled(state)
+                    ? "Alert saved privately. Medical officer not notified."
+                    : "Medical officer notified.",
+                );
               }}
             >
               <Icon name="medical" />

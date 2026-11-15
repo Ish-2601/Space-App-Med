@@ -18,6 +18,15 @@ import {
 import { Panel, Icon, Status, Segments } from "../components/ConsoleUI.jsx";
 import { Patterns } from "./Trends.jsx";
 import EmergencySimulator from "../components/EmergencySimulator.jsx";
+import {
+  WearablesBar,
+  QuickPulse,
+  ReadinessBadge,
+  RecoveryNotice,
+  CrewBioDome,
+} from "../components/HomeUpgrades.jsx";
+import { recoveryStatus, completeRecovery } from "../backend/homeUpgrades.js";
+import { sandboxEnabled } from "../backend/sandbox.js";
 
 const TASKS = {
   checkin: [
@@ -118,6 +127,7 @@ export default function Today({ person, go }) {
   const alerts = alertsFor(state, pid).filter((a) => a.level !== "info");
   const due = dueChecks(state, pid).filter((d) => d.due);
   const tasks = tasksFor(state, pid);
+  const recovery = recoveryStatus(state, pid);
   const done = tasks.filter((t) => t.done).length;
   const priority = alerts[0];
   const [notice, setNotice] = useState("");
@@ -138,6 +148,7 @@ export default function Today({ person, go }) {
           All tools
         </button>
       </div>
+      <WearablesBar person={person} />
       <Panel title="Current mission" className="home-mission">
         <div className="mission-identity">
           <span className="icon-tile">
@@ -168,7 +179,9 @@ export default function Today({ person, go }) {
       <button className="fast-help" onClick={() => go("emergency")}>
         <span>
           Feeling unwell or something's wrong?
-          <small>Tap the symptoms to get the most likely cause and what to do</small>
+          <small>
+            Tap the symptoms to get the most likely cause and what to do
+          </small>
         </span>
         <Icon name="arrow" size={28} />
       </button>
@@ -221,6 +234,7 @@ export default function Today({ person, go }) {
               </div>
             ))}
           </div>
+          <ReadinessBadge person={person} />
         </Panel>
         <Panel
           title="Do this next"
@@ -275,7 +289,11 @@ export default function Today({ person, go }) {
                     `${person.name}: ${priority.title}`,
                     priority.level,
                   );
-                  setNotice("The medical officer has been notified.");
+                  setNotice(
+                    sandboxEnabled(state)
+                      ? "Request saved only to Private Sandbox; the medical officer was not notified."
+                      : "The medical officer has been notified.",
+                  );
                 }}
               >
                 <Icon name="medical" size={18} />
@@ -296,6 +314,8 @@ export default function Today({ person, go }) {
       </div>
       <div className="main-with-aside">
         <Panel title="Today's routine">
+          <QuickPulse person={person} />
+          <RecoveryNotice person={person} />
           <div className="row spread">
             <div>
               <h2>
@@ -334,9 +354,17 @@ export default function Today({ person, go }) {
                     <Icon name={t.done ? "check" : icon} size={19} />
                   </span>
                   <div className="routine-copy">
-                    <b>{label}</b>
-                    <small>{sub}</small>
-                    {t.id === "exercise" && (
+                    <b>
+                      {t.id === "exercise" && recovery.active
+                        ? "Active Recovery (Streak Preserved)"
+                        : label}
+                    </b>
+                    <small>
+                      {t.id === "exercise" && recovery.active
+                        ? "Gentle mobility and rest replace today's high-strain workout"
+                        : sub}
+                    </small>
+                    {t.id === "exercise" && !recovery.active && (
                       <Segments
                         value={Math.min(row.exercise, 90)}
                         max={90}
@@ -358,10 +386,16 @@ export default function Today({ person, go }) {
                     <button
                       className="btn"
                       onClick={() =>
-                        t.id === "water" ? addWater(pid, 0.25) : go(page)
+                        t.id === "water"
+                          ? addWater(pid, 0.25)
+                          : t.id === "exercise" && recovery.active
+                            ? completeRecovery(pid)
+                            : go(page)
                       }
                     >
-                      {action}
+                      {t.id === "exercise" && recovery.active
+                        ? "Complete recovery"
+                        : action}
                     </button>
                   )}
                 </div>
@@ -430,6 +464,7 @@ export default function Today({ person, go }) {
             )}
           </Panel>
           <Patterns person={person} limit={1} />
+          <CrewBioDome />
           <Panel title="Consistency">
             <div className="row spread">
               <b>
@@ -446,11 +481,21 @@ export default function Today({ person, go }) {
               ).map((day) => (
                 <div
                   key={day}
-                  className={state.checkins[pid][day] ? "complete" : ""}
+                  className={
+                    state.checkins[pid][day] ||
+                    state.recovery?.[pid]?.[day]?.completedAt
+                      ? "complete"
+                      : ""
+                  }
                 >
                   <small>{day}</small>
                   <Icon
-                    name={state.checkins[pid][day] ? "check" : "clock"}
+                    name={
+                      state.checkins[pid][day] ||
+                      state.recovery?.[pid]?.[day]?.completedAt
+                        ? "check"
+                        : "clock"
+                    }
                     size={16}
                   />
                 </div>
@@ -465,4 +510,3 @@ export default function Today({ person, go }) {
     </div>
   );
 }
-
