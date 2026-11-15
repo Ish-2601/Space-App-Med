@@ -23,6 +23,7 @@ import MissionControl from "../pages/MissionControl.jsx";
 import ConsoleShell from "./ConsoleShell.jsx";
 import More from "../pages/More.jsx";
 import CrewHub from "../pages/CrewHub.jsx";
+import Summary from "../pages/Summary.jsx";
 
 export const NAV = [
   { group: "Daily", pages: [
@@ -55,7 +56,7 @@ export const NAV = [
   ] },
   { group: "", pages: [{ id: "emergency", label: "🚨 Emergency", C: Emergency }] },
 ];
-export const PAGES = [...NAV.flatMap((g) => g.pages), { id: "more", C: More }, { id: "crewHub", C: CrewHub }];
+export const PAGES = [...NAV.flatMap((g) => g.pages), { id: "more", C: More }, { id: "crewHub", C: CrewHub }, { id: "summary", C: Summary }];
 
 // One astronaut's personal app: mission bar, sidebar navigation, current page
 export default function Dashboard({ person, routeId = person.id, onSwitch, onOpenPerson, initialPage = "today" }) {

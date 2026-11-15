@@ -27,7 +27,7 @@ export const GROUPS = [
     id: "more",
     label: "More",
     icon: "more",
-    pages: ["more", "mission", "learn"],
+    pages: ["more", "mission", "learn", "summary"],
   },
 ];
 export const activeGroup = (page) =>

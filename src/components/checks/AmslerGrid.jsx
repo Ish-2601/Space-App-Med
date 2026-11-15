@@ -65,8 +65,9 @@ export default function AmslerGrid({ person, onSaved }) {
         <span className="muted small">Eye {eye === "left" ? 1 : 2} of 2</span>
       </div>
       <p className="muted small">
-        Cover your <b>{eye === "left" ? "right" : "left"}</b> eye. Keep looking
-        at the centre dot.
+        Hold the screen about 30–35 cm away. Cover your{" "}
+        <b>{eye === "left" ? "right" : "left"}</b> eye. Keep looking at the
+        centre dot.
       </p>
       <div
         className="amsler"

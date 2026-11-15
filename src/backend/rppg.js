@@ -23,9 +23,12 @@ function resample(samples) {
   return y;
 }
 
+// Removes slow drift (lighting, movement) by subtracting a 3-second moving average.
+// A shorter window would also weaken slow pulses (a 1-second window cuts a 45 bpm pulse by ~60%),
+// which matters for fit astronauts with low resting heart rates.
 function detrend(y) {
   const n = y.length;
-  const half = FS / 2;
+  const half = Math.round(FS * 1.5);
   const out = new Float64Array(n);
   for (let i = 0; i < n; i++) {
     let s = 0;

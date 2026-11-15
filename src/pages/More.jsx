@@ -1,6 +1,18 @@
 import React from "react";
 import { PageTitle, Panel, Icon } from "../components/ConsoleUI.jsx";
 const links = [
+  [
+    "summary",
+    "journal",
+    "Health summary",
+    "One page for the flight surgeon: print, save as PDF or send",
+  ],
+  [
+    "trends",
+    "star",
+    "Trends and patterns",
+    "Your readings over time and patterns in your own data",
+  ],
   ["learn", "book", "Learn", "NASA's hazards, risks and research"],
   [
     "mission",
@@ -27,19 +39,13 @@ const links = [
     "Streaks and quests",
     "Your progress and the crew leaderboard",
   ],
-  [
-    "trends",
-    "heart",
-    "Health trends",
-    "Readings against your personal baseline",
-  ],
   ["photos", "camera", "Photo log", "Capture, compare and share health photos"],
 ];
 export default function More({ go, onSwitch }) {
   return (
     <>
       <PageTitle
-        eyebrow="ONBOARD DIRECTORY"
+        eyebrow="More"
         title="Your mission, at a glance"
         description="Everything you need. Even when Earth is far away."
       />

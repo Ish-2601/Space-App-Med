@@ -1,0 +1,364 @@
+/* =====================================================================
+   NASA Med clean design layer (loaded after console.css).
+   Based on the research in docs/RESEARCH-UI.md:
+   - one typeface, one type scale (12 / 13 / 15 / 17 / 20 / 24 / 32), no text under 12 px
+   - one 8-point spacing scale (4 / 8 / 12 / 16 / 24 / 32 / 48)
+   - 60-30-10 colour: 60% deep background, 30% surfaces, 10% one accent (sky blue)
+   - status colours (green / amber / coral) are reserved for health status only,
+     always paired with an icon and a word
+   - no decorative chrome: no bracket corners, grid lines or monospace caps labels
+   ===================================================================== */
+
+:root {
+  /* 60% */
+  --bg: #0b1118;
+  /* 30% */
+  --surface: #121a24;
+  --surface-2: #19232f;
+  --surface-3: #212d3b;
+  --line: #233040;
+  --line-strong: #33445a;
+  /* text */
+  --text: #e9eef3;
+  --muted: #9cadbd;
+  --faint: #73859a;
+  /* 10% accent: one colour for primary actions, links and selection */
+  --brand: #8ec9ff;
+  --brand-ink: #071827;
+  --brand-soft: #8ec9ff1f;
+  /* status only (kept bright enough to tell apart, WCAG AA on --surface) */
+  --green: #7fd4b0;
+  --yellow: #f2c879;
+  --red: #f4a3a3;
+  --light: var(--brand);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* ---------- Base ---------- */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1 { font-size: clamp(26px, 2.6vw, 32px); font-weight: 650; letter-spacing: -0.02em; line-height: 1.2; }
+h2 { font-size: 20px; font-weight: 650; letter-spacing: -0.01em; line-height: 1.3; }
+h3 { font-size: 17px; font-weight: 600; letter-spacing: 0; }
+p { margin: 0 0 var(--space-4); }
+a { color: var(--brand); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+/* Small "eyebrow" labels: sentence case, regular font, readable size */
+.eyebrow,
+.priority-copy .eyebrow,
+.habitat-stats .eyebrow,
+.sensor-tile .eyebrow,
+.transmission-reply .eyebrow,
+.guidance-columns .eyebrow,
+.checkin-top > .eyebrow,
+.crew-select .crew-heading p.lobby-eyebrow,
+.panel-tab,
+.dock-item span,
+.table th,
+.detail h3,
+.body-guidance h3,
+.protocol-timer small,
+.crew-card-score small,
+.risk-number,
+.lobby-role-tab,
+.crew-select .crew-role {
+  font-family: var(--font) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.eyebrow {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: var(--space-2);
+}
+
+/* Minimum readable text size: 12 px everywhere */
+.notification-button > span, .profile-toggle small, .profile-options small, .console-footer,
+.btn.small, .status, .health-ring small, .mini-stats small, .priority-copy .eyebrow, .routine-copy small,
+.routine-points, .streak-days small, .directory-item small, .crew-summary-row small, .crew-summary-row .status,
+.table th, .crew-select .crew-role, .routine-row .btn, .body-reading strong small, .body-reading > .status,
+.body-reading > .text-button, .body-guidance h3, .body-guidance li, .shelter-crew-row small,
+.habitat-stats .eyebrow, .habitat-stats .status, .chart-legend, .crew-select .crew-heading p.lobby-eyebrow,
+.crew-select .crew-card > .status, .crew-select .crew-checkin, .activity-form label, .route-trends .recharts-text,
+.resource-link small, .transmission pre, .transmission-track li, .transmission-reply .eyebrow, .crew-card-heading p,
+.crew-card-score small, .sensor-tile .eyebrow, .sensor-tile > .small, .bodymap .part .status, .body-map-hint,
+.photo-preview-button small, .detail h3, .guidance-columns .eyebrow, .protocol-choice span, .compact-table td,
+.compact-table .status, .hazard-card > .small, .research-table details, .risk-links button, .protocol-timer small,
+.vitals-fields label, .bodymap .part, .summary-stat span, .checkin-top > .eyebrow, .symptom-choice,
+.transmission .status, .display-toggles small, .dock-item span {
+  font-size: 12px !important;
+}
+.status, .crew-summary-row .status, .bodymap .part .status, .habitat-stats .status, .compact-table .status,
+.transmission .status, .body-reading > .status, .crew-select .crew-card > .status { font-size: 12px !important; }
+.dock-item span, .routine-copy small, .directory-item small, .crew-summary-row small, .body-guidance li,
+.activity-form label, .vitals-fields label, .protocol-choice span, .compact-table td, .symptom-choice,
+.bodymap .part, .chart-legend, .console-footer, .resource-link small, .transmission-track li { font-size: 13px !important; }
+.body-guidance li { font-size: 14px !important; }
+
+/* ---------- App shell ---------- */
+.console-app { background: var(--bg); padding-bottom: 96px; }
+.console-app::before { display: none; }
+
+.console-topbar {
+  min-height: 64px;
+  padding: var(--space-3) var(--space-5);
+  gap: var(--space-4);
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+  box-shadow: none;
+}
+.brand { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; }
+.brand-button { padding-right: var(--space-4); border-right: 1px solid var(--line); }
+.brand-orb { width: 28px; height: 28px; box-shadow: none; }
+.brand-orb svg { width: 36px; height: 30px; }
+.brand-orb > span { font-size: 22px; }
+.console-telemetry { gap: var(--space-2); }
+.telemetry-chip {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+}
+button.telemetry-chip:hover { background: var(--surface-2); color: var(--text); }
+.icon-button, .profile-toggle {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+.icon-button:hover, .profile-toggle:hover { background: var(--surface-2); }
+.notification-button > span { background: #c0505e; font-weight: 700; }
+.profile-options {
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 16px 40px #0008;
+}
+.profile-options button:hover { background: var(--surface-3); }
+
+.console-main { max-width: 1240px; padding: var(--space-6) var(--space-5) var(--space-5); }
+.console-footer { color: var(--faint); text-align: center; }
+
+/* Banners: one clear sentence + one action */
+.console-banner {
+  margin: var(--space-4) var(--space-5) 0;
+  border-radius: var(--radius-sm);
+  border: 1px solid #7a3b44;
+  background: #2a171c;
+  box-shadow: none;
+}
+
+/* ---------- Bottom navigation ---------- */
+.console-dock {
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-5) max(var(--space-2), env(safe-area-inset-bottom));
+  background: #0b1118f2;
+  border-top: 1px solid var(--line);
+  box-shadow: none;
+}
+.dock-coordinate { display: none; }
+.dock-pages { gap: var(--space-2); margin: 0 auto; }
+.dock-item {
+  width: 84px;
+  min-height: 56px;
+  gap: 4px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--muted);
+}
+.dock-item span { font-weight: 500; }
+.dock-item:hover { background: var(--surface); color: var(--text); }
+.dock-item.active {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border: 0;
+  box-shadow: none;
+}
+.dock-item.active span { font-weight: 650; }
+.dock-emergency {
+  background: #b23a48;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: 650;
+  box-shadow: none;
+}
+.dock-emergency:hover { background: #c64656; }
+.dock-emergency.active { background: #d24d5d; box-shadow: 0 0 0 3px #f4a3a355; }
+
+/* ---------- Page titles ---------- */
+.page-title { margin-bottom: var(--space-6); align-items: flex-end; }
+.page-title .muted { margin-top: var(--space-2); font-size: 16px; }
+
+/* ---------- Cards (panels) ---------- */
+.console-panel,
+.card {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: none;
+}
+.console-panel::before,
+.console-panel::after { display: none !important; }
+/* Status cards: a calm 3 px stripe instead of tinted backgrounds and glows */
+.console-panel.tone-yellow,
+.console-panel.tone-red,
+.console-panel.tone-green {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.console-panel.tone-red { border-color: #5a2f37; }
+/* Card titles: a plain left-aligned label instead of a floating badge */
+.panel-tab {
+  position: static !important;
+  display: block !important;
+  margin: 0 0 var(--space-4) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--muted) !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  line-height: 1.4 !important;
+}
+
+/* Consistent gaps between cards: 24 px */
+.panel-stack, .main-with-aside, .equal-columns, .today-hero, .activity-layout, .body-layout,
+.settings-layout, .crew-medical-grid, .body-support, .check-layout, .help-resources,
+.emergency-options, .checks-directory, .dose-columns, .grid2, .grid3 { gap: var(--space-5) !important; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.btn:hover { background: var(--surface-3); border-color: #46607b; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--brand-ink); box-shadow: none; }
+.btn.primary:hover { background: #a9d6ff; border-color: #a9d6ff; }
+.btn.danger { background: #b23a48; border-color: #b23a48; color: #fff; }
+.btn.danger:hover { background: #c64656; }
+.btn.active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+.btn.small { min-height: 36px; padding: 6px 12px; }
+.text-button { color: var(--brand); font-size: 14px; font-weight: 600; }
+.text-button:hover { color: #b9e0ff; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Status pills ---------- */
+.status { border: 0; padding: 4px 10px; font-weight: 600; background: #ffffff0d; color: var(--muted); }
+.status-green { color: var(--green); background: #7fd4b01a; }
+.status-yellow { color: var(--yellow); background: #f2c8791a; }
+.status-red { color: var(--red); background: #f4a3a31f; }
+
+/* ---------- Forms ---------- */
+input, select, textarea {
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+input:focus, select:focus, textarea:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px var(--brand-soft); }
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--brand); }
+
+/* ---------- Focus: always visible, always the same ---------- */
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible,
+select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ---------- Progress and charts ---------- */
+.segments { height: 8px; border-radius: 999px; background: var(--surface-3); }
+.segments > span { border-radius: 999px; }
+.segments > i { display: none; }
+.spark-grid { stroke: var(--line); }
+
+/* ---------- Lists inside cards ---------- */
+.routine-row, .signal-row, .crew-summary-row, .directory-item { border-color: var(--line) !important; }
+.directory-item:hover, .crew-summary-row:hover { background: var(--surface-2); }
+
+/* ---------- Phones ---------- */
+@media (max-width: 760px) {
+  .console-topbar { padding: var(--space-2) var(--space-4); min-height: 56px; }
+  .console-main { padding: var(--space-5) var(--space-4); }
+  .console-panel, .card { padding: 20px; border-radius: 14px; }
+  .dock-item { width: auto; flex: 1; min-height: 52px; }
+  .dock-pages { flex: 1; gap: 0; }
+  .console-dock { padding-left: var(--space-2); padding-right: var(--space-2); }
+  h1 { font-size: 26px; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ---------- New checks and pages ---------- */
+.urine-chart { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: var(--space-2); margin: var(--space-3) 0; }
+.urine-swatch {
+  aspect-ratio: 1; min-height: 44px; border-radius: var(--radius-sm); border: 2px solid transparent;
+  color: #3b3010; font-weight: 700; cursor: pointer;
+}
+.urine-swatch.selected { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.tlx-form { display: grid; gap: var(--space-4); }
+.tlx-scale { display: grid; gap: var(--space-1); }
+.tlx-scale input[type="range"] { width: 100%; }
+.hearing-run .row { gap: var(--space-3); margin-top: var(--space-4); }
+.instruction-steps { padding-left: 20px; display: grid; gap: var(--space-2); }
+.score-note { margin-top: var(--space-2); }
+.patterns-panel .signal-row > svg { color: var(--brand); }
+
+.summary-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5); }
+.summary-grid > :nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+.summary-score { display: flex; align-items: center; gap: var(--space-3); font-size: 18px; }
+.summary-score b { font-size: 40px; font-weight: 700; }
+.summary-list { list-style: none; padding: 0; margin: 0 0 var(--space-4); display: grid; gap: var(--space-2); }
+.summary-table { width: 100%; border-collapse: collapse; }
+.summary-table th, .summary-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+@media (max-width: 760px) {
+  .summary-grid { grid-template-columns: 1fr; }
+  .summary-table { display: block; overflow-x: auto; }
+  .urine-chart { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Print: the summary page becomes a plain black-on-white document */
+@media print {
+  html.night-mode { filter: none; }
+  body, .console-app, .console-main { background: #fff !important; color: #000 !important; }
+  .console-topbar, .console-dock, .console-banner, .console-footer, .no-print { display: none !important; }
+  .console-panel, .card { background: #fff !important; border: 1px solid #999 !important; box-shadow: none !important; break-inside: avoid; }
+  .panel-tab, .muted, .eyebrow { color: #333 !important; }
+  .status { color: #000 !important; background: none !important; border: 1px solid #666 !important; }
+  .summary-table th, .summary-table td { border-color: #bbb; }
+  .console-main { max-width: none; padding: 0; }
+}
+.health-ring small, .mini-stats small { letter-spacing: 0 !important; text-transform: none !important; }

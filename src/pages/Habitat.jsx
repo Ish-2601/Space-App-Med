@@ -53,10 +53,10 @@ export default function Habitat({ go, embedded = false }) {
             <Status status={status}>
               {label === "Cabin CO₂"
                 ? s === "green"
-                  ? "Below target"
+                  ? "Below recommended"
                   : s === "yellow"
-                    ? "Above target"
-                    : "Above limit"
+                    ? "Above recommended"
+                    : "Above NASA limit"
                 : label === "Oxygen"
                   ? "ppO₂ " + ppO2(h) + " kPa"
                   : h.pressure < 80
@@ -119,8 +119,8 @@ export default function Habitat({ go, embedded = false }) {
           </LineChart>
         </ResponsiveContainer>
         <p className="chart-legend">
-          <span className="text-yellow">Target {CO2_TARGET_MMHG}</span>
-          <span className="text-red">Limit {CO2_LIMIT_MMHG}</span>
+          <span className="text-yellow">Recommended {CO2_TARGET_MMHG} (NASA study)</span>
+          <span className="text-red">NASA limit {CO2_LIMIT_MMHG} (1-h avg)</span>
         </p>
       </div>
       <div className="row spread">

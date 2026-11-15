@@ -12,6 +12,7 @@ import { indicators } from "../lib.js";
 
 export * from "./rules.js";
 export * from "./content.js";
+export * from "./assess.js";
 export { useStore, getState };
 
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -133,6 +134,17 @@ export function restockMed(medId, qty) {
 }
 
 // ---------- Symptoms and journal ----------
+
+// rating: 1-9 (NASA hedonic scale); portion: all | most | half | little
+export function logMeal(pid, { meal = "Meal", rating, portion = "all" }) {
+  const r = Math.round(Number(rating));
+  if (!(r >= 1 && r <= 9)) throw new Error("Rate the meal from 1 to 9.");
+  update((s) => {
+    if (!s.mealLog) s.mealLog = {};
+    if (!s.mealLog[pid]) s.mealLog[pid] = [];
+    s.mealLog[pid].unshift({ id: newId(), day: today(s), ts: Date.now(), meal: String(meal).slice(0, 60) || "Meal", rating: r, portion });
+  });
+}
 
 export function logSymptom(pid, symptom, note = "") {
   update((s) => {

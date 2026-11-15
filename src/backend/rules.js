@@ -2,10 +2,11 @@
 import { indicators, statusOf, worstStatus, statusRank, personalBaseline } from "../lib.js";
 import { ENVIRONMENTS, QUESTS, BADGES, SYMPTOMS, CHECKS, MEDKIT } from "./content.js";
 import { snellen } from "./vision.js";
+import { evaluateHearing, evaluateStand, evaluateTlx, rawTlx, evaluateUrine, mealSummary, compareGroups } from "./assess.js";
 
 export const CAREER_LIMIT_MSV = 600; // NASA-STD-3001 Vol 1 Rev B
 export const CO2_LIMIT_MMHG = 3.0; // NASA-STD-3001 Vol 2 Rev D, 1-hour average
-export const CO2_TARGET_MMHG = 2.5; // NASA OCHMO: keeps headache risk around 1%
+export const CO2_TARGET_MMHG = 2.5; // Recommended level from Law et al. 2014 (NASA, 7-day average); not part of NASA-STD-3001
 const RECENT_DAYS = 7;
 
 // ---------- Basic lookups ----------
@@ -105,6 +106,16 @@ export function evaluateTest(state, pid, test) {
     const status = r.seconds >= 20 ? "green" : r.seconds >= 10 ? "yellow" : "red";
     return { status, summary: `${r.seconds} s on one leg${r.sway != null ? `, sway ${r.sway}` : ""}` };
   }
+  if (test.type === "hearing") {
+    const base = all[all.length - 1];
+    return evaluateHearing(!base || base.id === test.id ? null : base.result, r);
+  }
+  if (test.type === "stand") return evaluateStand(r);
+  if (test.type === "tlx") {
+    const earlier = all.filter((t) => t.id !== test.id && t.day <= test.day).slice(0, 4).map((t) => rawTlx(t.result));
+    return evaluateTlx(r, earlier.length >= 2 ? avg(earlier) : null);
+  }
+  if (test.type === "urine") return evaluateUrine(r.shade);
   return { status: "unknown", summary: "" };
 }
 
@@ -210,7 +221,7 @@ export function alertsFor(state, pid) {
   if (co2 !== "green") {
     alerts.push({
       id: "co2", level: co2, title: `Cabin CO₂ ${hab.co2} mmHg`,
-      action: co2 === "red" ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol." : "Above the 2.5 mmHg target. Headache risk is rising; check ventilation.",
+      action: co2 === "red" ? "Above NASA's 3 mmHg limit. Expect headaches; follow the High CO₂ protocol." : "Above the 2.5 mmHg level a NASA study recommends. Headache risk is rising; check ventilation.",
       page: "habitat",
     });
   }
@@ -226,6 +237,10 @@ export function alertsFor(state, pid) {
   }
   if (last3.length === 3 && last3.every((r) => r.exercise < 90)) {
     alerts.push({ id: "trend-exercise", level: "yellow", title: "Below the 90-minute exercise target 3 days running", action: "Bone and muscle loss speeds up without exercise. Log a workout today.", part: "bones", page: "log" });
+  }
+  const meals = mealSummary(state.mealLog?.[pid] || [], day);
+  if (meals?.eatingLess) {
+    alerts.push({ id: "trend-meals", level: "yellow", title: `Ate half or less at ${meals.lowIntake} meals this week`, action: "Eating less for weeks leads to body-mass loss. Try other menu items, and tell the CMO if your appetite stays low.", part: "gut", page: "log" });
   }
   for (const res of recentCheckResults(state, pid)) {
     if (res.status === "yellow" || res.status === "red") {
@@ -268,6 +283,49 @@ export function healthScore(state, pid) {
   const checks = recentCheckResults(state, pid);
   const checkPenalty = checks.filter((c) => c.status === "yellow").length * 4 + checks.filter((c) => c.status === "red").length * 10;
   return Math.max(0, Math.min(100, 100 - yellow * 6 - red * 18 - sym * 4 - checkPenalty));
+}
+
+// ---------- Patterns in your own data ----------
+// Simple comparisons between groups of days (at least 3 days in each group).
+// They show a pattern in this person's data, not proof that one thing causes the other.
+export function insightsFor(state, pid) {
+  const hist = historyOf(state, pid);
+  const out = [];
+  const pct = (a, b) => Math.round(((a - b) / b) * 100);
+
+  const pvtRows = testsOf(state, pid, "pvt")
+    .map((t) => ({ sleep: hist.find((h) => h.day === t.day)?.sleep, speed: t.result.speed }))
+    .filter((x) => x.sleep != null && x.speed);
+  const sleepPvt = compareGroups(pvtRows, (r) => r.sleep < 7, (r) => r.speed);
+  if (sleepPvt) {
+    const d = pct(sleepPvt.b, sleepPvt.a);
+    if (Math.abs(d) >= 5) out.push({ id: "sleep-pvt", part: "brain", strength: Math.abs(d), title: `Reactions ${Math.abs(d)}% ${d > 0 ? "faster" : "slower"} after 7+ hours of sleep`, detail: `Compared ${sleepPvt.nb} reaction tests after 7+ h of sleep with ${sleepPvt.na} after less.` });
+  }
+
+  const exMood = compareGroups(hist, (r) => r.exercise >= 90, (r) => r.mood);
+  if (exMood && Math.abs(exMood.a - exMood.b) >= 0.5) {
+    const diff = Math.round((exMood.a - exMood.b) * 10) / 10;
+    out.push({ id: "exercise-mood", part: "brain", strength: Math.abs(diff) * 10, title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} on full-workout days`, detail: `${exMood.na} days with 90+ minutes of exercise vs ${exMood.nb} days with less.` });
+  }
+
+  const sleepMood = compareGroups(hist, (r) => r.sleep >= 7, (r) => r.mood);
+  if (sleepMood && Math.abs(sleepMood.a - sleepMood.b) >= 0.5) {
+    const diff = Math.round((sleepMood.a - sleepMood.b) * 10) / 10;
+    out.push({ id: "sleep-mood", part: "brain", strength: Math.abs(diff) * 10, title: `Mood ${Math.abs(diff)} points ${diff > 0 ? "higher" : "lower"} after 7+ hours of sleep`, detail: `${sleepMood.na} nights of 7+ h vs ${sleepMood.nb} shorter nights.` });
+  }
+
+  const dayRows = hist.map((h) => {
+    const ci = state.checkins[pid][h.day];
+    const logged = state.symptomLog[pid].some((s) => s.day === h.day && s.symptom === "headache");
+    return { co2: state.habitat.history.find((x) => x.day === h.day)?.co2, headache: logged || !!ci?.symptoms?.includes("headache") };
+  });
+  if (dayRows.some((r) => r.headache)) {
+    const co2Head = compareGroups(dayRows.filter((r) => r.co2 != null), (r) => r.co2 > CO2_TARGET_MMHG, (r) => (r.headache ? 1 : 0));
+    if (co2Head && co2Head.a - co2Head.b >= 0.1) {
+      out.push({ id: "co2-headache", part: "brain", strength: Math.round((co2Head.a - co2Head.b) * 100), title: `Headaches on ${Math.round(co2Head.a * 100)}% of high-CO₂ days vs ${Math.round(co2Head.b * 100)}% of other days`, detail: `${co2Head.na} days above ${CO2_TARGET_MMHG} mmHg vs ${co2Head.nb} days below. A NASA study found each +1 mmHg CO₂ doubled the odds of headache on the ISS.` });
+    }
+  }
+  return out.sort((a, b) => b.strength - a.strength);
 }
 
 // ---------- Gamification ----------

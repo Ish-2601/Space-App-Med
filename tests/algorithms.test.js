@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { estimateBpm, regionMean } from "../src/backend/rppg.js";
-import { scorePvt, LAPSE_MS } from "../src/backend/pvt.js";
+import { scorePvt, LAPSE_MS, ISI_MIN_MS, ISI_MAX_MS, PVT_DURATION_SEC, randomIsi } from "../src/backend/pvt.js";
 import { optotypeMm, snellen, smallestDrawableLine } from "../src/backend/vision.js";
 import { statusOf, personalBaseline, greenBand } from "../src/lib.js";
 
@@ -19,7 +19,7 @@ function fakeSignal(bpm, seconds = 20, noise = 0.3, seed = 1) {
 }
 
 describe("camera heart rate (rPPG)", () => {
-  it.each([55, 72, 95, 130])("finds %i bpm in a noisy signal", (bpm) => {
+  it.each([45, 55, 72, 95, 130, 180])("finds %i bpm in a noisy signal", (bpm) => {
     const r = estimateBpm(fakeSignal(bpm));
     expect(Math.abs(r.bpm - bpm)).toBeLessThanOrEqual(3);
     expect(r.label).not.toBe("poor");
@@ -63,6 +63,21 @@ describe("reaction self-test scoring", () => {
 
   it("handles no valid responses", () => {
     expect(scorePvt([{ falseStart: true }]).trials).toBe(0);
+  });
+
+  it("uses the true median for an even number of trials", () => {
+    expect(scorePvt([{ rt: 200 }, { rt: 300 }, { rt: 400 }, { rt: 500 }]).medianRt).toBe(350);
+    expect(scorePvt([{ rt: 200 }, { rt: 300 }, { rt: 400 }]).medianRt).toBe(300);
+  });
+
+  it("uses response speed (mean of 1000/RT), the measure most sensitive to sleep loss", () => {
+    expect(scorePvt([{ rt: 200 }, { rt: 400 }]).speed).toBe(3.75); // (5 + 2.5) / 2
+  });
+
+  it("follows the published PVT-B timing: 1-4 s between stimuli, 3 minutes long", () => {
+    expect([ISI_MIN_MS, ISI_MAX_MS, PVT_DURATION_SEC]).toEqual([1000, 4000, 180]);
+    expect(randomIsi(() => 0)).toBe(1000);
+    expect(randomIsi(() => 0.999)).toBeLessThan(4000);
   });
 });
 

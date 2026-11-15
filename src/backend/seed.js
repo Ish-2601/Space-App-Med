@@ -3,7 +3,7 @@
 import crewData from "../data/crew.json";
 import { ENVIRONMENTS, MEDKIT } from "./content.js";
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 export const HISTORY_DAYS = 30;
 
 // Seeded random so a given astronaut + day always produces the same numbers
@@ -67,6 +67,18 @@ export function simulatePvt(sleep, r) {
   };
 }
 
+// Simulated tone thresholds (dB below the loudest tone): normal hearing hears down to about -70 to -80
+export function simulateHearing(r) {
+  const ear = () => Object.fromEntries([1000, 2000, 3000, 4000, 6000].map((f) => [f, -80 + Math.round(r() * 2) * 5 + (f >= 4000 ? 5 : 0)]));
+  return { left: ear(), right: ear(), device: "Crew headset" };
+}
+
+// Simulated NASA-TLX ratings around a target raw score
+export function simulateTlx(target, r) {
+  const v = () => Math.max(0, Math.min(100, Math.round(target + (r() - 0.5) * 20)));
+  return { mental: v(), physical: v(), temporal: v(), performance: v(), effort: v(), frustration: v() };
+}
+
 export function createInitialState() {
   const { mission, crew } = crewData;
   const environment = mission.environment || "transit";
@@ -98,6 +110,7 @@ export function createInitialState() {
   // Past medical checks (newest first): reaction tests every 4 days, vision checks weekly
   const tests = perPerson((p) => {
     const r = seededRandom(`${p.id}:tests`);
+    const r2 = seededRandom(`${p.id}:tests2`); // separate stream so older seeded results stay the same
     const list = [];
     for (let d = startDay; d < mission.day; d++) {
       const row = history[p.id].find((x) => x.day === d);
@@ -106,6 +119,29 @@ export function createInitialState() {
         list.unshift({ id: `seed-amsler-${p.id}-${d}`, type: "amsler", day: d, ts: null, result: { left: [], right: [] } });
         const late = p.id === "okafor" && d >= mission.day - 7;
         list.unshift({ id: `seed-acuity-${p.id}-${d}`, type: "acuity", day: d, ts: null, result: late ? { left: 0.3, right: 0.2 } : { left: 0.1, right: 0.1 } });
+      }
+      // Hearing baseline early in the window (re-test due every 30 days)
+      if (d === startDay + 8) list.unshift({ id: `seed-hearing-${p.id}`, type: "hearing", day: d, ts: null, result: simulateHearing(r2) });
+      // Weekly workload rating; the commander's workload climbs (ties to her slowing reaction times)
+      if (d % 7 === 2) list.unshift({ id: `seed-tlx-${p.id}-${d}`, type: "tlx", day: d, ts: null, result: simulateTlx(p.id === "chen" ? 45 + (d - startDay) * 1.2 : 40, r2) });
+      // Hydration colour every 3 days
+      if (d % 3 === 0) list.unshift({ id: `seed-urine-${p.id}-${d}`, type: "urine", day: d, ts: null, result: { shade: 2 + Math.round(r2() * 1.4) } });
+    }
+    return list;
+  });
+
+  // Meal ratings (NASA 9-point scale): the mission specialist's intake drops, matching her weight loss
+  const mealLog = perPerson((p) => {
+    const r = seededRandom(`${p.id}:meals`);
+    const list = [];
+    for (let d = mission.day - 9; d < mission.day; d++) {
+      for (const meal of ["Breakfast", "Dinner"]) {
+        const tired = p.id === "sato" && d >= mission.day - 6;
+        list.unshift({
+          id: `seed-meal-${p.id}-${d}-${meal}`, day: d, ts: null, meal,
+          rating: tired ? 4 + Math.round(r() * 2) : 6 + Math.round(r() * 2),
+          portion: tired ? (r() < 0.6 ? "half" : "most") : r() < 0.8 ? "all" : "most",
+        });
       }
     }
     return list;
@@ -137,6 +173,7 @@ export function createInitialState() {
     tests,
     medLog,
     medkit: MEDKIT.map((m) => ({ ...m })),
+    mealLog,
     exerciseLog: perPerson(() => []),
     photos: perPerson(() => []),
     profilePhotos: {},

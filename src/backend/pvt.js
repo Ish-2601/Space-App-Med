@@ -1,11 +1,13 @@
 // Scoring for the reaction self-test (psychomotor vigilance test, 3-minute "PVT-B" style).
-// Lapse threshold 355 ms is the one used for the 3-minute PVT-B; responses under 100 ms are false starts.
+// Parameters from Basner, Mollicone & Dinges (2011), Acta Astronautica 69:949-959:
+// 3 minutes, inter-stimulus interval 1-4 s (standard 10-min PVT uses 2-10 s),
+// lapse = reaction time > 355 ms (standard PVT uses 500 ms); responses under 100 ms are false starts.
 
 export const PVT_DURATION_SEC = 180;
 export const LAPSE_MS = 355;
 export const FALSE_START_MS = 100;
-export const ISI_MIN_MS = 2000;
-export const ISI_MAX_MS = 5000;
+export const ISI_MIN_MS = 1000;
+export const ISI_MAX_MS = 4000;
 
 // responses: [{ rt: ms }] where a press before the stimulus is recorded as { falseStart: true }
 export function scorePvt(responses) {
@@ -14,7 +16,8 @@ export function scorePvt(responses) {
   if (valid.length === 0) return { trials: 0, meanRt: null, medianRt: null, speed: null, lapses: 0, falseStarts };
   const rts = valid.map((r) => r.rt).sort((a, b) => a - b);
   const meanRt = rts.reduce((a, b) => a + b, 0) / rts.length;
-  const medianRt = rts[Math.floor(rts.length / 2)];
+  const mid = Math.floor(rts.length / 2);
+  const medianRt = rts.length % 2 ? rts[mid] : (rts[mid - 1] + rts[mid]) / 2;
   // response speed = mean of 1000/RT: the measure most sensitive to sleep loss
   const speed = rts.reduce((a, rt) => a + 1000 / rt, 0) / rts.length;
   const lapses = rts.filter((rt) => rt > LAPSE_MS).length;

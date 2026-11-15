@@ -15,7 +15,7 @@ export const ENVIRONMENTS = {
     label: "Mars transit", gravity: "Microgravity", microgravity: true, doseRate: 1.84, delayMin: 14,
     atmosphere: { pressureKpa: 101.3, o2Pct: 21 },
     focus: ["wholeBody", "bones", "eyes", "brain"],
-    note: "Outside the magnetosphere: the highest radiation of any phase. Earth delay 4–24 min one way.",
+    note: "Outside the magnetosphere: the highest radiation of any phase. Earth delay up to 20 min one way (NASA).",
   },
   moon: {
     label: "Moon base", gravity: "1/6 g", microgravity: false, doseRate: 1.37, delayMin: 0.022,
@@ -57,12 +57,12 @@ export const CHECKS = [
   {
     id: "pvt", title: "Reaction self-test", every: 4, part: "brain",
     what: "3-minute alertness test: tap as soon as the counter appears.",
-    why: "NASA's Reaction Self-Test (a 3-minute psychomotor vigilance test) has been used on the ISS since 2009 to show astronauts when sleep loss and workload slow them down. ISS crews took it every 4 days.",
+    why: "NASA's Reaction Self-Test (a 3-minute psychomotor vigilance test) has been used on the ISS since 2009 to show astronauts when their performance drops, for example from heavy workloads and reduced sleep. NASA has scheduled it periodically and around events like sleep shifts; the every-4-days schedule here is this app's choice.",
     action: { yellow: "You're slower than your baseline. Avoid safety-critical tasks if you can, protect tonight's sleep, retest tomorrow.", red: "Strong signs of fatigue. Tell the commander before any safety-critical task and ask for rest." },
   },
   {
     id: "amsler", title: "Amsler grid (vision distortion)", every: 7, part: "eyes",
-    what: "Cover one eye, stare at the centre dot, mark any wavy, blurry or missing lines.",
+    what: "Hold the screen about 30–35 cm away (normal reading distance) with your reading glasses on if you use them. Cover one eye, stare at the centre dot, mark any wavy, blurry or missing lines.",
     why: "SANS can fold the retina and choroid at the back of the eye. Folds near the centre of vision can make straight lines look wavy. The grid is a quick self-screen between eye exams.",
     action: { yellow: "Distortion marked. Report to the CMO for an eye exam / ultrasound (SANS).", red: "Distortion marked. Report to the CMO and flight surgeon now." },
   },
@@ -83,6 +83,30 @@ export const CHECKS = [
     what: "Stand on one leg, arms crossed, eyes open, for up to 30 seconds.",
     why: "Gravity transitions affect balance and coordination. After landing on the Moon or Mars, crews must walk and self-exit without help (HRP sensorimotor risk).",
     action: { yellow: "Balance is reduced. Move carefully, use handholds, avoid ladders and driving rovers today.", red: "Balance is poor. No EVA, ladder or rover tasks. Notify the CMO." },
+  },
+  {
+    id: "hearing", title: "Hearing check", every: 30, part: "vestibular",
+    what: "Put on the same headphones at the same volume, in the quietest spot you can find. Tap when you hear each tone.",
+    why: "Spacecraft are noisy: the ISS background is about 72 dBA, and NASA tests the hearing of crew on missions longer than 30 days (On-Orbit Hearing Assessment). This screen is not calibrated, so it only compares you with your own first result.",
+    action: { yellow: "Hearing is worse than your baseline at 2–4 kHz. Wear hearing protection in noisy modules, retest in a quiet spot, and tell the CMO.", red: "Possible sudden hearing loss. Tell the CMO now: it is treated as urgent." },
+  },
+  {
+    id: "stand", title: "Stand test (landing readiness)", every: 7, part: "heart", gravityOnly: true,
+    what: "Lie down for 2 minutes, then stand still for 3.5 minutes. Record heart rate and blood pressure at the end of each part. Do it daily for the first few days after landing.",
+    why: "After weightlessness, blood pools in the legs when you stand, and many astronauts feel faint after landing. NASA uses lie-then-stand tests after landing. A fall of 20+ mmHg systolic (or 10+ diastolic) within 3 minutes of standing is called orthostatic hypotension.",
+    action: { yellow: "Your body is still adapting to gravity. Drink fluids, wear compression garments, stand up slowly and avoid ladders and driving today.", red: "Do not do tasks that need you to stand for long. Lie down with legs raised and notify the CMO." },
+  },
+  {
+    id: "tlx", title: "Workload rating (NASA-TLX)", every: 7, part: "brain",
+    what: "Rate six parts of your workload from 0 to 100: mental, physical, time pressure, performance, effort and frustration.",
+    why: "The NASA Task Load Index is NASA's standard way to measure workload. Work overload is one of the stressors behind the HRP sleep and behavioural-health risks. There is no official cut-off: the app flags 70+ or a jump of 15+ above your usual.",
+    action: { yellow: "Your workload is high. Talk to the commander about the schedule and protect your sleep window tonight.", red: "Your workload is very high. Talk to the commander today." },
+  },
+  {
+    id: "urine", title: "Hydration colour check", every: 3, part: "kidneys",
+    what: "Match your urine colour to the closest of 8 shades.",
+    why: "Dehydration plus calcium from shrinking bones raises kidney-stone risk in space (NASA gravity hazard). The 8-shade colour chart (Armstrong) is the one the US military uses for a quick self-check. B vitamins and some medicines can make urine bright yellow.",
+    action: { yellow: "Drink about 500 mL of water over the next hour and check again.", red: "You are likely dehydrated. Drink now; tell the CMO if you also have flank pain, dizziness or very little urine." },
   },
   {
     id: "face", title: "Face photo (fluid shift)", every: 7, part: "heart", photo: true,
@@ -181,7 +205,7 @@ export const MED_GUIDE = [
   },
   {
     id: "backpain", title: "Back pain", part: "bones",
-    causes: ["Spine lengthens up to 3% in weightlessness", "Muscle deconditioning"],
+    causes: ["Height can increase as much as 3% in space as the spine lengthens", "Muscle deconditioning"],
     selfCare: ["Curl into a fetal position to stretch the spine", "Core exercises in your routine"],
     escalate: ["Pain with numbness or weakness in the legs", "Pain after an impact or landing"],
   },
