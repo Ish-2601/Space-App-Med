@@ -362,3 +362,53 @@ select:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
   .console-main { max-width: none; padding: 0; }
 }
 .health-ring small, .mini-stats small { letter-spacing: 0 !important; text-transform: none !important; }
+
+/* ---------- Detailed body map (pixel figure, front and back) ---------- */
+.bodymap.bodymap-v2 { display: block; }
+.bodymap-v2 .bm-caption {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+  min-height: 40px; margin-bottom: var(--space-3); font-size: 15px;
+}
+.bodymap-v2 .bm-caption svg { color: var(--brand); }
+.bm-screen {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  padding: var(--space-4) var(--space-3) var(--space-2);
+  background:
+    repeating-linear-gradient(180deg, #ffffff05 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse at 50% 40%, #0b2142, #06112a 70%);
+}
+.bm-figure { display: block; width: 100%; max-width: 520px; height: auto; max-height: 560px; margin: 0 auto; }
+.bm-view-label { fill: #8fb4dc; font-size: 3.4px; letter-spacing: 0.4px; font-family: var(--font); }
+
+/* Colours per status. f0 = lightest shade, f3 = darkest, e = outline, s = seam between muscles */
+.bm-region, .bm-swatch {
+  --f0: #2b64a8; --f1: #22528d; --f2: #1b4374; --f3: #15355d; --e: #5aaeff; --s: #0a1f3d;
+}
+.bm-yellow { --f0: #c9952f; --f1: #a97c26; --f2: #8a641f; --f3: #6e4f19; --e: #ffd27a; --s: #36260a; }
+.bm-red { --f0: #c95260; --f1: #a8434f; --f2: #8a3640; --f3: #6f2b33; --e: #ffaaaa; --s: #3a1217; }
+.bm-unknown { --f0: #4a5566; --f1: #3f4958; --f2: #353d4a; --f3: #2c333e; --e: #8a9bb0; --s: #181d25; }
+.bm-selected { --f0: #eef2f6; --f1: #d3dbe4; --f2: #b6c1ce; --f3: #9aa7b7; --e: #ffffff; --s: #75859a; }
+.bm-region .f0 { fill: var(--f0); }
+.bm-region .f1 { fill: var(--f1); }
+.bm-region .f2 { fill: var(--f2); }
+.bm-region .f3 { fill: var(--f3); }
+.bm-region .e { fill: var(--e); }
+.bm-region .s { fill: var(--s); }
+.bm-region { cursor: pointer; outline: none; transition: filter 120ms ease; }
+.bm-region.bm-hover:not(.bm-selected) { filter: brightness(1.3) saturate(1.1); }
+.bm-region:focus-visible { filter: drop-shadow(0 0 1.2px #ffffff) brightness(1.25); }
+/* Whole-body radiation selected: the outline of the whole body lights up */
+.bm-figure.whole-selected .bm-region .e { fill: #ffffff; }
+
+.bm-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 0; margin: var(--space-3) 0 var(--space-4); font-size: 13px; color: var(--muted); }
+.bm-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.bm-swatch { width: 14px; height: 14px; border-radius: 3px; background: var(--f1); box-shadow: inset 0 0 0 2px var(--e); }
+
+.bodymap-v2 .part-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.bodymap-v2 .part-list .body-map-hint { grid-column: 1 / -1; }
+.bodymap-v2 .part { min-height: 44px; }
+@media (max-width: 760px) {
+  .bodymap-v2 .part-list { grid-template-columns: 1fr; }
+  .bm-screen { padding: var(--space-3) var(--space-2) var(--space-1); }
+}
