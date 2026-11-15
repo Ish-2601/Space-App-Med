@@ -119,6 +119,13 @@ export default function Today({ person, go }) {
     );
   return (
     <div className="today-screen">
+      <button className="fast-help" onClick={() => go("emergency")}>
+        <span>
+          Feeling unwell or something's wrong?
+          <small>Tap the symptoms to get the most likely cause and what to do</small>
+        </span>
+        <Icon name="arrow" size={28} />
+      </button>
       <div className="today-hero">
         <Panel className="status-window" aria-label="Your status">
           <h2>Welcome back, {person.name.split(" ").at(-1)}</h2>

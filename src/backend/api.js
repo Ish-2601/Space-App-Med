@@ -13,6 +13,7 @@ import { indicators } from "../lib.js";
 export * from "./rules.js";
 export * from "./content.js";
 export * from "./assess.js";
+export * from "./triage.js";
 export { useStore, getState };
 
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
